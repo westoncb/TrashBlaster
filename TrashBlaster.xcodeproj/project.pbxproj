@@ -16,6 +16,18 @@
 		AD1153F516F467D600A9FE87 /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = AD1153F416F467D600A9FE87 /* Default.png */; };
 		AD1153F716F467D600A9FE87 /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = AD1153F616F467D600A9FE87 /* Default@2x.png */; };
 		AD1153F916F467D600A9FE87 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = AD1153F816F467D600A9FE87 /* Default-568h@2x.png */; };
+		AD11540016F4685100A9FE87 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AD1153FF16F4685100A9FE87 /* QuartzCore.framework */; };
+		AD11540216F4685A00A9FE87 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AD11540116F4685A00A9FE87 /* OpenGLES.framework */; };
+		AD11540416F4686400A9FE87 /* GLKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AD11540316F4686400A9FE87 /* GLKit.framework */; };
+		AD11540616F4694100A9FE87 /* MainStoryboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AD11540516F4694100A9FE87 /* MainStoryboard.storyboard */; };
+		AD11540916F46BD200A9FE87 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AD11540816F46BD200A9FE87 /* ViewController.m */; };
+		AD11540C16F50B7C00A9FE87 /* Sprite.m in Sources */ = {isa = PBXBuildFile; fileRef = AD11540B16F50B7C00A9FE87 /* Sprite.m */; };
+		AD11544116F5273000A9FE87 /* background.png in Resources */ = {isa = PBXBuildFile; fileRef = AD11543B16F5273000A9FE87 /* background.png */; };
+		AD11544216F5273000A9FE87 /* block.png in Resources */ = {isa = PBXBuildFile; fileRef = AD11543C16F5273000A9FE87 /* block.png */; };
+		AD11544316F5273000A9FE87 /* catacombs.png in Resources */ = {isa = PBXBuildFile; fileRef = AD11543D16F5273000A9FE87 /* catacombs.png */; };
+		AD11544416F5273000A9FE87 /* draygon.png in Resources */ = {isa = PBXBuildFile; fileRef = AD11543E16F5273000A9FE87 /* draygon.png */; };
+		AD11544516F5273000A9FE87 /* olroxsquarters.png in Resources */ = {isa = PBXBuildFile; fileRef = AD11543F16F5273000A9FE87 /* olroxsquarters.png */; };
+		AD11544616F5273000A9FE87 /* samusvaria.png in Resources */ = {isa = PBXBuildFile; fileRef = AD11544016F5273000A9FE87 /* samusvaria.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -32,6 +44,20 @@
 		AD1153F416F467D600A9FE87 /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
 		AD1153F616F467D600A9FE87 /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
 		AD1153F816F467D600A9FE87 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
+		AD1153FF16F4685100A9FE87 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		AD11540116F4685A00A9FE87 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
+		AD11540316F4686400A9FE87 /* GLKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLKit.framework; path = System/Library/Frameworks/GLKit.framework; sourceTree = SDKROOT; };
+		AD11540516F4694100A9FE87 /* MainStoryboard.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = MainStoryboard.storyboard; sourceTree = "<group>"; };
+		AD11540716F46BD200A9FE87 /* ViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
+		AD11540816F46BD200A9FE87 /* ViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
+		AD11540A16F50B7C00A9FE87 /* Sprite.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Sprite.h; sourceTree = "<group>"; };
+		AD11540B16F50B7C00A9FE87 /* Sprite.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Sprite.m; sourceTree = "<group>"; };
+		AD11543B16F5273000A9FE87 /* background.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = background.png; sourceTree = "<group>"; };
+		AD11543C16F5273000A9FE87 /* block.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = block.png; sourceTree = "<group>"; };
+		AD11543D16F5273000A9FE87 /* catacombs.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = catacombs.png; sourceTree = "<group>"; };
+		AD11543E16F5273000A9FE87 /* draygon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = draygon.png; sourceTree = "<group>"; };
+		AD11543F16F5273000A9FE87 /* olroxsquarters.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = olroxsquarters.png; sourceTree = "<group>"; };
+		AD11544016F5273000A9FE87 /* samusvaria.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = samusvaria.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -39,6 +65,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AD11540416F4686400A9FE87 /* GLKit.framework in Frameworks */,
+				AD11540216F4685A00A9FE87 /* OpenGLES.framework in Frameworks */,
+				AD11540016F4685100A9FE87 /* QuartzCore.framework in Frameworks */,
 				AD1153E316F467D600A9FE87 /* UIKit.framework in Frameworks */,
 				AD1153E516F467D600A9FE87 /* Foundation.framework in Frameworks */,
 				AD1153E716F467D600A9FE87 /* CoreGraphics.framework in Frameworks */,
@@ -51,6 +80,9 @@
 		AD1153D616F467D600A9FE87 = {
 			isa = PBXGroup;
 			children = (
+				AD11540316F4686400A9FE87 /* GLKit.framework */,
+				AD11540116F4685A00A9FE87 /* OpenGLES.framework */,
+				AD1153FF16F4685100A9FE87 /* QuartzCore.framework */,
 				AD1153E816F467D600A9FE87 /* TrashBlaster */,
 				AD1153E116F467D600A9FE87 /* Frameworks */,
 				AD1153E016F467D600A9FE87 /* Products */,
@@ -78,9 +110,15 @@
 		AD1153E816F467D600A9FE87 /* TrashBlaster */ = {
 			isa = PBXGroup;
 			children = (
+				AD11543A16F5273000A9FE87 /* images */,
 				AD1153F116F467D600A9FE87 /* AppDelegate.h */,
 				AD1153F216F467D600A9FE87 /* AppDelegate.m */,
+				AD11540A16F50B7C00A9FE87 /* Sprite.h */,
+				AD11540B16F50B7C00A9FE87 /* Sprite.m */,
 				AD1153E916F467D600A9FE87 /* Supporting Files */,
+				AD11540516F4694100A9FE87 /* MainStoryboard.storyboard */,
+				AD11540716F46BD200A9FE87 /* ViewController.h */,
+				AD11540816F46BD200A9FE87 /* ViewController.m */,
 			);
 			path = TrashBlaster;
 			sourceTree = "<group>";
@@ -97,6 +135,19 @@
 				AD1153F816F467D600A9FE87 /* Default-568h@2x.png */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		AD11543A16F5273000A9FE87 /* images */ = {
+			isa = PBXGroup;
+			children = (
+				AD11543B16F5273000A9FE87 /* background.png */,
+				AD11543C16F5273000A9FE87 /* block.png */,
+				AD11543D16F5273000A9FE87 /* catacombs.png */,
+				AD11543E16F5273000A9FE87 /* draygon.png */,
+				AD11543F16F5273000A9FE87 /* olroxsquarters.png */,
+				AD11544016F5273000A9FE87 /* samusvaria.png */,
+			);
+			path = images;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -154,6 +205,13 @@
 				AD1153F516F467D600A9FE87 /* Default.png in Resources */,
 				AD1153F716F467D600A9FE87 /* Default@2x.png in Resources */,
 				AD1153F916F467D600A9FE87 /* Default-568h@2x.png in Resources */,
+				AD11540616F4694100A9FE87 /* MainStoryboard.storyboard in Resources */,
+				AD11544116F5273000A9FE87 /* background.png in Resources */,
+				AD11544216F5273000A9FE87 /* block.png in Resources */,
+				AD11544316F5273000A9FE87 /* catacombs.png in Resources */,
+				AD11544416F5273000A9FE87 /* draygon.png in Resources */,
+				AD11544516F5273000A9FE87 /* olroxsquarters.png in Resources */,
+				AD11544616F5273000A9FE87 /* samusvaria.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -166,6 +224,8 @@
 			files = (
 				AD1153EF16F467D600A9FE87 /* main.m in Sources */,
 				AD1153F316F467D600A9FE87 /* AppDelegate.m in Sources */,
+				AD11540916F46BD200A9FE87 /* ViewController.m in Sources */,
+				AD11540C16F50B7C00A9FE87 /* Sprite.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
