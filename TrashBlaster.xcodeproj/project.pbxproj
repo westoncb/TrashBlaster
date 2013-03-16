@@ -1,0 +1,289 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		AD1153E316F467D600A9FE87 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AD1153E216F467D600A9FE87 /* UIKit.framework */; };
+		AD1153E516F467D600A9FE87 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AD1153E416F467D600A9FE87 /* Foundation.framework */; };
+		AD1153E716F467D600A9FE87 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AD1153E616F467D600A9FE87 /* CoreGraphics.framework */; };
+		AD1153ED16F467D600A9FE87 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = AD1153EB16F467D600A9FE87 /* InfoPlist.strings */; };
+		AD1153EF16F467D600A9FE87 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = AD1153EE16F467D600A9FE87 /* main.m */; };
+		AD1153F316F467D600A9FE87 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = AD1153F216F467D600A9FE87 /* AppDelegate.m */; };
+		AD1153F516F467D600A9FE87 /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = AD1153F416F467D600A9FE87 /* Default.png */; };
+		AD1153F716F467D600A9FE87 /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = AD1153F616F467D600A9FE87 /* Default@2x.png */; };
+		AD1153F916F467D600A9FE87 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = AD1153F816F467D600A9FE87 /* Default-568h@2x.png */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		AD1153DF16F467D600A9FE87 /* TrashBlaster.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TrashBlaster.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		AD1153E216F467D600A9FE87 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		AD1153E416F467D600A9FE87 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		AD1153E616F467D600A9FE87 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		AD1153EA16F467D600A9FE87 /* TrashBlaster-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "TrashBlaster-Info.plist"; sourceTree = "<group>"; };
+		AD1153EC16F467D600A9FE87 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		AD1153EE16F467D600A9FE87 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		AD1153F016F467D600A9FE87 /* TrashBlaster-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "TrashBlaster-Prefix.pch"; sourceTree = "<group>"; };
+		AD1153F116F467D600A9FE87 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		AD1153F216F467D600A9FE87 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		AD1153F416F467D600A9FE87 /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
+		AD1153F616F467D600A9FE87 /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
+		AD1153F816F467D600A9FE87 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		AD1153DC16F467D600A9FE87 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AD1153E316F467D600A9FE87 /* UIKit.framework in Frameworks */,
+				AD1153E516F467D600A9FE87 /* Foundation.framework in Frameworks */,
+				AD1153E716F467D600A9FE87 /* CoreGraphics.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		AD1153D616F467D600A9FE87 = {
+			isa = PBXGroup;
+			children = (
+				AD1153E816F467D600A9FE87 /* TrashBlaster */,
+				AD1153E116F467D600A9FE87 /* Frameworks */,
+				AD1153E016F467D600A9FE87 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		AD1153E016F467D600A9FE87 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				AD1153DF16F467D600A9FE87 /* TrashBlaster.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		AD1153E116F467D600A9FE87 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				AD1153E216F467D600A9FE87 /* UIKit.framework */,
+				AD1153E416F467D600A9FE87 /* Foundation.framework */,
+				AD1153E616F467D600A9FE87 /* CoreGraphics.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		AD1153E816F467D600A9FE87 /* TrashBlaster */ = {
+			isa = PBXGroup;
+			children = (
+				AD1153F116F467D600A9FE87 /* AppDelegate.h */,
+				AD1153F216F467D600A9FE87 /* AppDelegate.m */,
+				AD1153E916F467D600A9FE87 /* Supporting Files */,
+			);
+			path = TrashBlaster;
+			sourceTree = "<group>";
+		};
+		AD1153E916F467D600A9FE87 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				AD1153EA16F467D600A9FE87 /* TrashBlaster-Info.plist */,
+				AD1153EB16F467D600A9FE87 /* InfoPlist.strings */,
+				AD1153EE16F467D600A9FE87 /* main.m */,
+				AD1153F016F467D600A9FE87 /* TrashBlaster-Prefix.pch */,
+				AD1153F416F467D600A9FE87 /* Default.png */,
+				AD1153F616F467D600A9FE87 /* Default@2x.png */,
+				AD1153F816F467D600A9FE87 /* Default-568h@2x.png */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		AD1153DE16F467D600A9FE87 /* TrashBlaster */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = AD1153FC16F467D600A9FE87 /* Build configuration list for PBXNativeTarget "TrashBlaster" */;
+			buildPhases = (
+				AD1153DB16F467D600A9FE87 /* Sources */,
+				AD1153DC16F467D600A9FE87 /* Frameworks */,
+				AD1153DD16F467D600A9FE87 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = TrashBlaster;
+			productName = TrashBlaster;
+			productReference = AD1153DF16F467D600A9FE87 /* TrashBlaster.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		AD1153D716F467D600A9FE87 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0460;
+				ORGANIZATIONNAME = "Weston Cannon Beecroft";
+			};
+			buildConfigurationList = AD1153DA16F467D600A9FE87 /* Build configuration list for PBXProject "TrashBlaster" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = AD1153D616F467D600A9FE87;
+			productRefGroup = AD1153E016F467D600A9FE87 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				AD1153DE16F467D600A9FE87 /* TrashBlaster */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		AD1153DD16F467D600A9FE87 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AD1153ED16F467D600A9FE87 /* InfoPlist.strings in Resources */,
+				AD1153F516F467D600A9FE87 /* Default.png in Resources */,
+				AD1153F716F467D600A9FE87 /* Default@2x.png in Resources */,
+				AD1153F916F467D600A9FE87 /* Default-568h@2x.png in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		AD1153DB16F467D600A9FE87 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AD1153EF16F467D600A9FE87 /* main.m in Sources */,
+				AD1153F316F467D600A9FE87 /* AppDelegate.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		AD1153EB16F467D600A9FE87 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				AD1153EC16F467D600A9FE87 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		AD1153FA16F467D600A9FE87 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		AD1153FB16F467D600A9FE87 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
+				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		AD1153FD16F467D600A9FE87 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "TrashBlaster/TrashBlaster-Prefix.pch";
+				INFOPLIST_FILE = "TrashBlaster/TrashBlaster-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		AD1153FE16F467D600A9FE87 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "TrashBlaster/TrashBlaster-Prefix.pch";
+				INFOPLIST_FILE = "TrashBlaster/TrashBlaster-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		AD1153DA16F467D600A9FE87 /* Build configuration list for PBXProject "TrashBlaster" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AD1153FA16F467D600A9FE87 /* Debug */,
+				AD1153FB16F467D600A9FE87 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		AD1153FC16F467D600A9FE87 /* Build configuration list for PBXNativeTarget "TrashBlaster" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AD1153FD16F467D600A9FE87 /* Debug */,
+				AD1153FE16F467D600A9FE87 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = AD1153D716F467D600A9FE87 /* Project object */;
+}
