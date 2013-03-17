@@ -1,19 +1,16 @@
-#import "ViewController.h"
-#import "Sprite.h"
+#import "TBViewController.h"
+#import "TBSprite.h"
+#import "TBWorld.h"
 
-@interface ViewController ()
+@interface TBViewController ()
 @property (strong, nonatomic) EAGLContext *context;
 @property (strong) GLKBaseEffect * effect;
-@property (strong) Sprite * background;
-@property (strong) Sprite * block;
-@property (strong) NSMutableArray * sprites;
+@property (strong) TBWorld * world;
 @end
 
-@implementation ViewController
+@implementation TBViewController
 @synthesize context = _context;
-@synthesize background = _background;
-@synthesize block = _block;
-@synthesize sprites = _sprites;
+@synthesize world = _world;
 
 - (void)viewDidLoad
 {
@@ -34,15 +31,8 @@
     GLKMatrix4 projectionMatrix = GLKMatrix4MakeOrtho(0, 320, 0, 480, -1024, 1024);
     self.effect.transform.projectionMatrix = projectionMatrix;
     
-    self.block = [[Sprite alloc] initWithFile:@"block.png" effect:self.effect];
-    self.background = [[Sprite alloc] initWithFile:@"background.png" effect:self.effect];
     
-    self.sprites = [NSMutableArray array];
-    [self.sprites addObject:self.background];
-    [self.sprites addObject:self.block];
-    self.block.position = GLKVector2Make(self.block.contentSize.width/2, 160);
-    self.block.moveVelocity = GLKVector2Make(50, 50);
-    self.background.position = GLKVector2Make(0, 0);
+    self.world = [[TBWorld alloc] world];
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
@@ -58,16 +48,11 @@
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_BLEND);
     
-    for (Sprite * sprite in self.sprites) {
-        [sprite update:self.timeSinceLastUpdate];
-    }
-    
-    for (Sprite * sprite in self.sprites) {
-        [sprite render];
-    }
+    [self.world render];
 }
 
 - (void)update {
+    [self.world update:self.timeSinceLastUpdate];
 }
 
 @end

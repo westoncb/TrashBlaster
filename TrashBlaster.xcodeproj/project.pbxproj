@@ -20,14 +20,16 @@
 		AD11540216F4685A00A9FE87 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AD11540116F4685A00A9FE87 /* OpenGLES.framework */; };
 		AD11540416F4686400A9FE87 /* GLKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AD11540316F4686400A9FE87 /* GLKit.framework */; };
 		AD11540616F4694100A9FE87 /* MainStoryboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AD11540516F4694100A9FE87 /* MainStoryboard.storyboard */; };
-		AD11540916F46BD200A9FE87 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AD11540816F46BD200A9FE87 /* ViewController.m */; };
-		AD11540C16F50B7C00A9FE87 /* Sprite.m in Sources */ = {isa = PBXBuildFile; fileRef = AD11540B16F50B7C00A9FE87 /* Sprite.m */; };
+		AD11540916F46BD200A9FE87 /* TBViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AD11540816F46BD200A9FE87 /* TBViewController.m */; };
+		AD11540C16F50B7C00A9FE87 /* TBSprite.m in Sources */ = {isa = PBXBuildFile; fileRef = AD11540B16F50B7C00A9FE87 /* TBSprite.m */; };
 		AD11544116F5273000A9FE87 /* background.png in Resources */ = {isa = PBXBuildFile; fileRef = AD11543B16F5273000A9FE87 /* background.png */; };
 		AD11544216F5273000A9FE87 /* block.png in Resources */ = {isa = PBXBuildFile; fileRef = AD11543C16F5273000A9FE87 /* block.png */; };
 		AD11544316F5273000A9FE87 /* catacombs.png in Resources */ = {isa = PBXBuildFile; fileRef = AD11543D16F5273000A9FE87 /* catacombs.png */; };
 		AD11544416F5273000A9FE87 /* draygon.png in Resources */ = {isa = PBXBuildFile; fileRef = AD11543E16F5273000A9FE87 /* draygon.png */; };
 		AD11544516F5273000A9FE87 /* olroxsquarters.png in Resources */ = {isa = PBXBuildFile; fileRef = AD11543F16F5273000A9FE87 /* olroxsquarters.png */; };
 		AD11544616F5273000A9FE87 /* samusvaria.png in Resources */ = {isa = PBXBuildFile; fileRef = AD11544016F5273000A9FE87 /* samusvaria.png */; };
+		AD11544916F57DB800A9FE87 /* TBEntity.m in Sources */ = {isa = PBXBuildFile; fileRef = AD11544816F57DB800A9FE87 /* TBEntity.m */; };
+		AD11544C16F5843500A9FE87 /* TBWorld.m in Sources */ = {isa = PBXBuildFile; fileRef = AD11544B16F5843500A9FE87 /* TBWorld.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -48,16 +50,20 @@
 		AD11540116F4685A00A9FE87 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
 		AD11540316F4686400A9FE87 /* GLKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLKit.framework; path = System/Library/Frameworks/GLKit.framework; sourceTree = SDKROOT; };
 		AD11540516F4694100A9FE87 /* MainStoryboard.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = MainStoryboard.storyboard; sourceTree = "<group>"; };
-		AD11540716F46BD200A9FE87 /* ViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
-		AD11540816F46BD200A9FE87 /* ViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
-		AD11540A16F50B7C00A9FE87 /* Sprite.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Sprite.h; sourceTree = "<group>"; };
-		AD11540B16F50B7C00A9FE87 /* Sprite.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Sprite.m; sourceTree = "<group>"; };
+		AD11540716F46BD200A9FE87 /* TBViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TBViewController.h; sourceTree = "<group>"; };
+		AD11540816F46BD200A9FE87 /* TBViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TBViewController.m; sourceTree = "<group>"; };
+		AD11540A16F50B7C00A9FE87 /* TBSprite.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TBSprite.h; sourceTree = "<group>"; };
+		AD11540B16F50B7C00A9FE87 /* TBSprite.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TBSprite.m; sourceTree = "<group>"; };
 		AD11543B16F5273000A9FE87 /* background.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = background.png; sourceTree = "<group>"; };
 		AD11543C16F5273000A9FE87 /* block.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = block.png; sourceTree = "<group>"; };
 		AD11543D16F5273000A9FE87 /* catacombs.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = catacombs.png; sourceTree = "<group>"; };
 		AD11543E16F5273000A9FE87 /* draygon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = draygon.png; sourceTree = "<group>"; };
 		AD11543F16F5273000A9FE87 /* olroxsquarters.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = olroxsquarters.png; sourceTree = "<group>"; };
 		AD11544016F5273000A9FE87 /* samusvaria.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = samusvaria.png; sourceTree = "<group>"; };
+		AD11544716F57DB800A9FE87 /* TBEntity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TBEntity.h; sourceTree = "<group>"; };
+		AD11544816F57DB800A9FE87 /* TBEntity.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TBEntity.m; sourceTree = "<group>"; };
+		AD11544A16F5843500A9FE87 /* TBWorld.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TBWorld.h; sourceTree = "<group>"; };
+		AD11544B16F5843500A9FE87 /* TBWorld.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TBWorld.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -113,12 +119,16 @@
 				AD11543A16F5273000A9FE87 /* images */,
 				AD1153F116F467D600A9FE87 /* AppDelegate.h */,
 				AD1153F216F467D600A9FE87 /* AppDelegate.m */,
-				AD11540A16F50B7C00A9FE87 /* Sprite.h */,
-				AD11540B16F50B7C00A9FE87 /* Sprite.m */,
+				AD11544A16F5843500A9FE87 /* TBWorld.h */,
+				AD11544B16F5843500A9FE87 /* TBWorld.m */,
+				AD11540A16F50B7C00A9FE87 /* TBSprite.h */,
+				AD11540B16F50B7C00A9FE87 /* TBSprite.m */,
+				AD11544716F57DB800A9FE87 /* TBEntity.h */,
+				AD11544816F57DB800A9FE87 /* TBEntity.m */,
 				AD1153E916F467D600A9FE87 /* Supporting Files */,
 				AD11540516F4694100A9FE87 /* MainStoryboard.storyboard */,
-				AD11540716F46BD200A9FE87 /* ViewController.h */,
-				AD11540816F46BD200A9FE87 /* ViewController.m */,
+				AD11540716F46BD200A9FE87 /* TBViewController.h */,
+				AD11540816F46BD200A9FE87 /* TBViewController.m */,
 			);
 			path = TrashBlaster;
 			sourceTree = "<group>";
@@ -224,8 +234,10 @@
 			files = (
 				AD1153EF16F467D600A9FE87 /* main.m in Sources */,
 				AD1153F316F467D600A9FE87 /* AppDelegate.m in Sources */,
-				AD11540916F46BD200A9FE87 /* ViewController.m in Sources */,
-				AD11540C16F50B7C00A9FE87 /* Sprite.m in Sources */,
+				AD11540916F46BD200A9FE87 /* TBViewController.m in Sources */,
+				AD11540C16F50B7C00A9FE87 /* TBSprite.m in Sources */,
+				AD11544916F57DB800A9FE87 /* TBEntity.m in Sources */,
+				AD11544C16F5843500A9FE87 /* TBWorld.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

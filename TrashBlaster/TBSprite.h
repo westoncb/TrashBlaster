@@ -8,14 +8,11 @@
 #import <Foundation/Foundation.h>
 #import <GLKit/GLKit.h>
 
-@interface Sprite : NSObject
+@interface TBSprite : NSObject
 
-@property (assign) GLKVector2 moveVelocity;
-@property (assign) GLKVector2 position;
-@property (assign) CGSize contentSize;
+@property CGSize size;
 
-- (void)update:(float)dt;
 - (id)initWithFile:(NSString *)fileName effect:(GLKBaseEffect *)effect;
-- (void)render;
+- (void)render:(GLKMatrix4)modelMatrix;
 
 @end

@@ -1,5 +1,5 @@
 //
-//  ViewController.h
+//  TBViewController.h
 //  TrashBlaster
 //
 //  Created by Weston Cannon Beecroft on 3/16/13.
@@ -9,6 +9,6 @@
 #import <GLKit/GLKit.h>
 #import <UIKit/UIKit.h>
 
-@interface ViewController : GLKViewController
+@interface TBViewController : GLKViewController
 
 @end
