@@ -33,8 +33,8 @@
 - (id)world {
     if((super.init)) {
         self.entities = [NSMutableArray array];
-        self.blockDelay = 2.5f;
-        self.BLOCK_ACCELERATION = -10;
+        self.blockDelay = 1.0f;
+        self.BLOCK_ACCELERATION = -6;
         self.WIDTH = 320;
         self.HEIGHT = 480;
         
@@ -48,6 +48,9 @@
         
         TBEntity *background = [[TBEntity alloc] initWithSprite:self.bgSprite];
         background.position = GLKVector2Make(0, 0);
+        background.collisionxoff = 0;
+        background.collisionyoff = background.size.height-40;
+        background.collisionsize = CGSizeMake(background.size.width, 40);
         
         
         [self addEntity:background];
@@ -77,6 +80,9 @@
     block.position = GLKVector2Make(arc4random_uniform(self.WIDTH), self.HEIGHT);
     block.velocity = GLKVector2Make(0, self.initialBlockVelocity);
     block.acceleration = GLKVector2Make(0, self.BLOCK_ACCELERATION);
+    block.collisionxoff = 3;
+    block.collisionyoff = 2;
+    block.collisionsize = CGSizeMake(block.size.width-4, block.size.height-6);
     return block;
 }
 
@@ -85,6 +91,19 @@
     
     for (TBEntity * entity in self.entities) {
         [entity update:delta];
+    }
+    
+    [self checkForCollisions];
+}
+
+- (void)checkForCollisions {
+    for (TBEntity * entity in self.entities) {
+        for (TBEntity * entity2 in self.entities) {
+            if(entity != entity2 && entity.alive && entity2.alive && ([entity doCollisionCheck:entity2] || [entity2 doCollisionCheck:entity])) {
+                [entity handleCollision:entity2];
+                [entity2 handleCollision:entity];
+            }
+        }
     }
 }
 

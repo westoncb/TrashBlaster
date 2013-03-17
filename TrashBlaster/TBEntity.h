@@ -15,9 +15,16 @@
 @property (assign) GLKVector2 velocity;
 @property (assign) GLKVector2 position;
 @property (assign) CGSize size;
+@property float collisionxoff;
+@property float collisionyoff;
+@property (assign) CGSize collisionsize;
 @property (strong) TBSprite *sprite;
+@property BOOL alive;
 
 - (id)initWithSprite:(TBSprite *)sprite;
 - (void)update:(float)dt;
 - (void)render;
+- (BOOL)doCollisionCheck:(TBEntity *)other;
+- (void)handleCollision:(TBEntity *)collider;
+//- (BOOL)doBoundsIntersect:(TBEntity *)first other:(TBEntity *)other;
 @end

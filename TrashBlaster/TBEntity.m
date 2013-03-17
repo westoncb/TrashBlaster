@@ -11,14 +11,19 @@
 @implementation TBEntity
 @synthesize position = _position;
 @synthesize size = _size;
+@synthesize collisionxoff = _collisionxoff;
+@synthesize collisionyoff = _collisionyoff;
+@synthesize collisionsize = _collisionsize;
 @synthesize velocity = _velocity;
 @synthesize acceleration = _acceleration;
 @synthesize sprite = _sprite;
+@synthesize alive = _alive;
 
 - (id)initWithSprite:(TBSprite *)sprite {
     if(([super init])) {
         self.sprite = sprite;
         self.size = CGSizeMake(sprite.size.width, sprite.size.height);
+        self.alive = true;
     }
     
     return self;
@@ -35,6 +40,49 @@
     GLKMatrix4 modelMatrix = GLKMatrix4Identity;
     modelMatrix = GLKMatrix4Translate(modelMatrix, self.position.x, self.position.y, 0);
     [self.sprite render:modelMatrix];
+}
+
+- (BOOL)doCollisionCheck:(TBEntity *)other {
+    if([self doBoundsIntersect:self other:other]) {
+        return TRUE;
+    } else
+        return FALSE;
+}
+
+- (void)handleCollision:(TBEntity *)collider {
+    self.acceleration = GLKVector2Make(0, 0);
+    self.velocity = GLKVector2Make(0, 0);
+    //self.alive = false;
+}
+
+- (float)collisionx1 {
+    return self.position.x + self.collisionxoff;
+}
+
+- (float)collisionx2 {
+    return self.position.x + self.collisionxoff + self.collisionsize.width;
+}
+
+- (float)collisiony1 {
+    return self.position.y+self.size.height - self.collisionyoff;
+}
+
+- (float)collisiony2 {
+    return self.position.y+self.size.height - self.collisionyoff - self.collisionsize.height;
+}
+
+- (BOOL)doBoundsIntersect:(TBEntity *)first other:(TBEntity *)second {
+    if (([first collisionx1] < [second collisionx1] && [first collisionx2] > [second collisionx1] &&
+        [first collisiony1] > [second collisiony1] && [first collisiony2] < [second collisiony1]) ||
+        ([first collisionx1] < [second collisionx2] && [first collisionx2] > [second collisionx2] &&
+         [first collisiony1] > [second collisiony1] && [first collisiony2] < [second collisiony1]) ||
+        ([first collisionx1] < [second collisionx1] && [first collisionx2] > [second collisionx1] &&
+         [first collisiony1] > [second collisiony2] && [first collisiony2] < [second collisiony2]) ||
+        ([first collisionx1] < [second collisionx2] && [first collisionx2] > [second collisionx2] &&
+         [first collisiony1] > [second collisiony2] && [first collisiony2] < [second collisiony2])) {
+        return true;
+    }
+    return FALSE;
 }
 
 - (NSComparisonResult)compare:(TBEntity *)otherObject {
