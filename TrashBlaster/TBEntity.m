@@ -22,6 +22,9 @@
 @synthesize sprite = _sprite;
 @synthesize alive = _alive;
 @synthesize lastDelta;
+@synthesize xChange;
+@synthesize yChange;
+@synthesize type;
 
 - (id)initWithSprite:(TBSprite *)sprite {
     if(([super init])) {
@@ -34,16 +37,18 @@
 }
 
 - (void)update:(float)dt {
-    if(self.alive) {
-        GLKVector2 velocityIncrement = GLKVector2MultiplyScalar(self.acceleration, dt);
-        self.velocity = GLKVector2Add(self.velocity, velocityIncrement);
-        [self updateMotion:dt];
-        self.lastDelta = dt;
-    }
+    GLKVector2 velocityIncrement = GLKVector2MultiplyScalar(self.acceleration, dt);
+    self.velocity = GLKVector2Add(self.velocity, velocityIncrement);
+    [self updateMotion:dt];
+    self.lastDelta = dt;
 }
 
 - (void)updateMotion:(float)dt {
-    self.position = GLKVector2Add(self.position, self.velocity);
+    GLKVector2 positionIncrement = GLKVector2MultiplyScalar(self.velocity, dt);
+    GLKVector2 old = GLKVector2Make(self.position.x, self.position.y);
+    self.position = GLKVector2Add(self.position, positionIncrement);
+    self.xChange = self.position.x - old.x;
+    self.yChange = self.position.y - old.y;
 }
 
 - (void)render {
@@ -59,16 +64,8 @@
         return FALSE;
 }
 
-- (void)handleCollision:(TBEntity *)collider wasTheProtruder:(BOOL)retractSelf {
-    if(retractSelf) {
-        self.alive = false;
-        self.velocity = GLKVector2MultiplyScalar(self.velocity, -0.1f);
-        do {
-            [self updateMotion:lastDelta];
-        } while([collider doCollisionCheck:self]);
-    }
-    self.velocity = GLKVector2Make(0, 0);
-    NSLog(@"collision!");
+- (void)handleCollision:(TBEntity *)collider wasTheProtruder:(BOOL)retractSelf {    
+    
 }
 
 - (float)collisionx1 {
