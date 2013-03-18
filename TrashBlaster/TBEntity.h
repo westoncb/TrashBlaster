@@ -13,6 +13,7 @@
 
 @interface TBEntity : NSObject
 @property (assign) GLKVector2 acceleration;
+@property (assign) GLKVector2 deceleration;
 @property (assign) GLKVector2 velocity;
 @property (assign) GLKVector2 position;
 @property (assign) CGSize size;
@@ -24,6 +25,7 @@
 @property float xChange;
 @property float yChange;
 @property int type;
+@property float maxSpeed;
 
 typedef enum {
     BLOCK,
@@ -36,6 +38,5 @@ typedef enum {
 - (void)render;
 - (BOOL)doCollisionCheck:(TBEntity *)other;
 - (void)handleCollision:(TBEntity *)collider wasTheProtruder:(BOOL)retractSelf;
-- (void)addDestPoint:(float)destx;
 //- (BOOL)doBoundsIntersect:(TBEntity *)first other:(TBEntity *)other;
 @end

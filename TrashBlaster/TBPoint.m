@@ -12,10 +12,10 @@
 @synthesize x;
 @synthesize y;
 
-- (id)init:(float)x y:(float)y {
+- (id)init:(float)xcoord ycoord:(float)ycoord {
     if([super init]) {
-        self.x = x;
-        self.y = y;
+        self.x = xcoord;
+        self.y = ycoord;
     }
     
     return self;

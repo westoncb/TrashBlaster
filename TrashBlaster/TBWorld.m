@@ -8,6 +8,7 @@
 
 #import "TBWorld.h"
 #import "TBSprite.h"
+#import "TBPlayer.h"
 #import <GLKit/GLKit.h>
 #import <stdlib.h>
 
@@ -20,7 +21,7 @@ int blocksInColumns[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 @property (strong) NSMutableArray * blocks;
 @property (strong) TBSprite * bgSprite;
 @property (strong) TBSprite * blockSprite;
-@property (strong) TBEntity * player;
+@property (strong) TBPlayer * player;
 
 @property const int WIDTH;
 @property const int HEIGHT;
@@ -65,7 +66,7 @@ int blocksInColumns[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
         [self addEntity:background];
         
         TBSprite *playerSprite  = [[TBSprite alloc] initWithFile:@"player.png" effect:effect];
-        self.player = [[TBEntity alloc] initWithSprite:playerSprite];
+        self.player = [[TBPlayer alloc] initWithSprite:playerSprite];
         self.player.position = GLKVector2Make(self.WIDTH/2 - self.player.size.width/2, self.FLOOR_HEIGHT);
         self.player.type = PLAYER;
         [self addEntity:self.player];

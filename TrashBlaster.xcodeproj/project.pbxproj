@@ -34,6 +34,7 @@
 		AD8D689C16F70AC80020EC7B /* player.png in Resources */ = {isa = PBXBuildFile; fileRef = AD8D689B16F70AC80020EC7B /* player.png */; };
 		AD8D68A116F70FBB0020EC7B /* NSMutableArray+QueueAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = AD8D68A016F70FBB0020EC7B /* NSMutableArray+QueueAdditions.m */; };
 		AD8D68A416F7131F0020EC7B /* TBPoint.m in Sources */ = {isa = PBXBuildFile; fileRef = AD8D68A316F7131E0020EC7B /* TBPoint.m */; };
+		AD8D68A716F793430020EC7B /* TBPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = AD8D68A616F793430020EC7B /* TBPlayer.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -74,6 +75,8 @@
 		AD8D68A016F70FBB0020EC7B /* NSMutableArray+QueueAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSMutableArray+QueueAdditions.m"; sourceTree = "<group>"; };
 		AD8D68A216F7131E0020EC7B /* TBPoint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TBPoint.h; sourceTree = "<group>"; };
 		AD8D68A316F7131E0020EC7B /* TBPoint.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TBPoint.m; sourceTree = "<group>"; };
+		AD8D68A516F793430020EC7B /* TBPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TBPlayer.h; sourceTree = "<group>"; };
+		AD8D68A616F793430020EC7B /* TBPlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TBPlayer.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -138,6 +141,8 @@
 				AD8D68A216F7131E0020EC7B /* TBPoint.h */,
 				AD8D68A316F7131E0020EC7B /* TBPoint.m */,
 				AD11540B16F50B7C00A9FE87 /* TBSprite.m */,
+				AD8D68A516F793430020EC7B /* TBPlayer.h */,
+				AD8D68A616F793430020EC7B /* TBPlayer.m */,
 				AD11544716F57DB800A9FE87 /* TBEntity.h */,
 				AD11544816F57DB800A9FE87 /* TBEntity.m */,
 				AD1153E916F467D600A9FE87 /* Supporting Files */,
@@ -258,6 +263,7 @@
 				AD11544C16F5843500A9FE87 /* TBWorld.m in Sources */,
 				AD8D68A116F70FBB0020EC7B /* NSMutableArray+QueueAdditions.m in Sources */,
 				AD8D68A416F7131F0020EC7B /* TBPoint.m in Sources */,
+				AD8D68A716F793430020EC7B /* TBPlayer.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

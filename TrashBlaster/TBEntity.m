@@ -11,7 +11,7 @@
 
 @interface TBEntity()
 @property float lastDelta;
-@property NSMutableArray *destPoints;
+
 @end
 
 @implementation TBEntity
@@ -22,41 +22,57 @@
 @synthesize collisionsize = _collisionsize;
 @synthesize velocity = _velocity;
 @synthesize acceleration = _acceleration;
+@synthesize deceleration = _deceleration;
 @synthesize sprite = _sprite;
 @synthesize alive = _alive;
 @synthesize lastDelta;
 @synthesize xChange;
 @synthesize yChange;
 @synthesize type;
-@synthesize destPoints;
 
 - (id)initWithSprite:(TBSprite *)sprite {
     if(([super init])) {
         self.sprite = sprite;
         self.size = CGSizeMake(sprite.size.width, sprite.size.height);
         self.alive = true;
-        self.destPoints = [NSMutableArray array];
+        self.maxSpeed = NSIntegerMax;
     }
     
     return self;
 }
 
-- (void)update:(float)dt {
-    if (self.destPoints.count > 0) {
-        TBPoint *destPoint = [self.destPoints objectAtIndex:0];
-        GLKVector2 point = GLKVector2Make(destPoint.x, self.position.y);
-        GLKVector2 offset = GLKVector2Subtract(point, self.position);
-        if(fabsf(offset.x) < 3) {
-            [self.destPoints removeObjectAtIndex:0];
-            self.velocity = GLKVector2Make(0, 0);
-        } else {
-            GLKVector2 normalizedOffset = GLKVector2Normalize(offset);
-            self.velocity = GLKVector2MultiplyScalar(normalizedOffset, 100);
-        }
-    }
-    
+- (void)update:(float)dt {    
     GLKVector2 velocityIncrement = GLKVector2MultiplyScalar(self.acceleration, dt);
+    
+    float newXVol = self.velocity.x + velocityIncrement.x;
+    float newYVol = self.velocity.y + velocityIncrement.y;
+    if (fabsf(newXVol) > self.maxSpeed) { //cap xspeed
+        float xDirection = newXVol/fabsf(newXVol);
+        velocityIncrement = GLKVector2Make((self.maxSpeed*xDirection) - self.velocity.x, velocityIncrement.y);
+    }
+    if (fabsf(newYVol) > self.maxSpeed) { //cap yspeed
+        float yDirection = newYVol/fabsf(newYVol);
+        velocityIncrement = GLKVector2Make(velocityIncrement.x, (self.maxSpeed*yDirection) - self.velocity.y);
+    }
     self.velocity = GLKVector2Add(self.velocity, velocityIncrement);
+    
+    //It simplifies things to handle deceleration seperately, rather than just treating it as reverse acceleration
+    GLKVector2 velocityDecrement = GLKVector2MultiplyScalar(self.deceleration, dt);
+    NSLog(@"accelX: %f, posx: %f", self.deceleration.x, self.position.x);
+    newXVol = self.velocity.x + velocityDecrement.x;
+    newYVol = self.velocity.y + velocityDecrement.y;
+    if (fabsf(newXVol) > fabsf(self.velocity.x)) { //deceleration should never increase speed -- dampen to zero instead
+        velocityDecrement = GLKVector2Make(-self.velocity.x, velocityDecrement.y); //this will make the x velocity zero
+        self.deceleration = GLKVector2Make(0, self.deceleration.y);
+    }
+    if (fabsf(newYVol) > fabsf(self.velocity.y)) { //same for the y-axis
+        velocityDecrement = GLKVector2Make(velocityDecrement.x, -self.velocity.y);
+        self.deceleration = GLKVector2Make(self.deceleration.x, 0);
+    }
+    NSLog(@"decrement: %f", velocityDecrement.x);
+    self.velocity = GLKVector2Add(self.velocity, velocityDecrement);
+    
+    
     [self updateMotion:dt];
     self.lastDelta = dt;
 }
@@ -80,11 +96,6 @@
         return TRUE;
     } else
         return FALSE;
-}
-
-- (void)addDestPoint:(float)destx {
-    TBPoint *point = [[TBPoint alloc] init:destx y:0];
-    [self.destPoints addObject:point];
 }
 
 - (void)handleCollision:(TBEntity *)collider wasTheProtruder:(BOOL)retractSelf {    
