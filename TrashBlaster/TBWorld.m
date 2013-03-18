@@ -20,6 +20,7 @@ int blocksInColumns[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 @property (strong) NSMutableArray * blocks;
 @property (strong) TBSprite * bgSprite;
 @property (strong) TBSprite * blockSprite;
+@property (strong) TBEntity * player;
 
 @property const int WIDTH;
 @property const int HEIGHT;
@@ -44,12 +45,12 @@ int blocksInColumns[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
         self.entities = [NSMutableArray array];
         self.colliders = [NSMutableArray array];
         self.blocks = [NSMutableArray array];
-        self.blockDelay = 0.1f;
+        self.blockDelay = 1;
         self.BLOCK_ACCELERATION = -60;
         self.initialBlockVelocity = -100;
         self.WIDTH = 320;
         self.HEIGHT = 480;
-        self.FLOOR_HEIGHT = 28;
+        self.FLOOR_HEIGHT = 31;
 
         GLKBaseEffect *effect = [[GLKBaseEffect alloc] init];
         
@@ -61,9 +62,13 @@ int blocksInColumns[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
         
         TBEntity *background = [[TBEntity alloc] initWithSprite:self.bgSprite];
         background.position = GLKVector2Make(0, 0);
-        
-        
         [self addEntity:background];
+        
+        TBSprite *playerSprite  = [[TBSprite alloc] initWithFile:@"player.png" effect:effect];
+        self.player = [[TBEntity alloc] initWithSprite:playerSprite];
+        self.player.position = GLKVector2Make(self.WIDTH/2 - self.player.size.width/2, self.FLOOR_HEIGHT);
+        self.player.type = PLAYER;
+        [self addEntity:self.player];
     }
     
     return self;
@@ -71,7 +76,7 @@ int blocksInColumns[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
 - (void)addEntity:(TBEntity *)entity {
     [self.entities addObject:entity];
-    if(entity.type != BLOCK)
+    if(entity.type != BLOCK && entity.type != PLAYER)
         [self.colliders addObject:entity];
     else
         [self.blocks addObject:entity];
@@ -117,11 +122,15 @@ int blocksInColumns[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     [self checkForCollisions];
 }
 
-- (BOOL)checkForBlockCollisions {
+- (void)checkForBlockCollisions {
     for (TBEntity * block in self.blocks) {
+        if (block.type == PLAYER) {
+            continue;
+        }
+        
         int colIndex = block.position.x/block.size.width;
         int blocksInCol = blocksInColumns[colIndex];
-        int collisionThreshold = blocksInCol*block.collisionsize.height + self.FLOOR_HEIGHT;
+        int collisionThreshold = blocksInCol*block.collisionsize.height + self.FLOOR_HEIGHT - block.collisionyoff;
         
         if(block.position.y < collisionThreshold && fabsf(block.velocity.y) > 0) {
             block.acceleration = GLKVector2Make(0, 0);
@@ -132,19 +141,16 @@ int blocksInColumns[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     }
 }
 
+- (void)movePlayerTo:(GLKVector2)dest {
+    [self.player addDestPoint:dest.x];
+}
+
 - (void)checkForCollisions {
     [self checkForBlockCollisions];
     
-    for (TBEntity * entity in self.colliders) {
+    /*for (TBEntity * entity in self.colliders) {
         for (TBEntity * entity2 in self.colliders) {
             if(entity != entity2 && (entity.alive || entity2.alive)) {
-                
-                //prevent mid-air collisions of blocks! (Doing it another way would require a decent collision system)
-                //if(entity.type == BLOCK && entity2.type == BLOCK) {
-                  //  if(entity.position.x != entity2.position.x || !(fabsf(entity.yChange) < .1 || fabsf(entity2.yChange) < .1))
-                    //    continue;
-                //}
-                
                 BOOL collision = false;
                 TBEntity * protruder = NULL;
                 if([entity doCollisionCheck:entity2]) {
@@ -160,7 +166,7 @@ int blocksInColumns[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
                 }
             }
         }
-    }
+    }*/
     
 }
 

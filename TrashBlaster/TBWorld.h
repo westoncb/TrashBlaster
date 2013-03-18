@@ -14,4 +14,5 @@
 - (void)addEntity:(TBEntity *)entity;
 - (void)update:(float)delta;
 - (void)render;
+- (void)movePlayerTo:(GLKVector2)dest;
 @end

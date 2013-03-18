@@ -12,8 +12,7 @@
 @synthesize context = _context;
 @synthesize world = _world;
 
-- (void)viewDidLoad
-{
+- (void)viewDidLoad {
     [super viewDidLoad];
     
     self.context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
@@ -33,6 +32,18 @@
     
     
     self.world = [[TBWorld alloc] world];
+    
+    UITapGestureRecognizer *tapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTapFrom:)];
+    [self.view addGestureRecognizer:tapRecognizer];
+}
+
+- (void)handleTapFrom:(UITapGestureRecognizer *)recognizer {
+    CGPoint touchLocation = [recognizer locationInView:recognizer.view];
+    touchLocation = CGPointMake(touchLocation.x, 320 - touchLocation.y);
+    
+    GLKVector2 target = GLKVector2Make(touchLocation.x, touchLocation.y);
+    
+    [self.world movePlayerTo:target];
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation

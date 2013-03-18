@@ -7,8 +7,11 @@
 //
 
 #import "TBEntity.h"
+#import "TBPoint.h"
+
 @interface TBEntity()
 @property float lastDelta;
+@property NSMutableArray *destPoints;
 @end
 
 @implementation TBEntity
@@ -25,18 +28,33 @@
 @synthesize xChange;
 @synthesize yChange;
 @synthesize type;
+@synthesize destPoints;
 
 - (id)initWithSprite:(TBSprite *)sprite {
     if(([super init])) {
         self.sprite = sprite;
         self.size = CGSizeMake(sprite.size.width, sprite.size.height);
         self.alive = true;
+        self.destPoints = [NSMutableArray array];
     }
     
     return self;
 }
 
 - (void)update:(float)dt {
+    if (self.destPoints.count > 0) {
+        TBPoint *destPoint = [self.destPoints objectAtIndex:0];
+        GLKVector2 point = GLKVector2Make(destPoint.x, self.position.y);
+        GLKVector2 offset = GLKVector2Subtract(point, self.position);
+        if(fabsf(offset.x) < 3) {
+            [self.destPoints removeObjectAtIndex:0];
+            self.velocity = GLKVector2Make(0, 0);
+        } else {
+            GLKVector2 normalizedOffset = GLKVector2Normalize(offset);
+            self.velocity = GLKVector2MultiplyScalar(normalizedOffset, 100);
+        }
+    }
+    
     GLKVector2 velocityIncrement = GLKVector2MultiplyScalar(self.acceleration, dt);
     self.velocity = GLKVector2Add(self.velocity, velocityIncrement);
     [self updateMotion:dt];
@@ -64,8 +82,24 @@
         return FALSE;
 }
 
+- (void)addDestPoint:(float)destx {
+    TBPoint *point = [[TBPoint alloc] init:destx y:0];
+    [self.destPoints addObject:point];
+}
+
 - (void)handleCollision:(TBEntity *)collider wasTheProtruder:(BOOL)retractSelf {    
+    if(retractSelf) {
+        self.velocity = GLKVector2MultiplyScalar(self.velocity, -0.1f);
+        do {
+            [self updateMotion:lastDelta];
+        } while ((fabsf(self.xChange) > .001f || fabsf(self.yChange)) > .001f && [collider doCollisionCheck:self]);
+        
+        
+        self.velocity = GLKVector2Make(self.velocity.x, 0);
+        self.acceleration = GLKVector2Make(self.acceleration.x, 0);
+    }
     
+    NSLog(@"collide");
 }
 
 - (float)collisionx1 {

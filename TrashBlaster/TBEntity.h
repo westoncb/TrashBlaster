@@ -35,6 +35,7 @@ typedef enum {
 - (void)update:(float)dt;
 - (void)render;
 - (BOOL)doCollisionCheck:(TBEntity *)other;
-- (void)handleCollision:(TBEntity *)collider wasTheProtruder:(BOOL)retractSelf ;
+- (void)handleCollision:(TBEntity *)collider wasTheProtruder:(BOOL)retractSelf;
+- (void)addDestPoint:(float)destx;
 //- (BOOL)doBoundsIntersect:(TBEntity *)first other:(TBEntity *)other;
 @end
