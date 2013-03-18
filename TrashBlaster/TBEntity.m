@@ -7,6 +7,9 @@
 //
 
 #import "TBEntity.h"
+@interface TBEntity()
+@property float lastDelta;
+@end
 
 @implementation TBEntity
 @synthesize position = _position;
@@ -18,6 +21,7 @@
 @synthesize acceleration = _acceleration;
 @synthesize sprite = _sprite;
 @synthesize alive = _alive;
+@synthesize lastDelta;
 
 - (id)initWithSprite:(TBSprite *)sprite {
     if(([super init])) {
@@ -30,9 +34,15 @@
 }
 
 - (void)update:(float)dt {
-    GLKVector2 velocityIncrement = GLKVector2MultiplyScalar(self.acceleration, dt);
-    self.velocity = GLKVector2Add(self.velocity, velocityIncrement);
-    //GLKVector2 curMove = GLKVector2MultiplyScalar(self.velocity, dt);
+    if(self.alive) {
+        GLKVector2 velocityIncrement = GLKVector2MultiplyScalar(self.acceleration, dt);
+        self.velocity = GLKVector2Add(self.velocity, velocityIncrement);
+        [self updateMotion:dt];
+        self.lastDelta = dt;
+    }
+}
+
+- (void)updateMotion:(float)dt {
     self.position = GLKVector2Add(self.position, self.velocity);
 }
 
@@ -49,10 +59,16 @@
         return FALSE;
 }
 
-- (void)handleCollision:(TBEntity *)collider {
-    self.acceleration = GLKVector2Make(0, 0);
+- (void)handleCollision:(TBEntity *)collider wasTheProtruder:(BOOL)retractSelf {
+    if(retractSelf) {
+        self.alive = false;
+        self.velocity = GLKVector2MultiplyScalar(self.velocity, -0.1f);
+        do {
+            [self updateMotion:lastDelta];
+        } while([collider doCollisionCheck:self]);
+    }
     self.velocity = GLKVector2Make(0, 0);
-    //self.alive = false;
+    NSLog(@"collision!");
 }
 
 - (float)collisionx1 {
@@ -72,14 +88,14 @@
 }
 
 - (BOOL)doBoundsIntersect:(TBEntity *)first other:(TBEntity *)second {
-    if (([first collisionx1] < [second collisionx1] && [first collisionx2] > [second collisionx1] &&
-        [first collisiony1] > [second collisiony1] && [first collisiony2] < [second collisiony1]) ||
-        ([first collisionx1] < [second collisionx2] && [first collisionx2] > [second collisionx2] &&
-         [first collisiony1] > [second collisiony1] && [first collisiony2] < [second collisiony1]) ||
-        ([first collisionx1] < [second collisionx1] && [first collisionx2] > [second collisionx1] &&
-         [first collisiony1] > [second collisiony2] && [first collisiony2] < [second collisiony2]) ||
-        ([first collisionx1] < [second collisionx2] && [first collisionx2] > [second collisionx2] &&
-         [first collisiony1] > [second collisiony2] && [first collisiony2] < [second collisiony2])) {
+    if (([first collisionx1] <= [second collisionx1] && [first collisionx2] >= [second collisionx1] &&
+        [first collisiony1] >= [second collisiony1] && [first collisiony2] <= [second collisiony1]) ||
+        ([first collisionx1] <= [second collisionx2] && [first collisionx2] >= [second collisionx2] &&
+         [first collisiony1] >= [second collisiony1] && [first collisiony2] <= [second collisiony1]) ||
+        ([first collisionx1] <= [second collisionx1] && [first collisionx2] >= [second collisionx1] &&
+         [first collisiony1] >= [second collisiony2] && [first collisiony2] <= [second collisiony2]) ||
+        ([first collisionx1] <= [second collisionx2] && [first collisionx2] >= [second collisionx2] &&
+         [first collisiony1] >= [second collisiony2] && [first collisiony2] <= [second collisiony2])) {
         return true;
     }
     return FALSE;

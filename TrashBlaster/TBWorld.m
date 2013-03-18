@@ -49,8 +49,8 @@
         TBEntity *background = [[TBEntity alloc] initWithSprite:self.bgSprite];
         background.position = GLKVector2Make(0, 0);
         background.collisionxoff = 0;
-        background.collisionyoff = background.size.height-40;
-        background.collisionsize = CGSizeMake(background.size.width, 40);
+        background.collisionyoff = background.size.height-32;
+        background.collisionsize = CGSizeMake(background.size.width, 32);
         
         
         [self addEntity:background];
@@ -77,12 +77,12 @@
 
 - (TBEntity *) createBlock {
     TBEntity *block = [[TBEntity alloc] initWithSprite:self.blockSprite];
-    block.position = GLKVector2Make(arc4random_uniform(self.WIDTH), self.HEIGHT);
+    block.position = GLKVector2Make(arc4random_uniform(self.WIDTH - block.size.width), self.HEIGHT);
     block.velocity = GLKVector2Make(0, self.initialBlockVelocity);
     block.acceleration = GLKVector2Make(0, self.BLOCK_ACCELERATION);
-    block.collisionxoff = 3;
-    block.collisionyoff = 2;
-    block.collisionsize = CGSizeMake(block.size.width-4, block.size.height-6);
+    block.collisionxoff = 2;
+    block.collisionyoff = 3;
+    block.collisionsize = CGSizeMake(block.size.width-6, block.size.height-6);
     return block;
 }
 
@@ -99,9 +99,20 @@
 - (void)checkForCollisions {
     for (TBEntity * entity in self.entities) {
         for (TBEntity * entity2 in self.entities) {
-            if(entity != entity2 && entity.alive && entity2.alive && ([entity doCollisionCheck:entity2] || [entity2 doCollisionCheck:entity])) {
-                [entity handleCollision:entity2];
-                [entity2 handleCollision:entity];
+            if(entity != entity2 && (entity.alive || entity2.alive)) {
+                BOOL collision = false;
+                TBEntity * protruder = NULL;
+                if([entity doCollisionCheck:entity2]) {
+                    protruder = entity2;
+                    collision = true;
+                } else if([entity2 doCollisionCheck:entity]) {
+                    protruder = entity;
+                    collision = true;
+                }
+                if(collision) {
+                    [entity handleCollision:entity2 wasTheProtruder:(entity == protruder)];
+                    [entity2 handleCollision:entity wasTheProtruder:(entity2 == protruder)];
+                }
             }
         }
     }

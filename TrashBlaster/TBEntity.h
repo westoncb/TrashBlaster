@@ -25,6 +25,6 @@
 - (void)update:(float)dt;
 - (void)render;
 - (BOOL)doCollisionCheck:(TBEntity *)other;
-- (void)handleCollision:(TBEntity *)collider;
+- (void)handleCollision:(TBEntity *)collider wasTheProtruder:(BOOL)retractSelf ;
 //- (BOOL)doBoundsIntersect:(TBEntity *)first other:(TBEntity *)other;
 @end
