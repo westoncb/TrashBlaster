@@ -9,13 +9,12 @@
 #import "TBPoint.h"
 
 @implementation TBPoint
-@synthesize x;
-@synthesize y;
 
-- (id)init:(float)xcoord ycoord:(float)ycoord {
-    if([super init]) {
-        self.x = xcoord;
-        self.y = ycoord;
+- (id)init:(float)x y:(float)y {
+    self = [super init];
+    if(self) {
+        _x = x;
+        _y = y;
     }
     
     return self;

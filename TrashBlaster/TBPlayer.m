@@ -8,6 +8,7 @@
 
 #import "TBPlayer.h"
 #import "TBPoint.h"
+#import "TBSprite.h"
 
 @interface TBPlayer()
 @property const float INITIAL_SPEED;
@@ -15,24 +16,34 @@
 @property const float DECELERATION;
 @property BOOL startedMoving;
 @property BOOL goingRight;
+@property (weak) TBWorld *world;
+
+@property float lastBulletTime;
+@property float reloadTIme;
 @end
 @implementation TBPlayer
-@synthesize destPoints;
 
-- (id)initWithSprite:(TBSprite *)sprite {
-    if ([super initWithSprite:sprite]) {
+- (id)initWithSprite:(TBSprite *)sprite bulletSprite:(TBSprite *)theBulletSprite world:(TBWorld *)world {
+    self = [super initWithSprite:sprite];
+    if (self) {
         self.destPoints = [NSMutableArray array];
         self.INITIAL_SPEED = 50;
         self.maxSpeed = 300;
         self.ACCELERATION = 6000;
         self.DECELERATION = 12000;
+        self.reloadTIme = .5f;
+        self.lastBulletTime = 0;
+        self.type = PLAYER;
+        self.world = world;
+        self.position = GLKVector2Make(TBWorld.WIDTH/2 - self.size.width/2, TBWorld.FLOOR_HEIGHT);
+        _bulletSprite = theBulletSprite;
     }
     
     return self;
 }
 
 - (void)addDestPoint:(float)destx {
-    TBPoint *point = [[TBPoint alloc] init:destx ycoord:0];
+    TBPoint *point = [[TBPoint alloc] init:destx y:0];
     [self.destPoints addObject:point];
 }
 
@@ -64,6 +75,23 @@
         }
     }
     
+    self.lastBulletTime += dt;
+    if(self.lastBulletTime > self.reloadTIme) {
+        self.lastBulletTime -= self.reloadTIme;
+        [self fireBullet];
+    }
+    
     [super update:dt];
+}
+
+- (void)fireBullet {
+    TBEntity *bullet = [[TBEntity alloc] initWithSprite:self.bulletSprite];
+    [self.world addEntity:bullet];
+    bullet.position = GLKVector2Make(self.position.x + self.size.width/2 - self.bulletSprite.size.width/2, self.position.y + self.size.height);
+    bullet.velocity = GLKVector2Make(0, 300);
+    bullet.collisionxoff = 0;
+    bullet.collisionyoff = 0;
+    bullet.collisionsize = CGSizeMake(7, 24);
+    bullet.type = BULLET;
 }
 @end

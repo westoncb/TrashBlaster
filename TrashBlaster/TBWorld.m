@@ -9,117 +9,72 @@
 #import "TBWorld.h"
 #import "TBSprite.h"
 #import "TBPlayer.h"
-#import <GLKit/GLKit.h>
 #import <stdlib.h>
-
-int blocksInColumns[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+#import "TBBlockMachine.h"
 
 @interface TBWorld()
-
-@property (strong) NSMutableArray * entities;
-@property (strong) NSMutableArray * colliders;
-@property (strong) NSMutableArray * blocks;
-@property (strong) TBSprite * bgSprite;
-@property (strong) TBSprite * blockSprite;
-@property (strong) TBPlayer * player;
-
-@property const int WIDTH;
-@property const int HEIGHT;
-@property const int FLOOR_HEIGHT;
-
-@property float timePassed;
-@property float blockDelay;
-@property float initialBlockVelocity;
-@property const float BLOCK_ACCELERATION;
-@property int blockCount;
+@property NSMutableArray * entities;
+@property NSMutableArray * colliders;
+@property NSMutableArray * blocks;
+@property NSMutableArray * entityBuffer; //add to the buffer instead because something might want to add to 'entities' while we are
+                                         //iterating that collection
+@property TBSprite * bgSprite;
+@property TBPlayer * player;
+@property TBBlockMachine * blockMachine;
 @end
 
 @implementation TBWorld
-@synthesize entities;
-@synthesize colliders;
-@synthesize blocks;
-@synthesize timePassed;
-@synthesize blockDelay;
 
-- (id)world {
-    if((super.init)) {
+- (id)init {
+    self = super.init;
+    if(self) {
+        TBWorld.effect = [[GLKBaseEffect alloc] init];
+        GLKMatrix4 projectionMatrix = GLKMatrix4MakeOrtho(0, TBWorld.WIDTH, 0, TBWorld.HEIGHT, -1024, 1024);
+        TBWorld.effect.transform.projectionMatrix = projectionMatrix;
+        
         self.entities = [NSMutableArray array];
         self.colliders = [NSMutableArray array];
         self.blocks = [NSMutableArray array];
-        self.blockDelay = 1;
-        self.BLOCK_ACCELERATION = -60;
-        self.initialBlockVelocity = -100;
-        self.WIDTH = 320;
-        self.HEIGHT = 480;
-        self.FLOOR_HEIGHT = 31;
-
-        GLKBaseEffect *effect = [[GLKBaseEffect alloc] init];
+        self.entityBuffer = [NSMutableArray array];
         
-        GLKMatrix4 projectionMatrix = GLKMatrix4MakeOrtho(0, self.WIDTH, 0, self.HEIGHT, -1024, 1024);
-        effect.transform.projectionMatrix = projectionMatrix;
-        
-        self.blockSprite = [[TBSprite alloc] initWithFile:@"block.png" effect:effect];
-        self.bgSprite = [[TBSprite alloc] initWithFile:@"background.png" effect:effect];
+        self.bgSprite = [[TBSprite alloc] initWithFile:@"background.png"];
         
         TBEntity *background = [[TBEntity alloc] initWithSprite:self.bgSprite];
-        background.position = GLKVector2Make(0, 0);
         [self addEntity:background];
         
-        TBSprite *playerSprite  = [[TBSprite alloc] initWithFile:@"player.png" effect:effect];
-        self.player = [[TBPlayer alloc] initWithSprite:playerSprite];
-        self.player.position = GLKVector2Make(self.WIDTH/2 - self.player.size.width/2, self.FLOOR_HEIGHT);
-        self.player.type = PLAYER;
-        [self addEntity:self.player];
+        TBSprite *bulletSprite = [[TBSprite alloc] initWithFile:@"bullet.png"];
+        TBSprite *playerSprite  = [[TBSprite alloc] initWithFile:@"player.png"];
+        _player = [[TBPlayer alloc] initWithSprite:playerSprite bulletSprite:bulletSprite world:self];
+        [self addEntity:_player];
+    
+        self.blockMachine = [[TBBlockMachine alloc] initWithWorld:self];
+        
     }
     
     return self;
 }
 
 - (void)addEntity:(TBEntity *)entity {
-    [self.entities addObject:entity];
+    [self.entityBuffer addObject:entity];
     if(entity.type != BLOCK && entity.type != PLAYER)
         [self.colliders addObject:entity];
     else
         [self.blocks addObject:entity];
-}
-
-- (void) updateBlockMachine:(float)delta {
-    self.timePassed += delta;
-    if(self.timePassed > self.blockDelay) {
-        self.timePassed -= self.blockDelay;
-        self.blockCount++;
-        
-        TBEntity *block = [self createBlock];
-        [self addEntity:block];
-        
-        [self.entities sortedArrayUsingSelector:@selector(compare:)];
-    }
-}
-
-- (TBEntity *) createBlock {
-    TBEntity *block = [[TBEntity alloc] initWithSprite:self.blockSprite];
-    int randX = arc4random_uniform(self.WIDTH);
-    int colIndex = round(randX/32);
-    int newX = colIndex*32;
     
-    if(blocksInColumns[colIndex]*block.collisionsize.height < self.HEIGHT) {
-        block.position = GLKVector2Make(newX, self.HEIGHT);
-        block.velocity = GLKVector2Make(0, self.initialBlockVelocity);
-        block.acceleration = GLKVector2Make(0, self.BLOCK_ACCELERATION);
-        block.collisionxoff = 2;
-        block.collisionyoff = 3;
-        block.collisionsize = CGSizeMake(block.size.width-6, block.size.height-6);
-        block.type = BLOCK;
-    }
-    return block;
+    [self.entities sortedArrayUsingSelector:@selector(compare:)];
 }
 
 - (void)update:(float)delta {
-    [self updateBlockMachine:delta];
+    [self.blockMachine update:delta];
     
     for (TBEntity * entity in self.entities) {
         [entity update:delta];
     }
+    for (TBEntity * entity in self.entityBuffer) {
+        [self.entities addObject:entity];
+    }
+    [self.entityBuffer removeAllObjects];
+    
     [self checkForCollisions];
 }
 
@@ -130,14 +85,14 @@ int blocksInColumns[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
         }
         
         int colIndex = block.position.x/block.size.width;
-        int blocksInCol = blocksInColumns[colIndex];
-        int collisionThreshold = blocksInCol*block.collisionsize.height + self.FLOOR_HEIGHT - block.collisionyoff;
+        int blocksInCol = [self.blockMachine blocksInColumn:colIndex];
+        int collisionThreshold = blocksInCol*block.collisionsize.height + TBWorld.FLOOR_HEIGHT - block.collisionyoff;
         
         if(block.position.y < collisionThreshold && fabsf(block.velocity.y) > 0) {
             block.acceleration = GLKVector2Make(0, 0);
             block.velocity = GLKVector2Make(0, 0);
             block.position = GLKVector2Make(block.position.x, collisionThreshold);
-            blocksInColumns[colIndex]++;
+            [self.blockMachine alterColumnCount:colIndex adder:1];
         }
     }
 }
@@ -171,9 +126,28 @@ int blocksInColumns[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     
 }
 
++ (GLKBaseEffect*)effect {
+    return effect;
+}
+
++ (void)setEffect:(GLKBaseEffect *)newEffect {
+    effect = newEffect;
+}
+
++ (int) WIDTH {
+    return WIDTH;
+}
++ (int) HEIGHT {
+    return HEIGHt;
+}
++ (int) FLOOR_HEIGHT {
+    return FLOOR_HEIGHT;
+}
+
 - (void)render {
     for (TBEntity * entity in self.entities) {
         [entity render];
     }
 }
+
 @end

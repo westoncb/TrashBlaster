@@ -31,11 +31,23 @@
 		AD11544916F57DB800A9FE87 /* TBEntity.m in Sources */ = {isa = PBXBuildFile; fileRef = AD11544816F57DB800A9FE87 /* TBEntity.m */; };
 		AD11544C16F5843500A9FE87 /* TBWorld.m in Sources */ = {isa = PBXBuildFile; fileRef = AD11544B16F5843500A9FE87 /* TBWorld.m */; };
 		AD11545116F6D06900A9FE87 /* block2.png in Resources */ = {isa = PBXBuildFile; fileRef = AD11545016F6D06900A9FE87 /* block2.png */; };
+		AD2B2E6816FE902C0024F163 /* TBBlockMachine.m in Sources */ = {isa = PBXBuildFile; fileRef = AD2B2E6716FE902C0024F163 /* TBBlockMachine.m */; };
 		AD8D689C16F70AC80020EC7B /* player.png in Resources */ = {isa = PBXBuildFile; fileRef = AD8D689B16F70AC80020EC7B /* player.png */; };
-		AD8D68A116F70FBB0020EC7B /* NSMutableArray+QueueAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = AD8D68A016F70FBB0020EC7B /* NSMutableArray+QueueAdditions.m */; };
 		AD8D68A416F7131F0020EC7B /* TBPoint.m in Sources */ = {isa = PBXBuildFile; fileRef = AD8D68A316F7131E0020EC7B /* TBPoint.m */; };
 		AD8D68A716F793430020EC7B /* TBPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = AD8D68A616F793430020EC7B /* TBPlayer.m */; };
+		AD8D68A916F7B9C80020EC7B /* bullet.png in Resources */ = {isa = PBXBuildFile; fileRef = AD8D68A816F7B9C80020EC7B /* bullet.png */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXBuildRule section */
+		ADBCFAAA16F98F730086A1FD /* PBXBuildRule */ = {
+			isa = PBXBuildRule;
+			compilerSpec = com.apple.compilers.proxy.script;
+			fileType = pattern.proxy;
+			isEditable = 1;
+			outputFiles = (
+			);
+		};
+/* End PBXBuildRule section */
 
 /* Begin PBXFileReference section */
 		AD1153DF16F467D600A9FE87 /* TrashBlaster.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TrashBlaster.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -69,14 +81,15 @@
 		AD11544816F57DB800A9FE87 /* TBEntity.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TBEntity.m; sourceTree = "<group>"; };
 		AD11544A16F5843500A9FE87 /* TBWorld.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TBWorld.h; sourceTree = "<group>"; };
 		AD11544B16F5843500A9FE87 /* TBWorld.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TBWorld.m; sourceTree = "<group>"; };
-		AD11545016F6D06900A9FE87 /* block2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = block2.png; path = images/block2.png; sourceTree = "<group>"; };
+		AD11545016F6D06900A9FE87 /* block2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = block2.png; sourceTree = "<group>"; };
+		AD2B2E6616FE902C0024F163 /* TBBlockMachine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TBBlockMachine.h; sourceTree = "<group>"; };
+		AD2B2E6716FE902C0024F163 /* TBBlockMachine.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TBBlockMachine.m; sourceTree = "<group>"; };
 		AD8D689B16F70AC80020EC7B /* player.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = player.png; sourceTree = "<group>"; };
-		AD8D689F16F70FBB0020EC7B /* NSMutableArray+QueueAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSMutableArray+QueueAdditions.h"; sourceTree = "<group>"; };
-		AD8D68A016F70FBB0020EC7B /* NSMutableArray+QueueAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSMutableArray+QueueAdditions.m"; sourceTree = "<group>"; };
 		AD8D68A216F7131E0020EC7B /* TBPoint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TBPoint.h; sourceTree = "<group>"; };
 		AD8D68A316F7131E0020EC7B /* TBPoint.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TBPoint.m; sourceTree = "<group>"; };
 		AD8D68A516F793430020EC7B /* TBPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TBPlayer.h; sourceTree = "<group>"; };
 		AD8D68A616F793430020EC7B /* TBPlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TBPlayer.m; sourceTree = "<group>"; };
+		AD8D68A816F7B9C80020EC7B /* bullet.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bullet.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -134,12 +147,11 @@
 				AD1153F216F467D600A9FE87 /* AppDelegate.m */,
 				AD11544A16F5843500A9FE87 /* TBWorld.h */,
 				AD11544B16F5843500A9FE87 /* TBWorld.m */,
-				AD8D689F16F70FBB0020EC7B /* NSMutableArray+QueueAdditions.h */,
-				AD8D68A016F70FBB0020EC7B /* NSMutableArray+QueueAdditions.m */,
-				AD11545016F6D06900A9FE87 /* block2.png */,
-				AD11540A16F50B7C00A9FE87 /* TBSprite.h */,
+				AD2B2E6616FE902C0024F163 /* TBBlockMachine.h */,
+				AD2B2E6716FE902C0024F163 /* TBBlockMachine.m */,
 				AD8D68A216F7131E0020EC7B /* TBPoint.h */,
 				AD8D68A316F7131E0020EC7B /* TBPoint.m */,
+				AD11540A16F50B7C00A9FE87 /* TBSprite.h */,
 				AD11540B16F50B7C00A9FE87 /* TBSprite.m */,
 				AD8D68A516F793430020EC7B /* TBPlayer.h */,
 				AD8D68A616F793430020EC7B /* TBPlayer.m */,
@@ -170,6 +182,8 @@
 		AD11543A16F5273000A9FE87 /* images */ = {
 			isa = PBXGroup;
 			children = (
+				AD11545016F6D06900A9FE87 /* block2.png */,
+				AD8D68A816F7B9C80020EC7B /* bullet.png */,
 				AD8D689B16F70AC80020EC7B /* player.png */,
 				AD11543B16F5273000A9FE87 /* background.png */,
 				AD11543C16F5273000A9FE87 /* block.png */,
@@ -193,6 +207,7 @@
 				AD1153DD16F467D600A9FE87 /* Resources */,
 			);
 			buildRules = (
+				ADBCFAAA16F98F730086A1FD /* PBXBuildRule */,
 			);
 			dependencies = (
 			);
@@ -245,6 +260,7 @@
 				AD11544616F5273000A9FE87 /* samusvaria.png in Resources */,
 				AD11545116F6D06900A9FE87 /* block2.png in Resources */,
 				AD8D689C16F70AC80020EC7B /* player.png in Resources */,
+				AD8D68A916F7B9C80020EC7B /* bullet.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -261,9 +277,9 @@
 				AD11540C16F50B7C00A9FE87 /* TBSprite.m in Sources */,
 				AD11544916F57DB800A9FE87 /* TBEntity.m in Sources */,
 				AD11544C16F5843500A9FE87 /* TBWorld.m in Sources */,
-				AD8D68A116F70FBB0020EC7B /* NSMutableArray+QueueAdditions.m in Sources */,
 				AD8D68A416F7131F0020EC7B /* TBPoint.m in Sources */,
 				AD8D68A716F793430020EC7B /* TBPlayer.m in Sources */,
+				AD2B2E6816FE902C0024F163 /* TBBlockMachine.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

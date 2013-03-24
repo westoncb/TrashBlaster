@@ -25,13 +25,7 @@
     view.context = self.context;
     [EAGLContext setCurrentContext:self.context];
     
-    self.effect = [[GLKBaseEffect alloc] init];
-
-    GLKMatrix4 projectionMatrix = GLKMatrix4MakeOrtho(0, 320, 0, 480, -1024, 1024);
-    self.effect.transform.projectionMatrix = projectionMatrix;
-    
-    
-    self.world = [[TBWorld alloc] world];
+    self.world = [[TBWorld alloc] init];
     
     UITapGestureRecognizer *tapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTapFrom:)];
     [self.view addGestureRecognizer:tapRecognizer];

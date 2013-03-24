@@ -9,23 +9,25 @@
 #import <GLKit/GLKit.h>
 #import <Foundation/Foundation.h>
 #import "TBSprite.h"
+#import "TBWorld.h"
 
 
 @interface TBEntity : NSObject
-@property (assign) GLKVector2 acceleration;
-@property (assign) GLKVector2 deceleration;
-@property (assign) GLKVector2 velocity;
-@property (assign) GLKVector2 position;
-@property (assign) CGSize size;
+@property GLKVector2 acceleration;
+@property GLKVector2 deceleration;
+@property GLKVector2 velocity;
+@property GLKVector2 position;
+@property CGSize size;
 @property float collisionxoff;
 @property float collisionyoff;
-@property (assign) CGSize collisionsize;
-@property (strong) TBSprite *sprite;
+@property CGSize collisionsize;
+@property TBSprite *sprite;
 @property BOOL alive;
 @property float xChange;
 @property float yChange;
 @property int type;
 @property float maxSpeed;
+@property (weak) TBWorld *world;
 
 typedef enum {
     BLOCK,

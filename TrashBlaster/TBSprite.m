@@ -6,6 +6,7 @@
 //  Copyright (c) 2013 Weston Cannon Beecroft. All rights reserved.
 //
 #import "TBSprite.h"
+#import "TBWorld.h"
 
 typedef struct {
     CGPoint geometryVertex;
@@ -21,23 +22,15 @@ typedef struct {
 
 @interface TBSprite()
 
-@property (strong) GLKBaseEffect * effect;
 @property (assign) TexturedQuad quad;
 @property (strong) GLKTextureInfo * textureInfo;
 
 @end
 
 @implementation TBSprite : NSObject
-@synthesize effect = _effect;
-@synthesize quad = _quad;
-@synthesize textureInfo = _textureInfo;
-@synthesize size = _size;
 
-- (id)initWithFile:(NSString *)fileName effect:(GLKBaseEffect *)effect {
+- (id)initWithFile:(NSString *)fileName {
     if ((self = [super init])) {
-        // 1
-        self.effect = effect;
-        
         // 2
         NSDictionary * options = [NSDictionary dictionaryWithObjectsAndKeys:
                                   [NSNumber numberWithBool:YES],
@@ -73,27 +66,21 @@ typedef struct {
 
 - (void)render:(GLKMatrix4)modelMatrix {
     
-    // 1
-    self.effect.texture2d0.name = self.textureInfo.name;
-    self.effect.texture2d0.enabled = YES;
+    TBWorld.effect.texture2d0.name = self.textureInfo.name;
+    TBWorld.effect.texture2d0.enabled = YES;
     
-    self.effect.transform.modelviewMatrix = modelMatrix;
+    TBWorld.effect.transform.modelviewMatrix = modelMatrix;
     
-    // 2
-    [self.effect prepareToDraw];
+    [TBWorld.effect prepareToDraw];
     
-    // 3
     glEnableVertexAttribArray(GLKVertexAttribPosition);
     glEnableVertexAttribArray(GLKVertexAttribTexCoord0);
     
-    // 4
     long offset = (long)&_quad;
     glVertexAttribPointer(GLKVertexAttribPosition, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void *) (offset + offsetof(TexturedVertex, geometryVertex)));
     glVertexAttribPointer(GLKVertexAttribTexCoord0, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void *) (offset + offsetof(TexturedVertex, textureVertex)));
     
-    // 5
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-    
 }
 
 @end

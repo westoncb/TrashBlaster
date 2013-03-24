@@ -10,9 +10,11 @@
 #import "TBEntity.h"
 #import "TBSprite.h"
 
-@interface TBPlayer : TBEntity
-@property NSMutableArray *destPoints;
+@class TBWorld;
 
+@interface TBPlayer : TBEntity
+@property NSMutableArray * destPoints;
+@property TBSprite * bulletSprite;
 - (void)addDestPoint:(float)destx;
-- (id)initWithSprite:(TBSprite *)sprite;
+- (id)initWithSprite:(TBSprite *)sprite bulletSprite:(TBSprite *)bulletSprite world:(TBWorld *)world;
 @end

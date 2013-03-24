@@ -12,5 +12,5 @@
 @property float x;
 @property float y;
 
-- (id)init:(float)xcoord ycoord:(float)ycoord;
+- (id)init:(float)x y:(float)y;
 @end

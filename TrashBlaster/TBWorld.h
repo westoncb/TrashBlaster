@@ -7,10 +7,25 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "TBEntity.h"
+#import <GLKit/GLKit.h>
+
+@class TBEntity;
+
+static GLKBaseEffect *effect;
+static const int WIDTH = 320;
+static const int HEIGHt = 480;
+static const int FLOOR_HEIGHT = 31;
 
 @interface TBWorld : NSObject
-- (id)world;
+@property const int WIDTH;
+@property const int HEIGHT;
+@property const int FLOOR_HEIGHT;
++ (GLKBaseEffect*) effect;
++ (int) WIDTH;
++ (int) HEIGHT;
++ (int) FLOOR_HEIGHT;
+
+- (id)init;
 - (void)addEntity:(TBEntity *)entity;
 - (void)update:(float)delta;
 - (void)render;

@@ -12,7 +12,7 @@
 
 @property CGSize size;
 
-- (id)initWithFile:(NSString *)fileName effect:(GLKBaseEffect *)effect;
+- (id)initWithFile:(NSString *)fileName;
 - (void)render:(GLKMatrix4)modelMatrix;
 
 @end

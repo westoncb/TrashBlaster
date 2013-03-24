@@ -15,25 +15,17 @@
 @end
 
 @implementation TBEntity
-@synthesize position = _position;
-@synthesize size = _size;
-@synthesize collisionxoff = _collisionxoff;
-@synthesize collisionyoff = _collisionyoff;
-@synthesize collisionsize = _collisionsize;
-@synthesize velocity = _velocity;
-@synthesize acceleration = _acceleration;
-@synthesize deceleration = _deceleration;
-@synthesize sprite = _sprite;
-@synthesize alive = _alive;
-@synthesize lastDelta;
-@synthesize xChange;
-@synthesize yChange;
-@synthesize type;
 
 - (id)initWithSprite:(TBSprite *)sprite {
-    if(([super init])) {
-        self.sprite = sprite;
+    self = [super init];
+    if(self) {
+        _sprite = sprite;
         self.size = CGSizeMake(sprite.size.width, sprite.size.height);
+        self.collisionsize = CGSizeMake(self.size.width, self.size.height);
+        self.acceleration = GLKVector2Make(0, 0);
+        self.deceleration = GLKVector2Make(0, 0);
+        self.velocity = GLKVector2Make(0, 0);
+        self.position = GLKVector2Make(0, 0);
         self.alive = true;
         self.maxSpeed = NSIntegerMax;
     }
@@ -58,7 +50,6 @@
     
     //It simplifies things to handle deceleration seperately, rather than just treating it as reverse acceleration
     GLKVector2 velocityDecrement = GLKVector2MultiplyScalar(self.deceleration, dt);
-    NSLog(@"accelX: %f, posx: %f", self.deceleration.x, self.position.x);
     newXVol = self.velocity.x + velocityDecrement.x;
     newYVol = self.velocity.y + velocityDecrement.y;
     if (fabsf(newXVol) > fabsf(self.velocity.x)) { //deceleration should never increase speed -- dampen to zero instead
@@ -69,7 +60,7 @@
         velocityDecrement = GLKVector2Make(velocityDecrement.x, -self.velocity.y);
         self.deceleration = GLKVector2Make(self.deceleration.x, 0);
     }
-    NSLog(@"decrement: %f", velocityDecrement.x);
+    
     self.velocity = GLKVector2Add(self.velocity, velocityDecrement);
     
     
@@ -102,7 +93,7 @@
     if(retractSelf) {
         self.velocity = GLKVector2MultiplyScalar(self.velocity, -0.1f);
         do {
-            [self updateMotion:lastDelta];
+            [self updateMotion:_lastDelta];
         } while ((fabsf(self.xChange) > .001f || fabsf(self.yChange)) > .001f && [collider doCollisionCheck:self]);
         
         
@@ -110,7 +101,7 @@
         self.acceleration = GLKVector2Make(self.acceleration.x, 0);
     }
     
-    NSLog(@"collide");
+    //NSLog(@"collide");
 }
 
 - (float)collisionx1 {
@@ -146,5 +137,9 @@
 - (NSComparisonResult)compare:(TBEntity *)otherObject {
     return otherObject.position.y - self.position.y;
     
+}
+
+- (NSString *)description {
+    return [NSString stringWithFormat:@"entity width: %f, height: %f", self.size.width, self.size.height];
 }
 @end
