@@ -32,10 +32,14 @@
 		AD11544C16F5843500A9FE87 /* TBWorld.m in Sources */ = {isa = PBXBuildFile; fileRef = AD11544B16F5843500A9FE87 /* TBWorld.m */; };
 		AD11545116F6D06900A9FE87 /* block2.png in Resources */ = {isa = PBXBuildFile; fileRef = AD11545016F6D06900A9FE87 /* block2.png */; };
 		AD2B2E6816FE902C0024F163 /* TBBlockMachine.m in Sources */ = {isa = PBXBuildFile; fileRef = AD2B2E6716FE902C0024F163 /* TBBlockMachine.m */; };
+		AD2B2E6A16FEC9FE0024F163 /* glow.png in Resources */ = {isa = PBXBuildFile; fileRef = AD2B2E6916FEC9FE0024F163 /* glow.png */; };
+		AD2B2E6C16FECF270024F163 /* glow2.png in Resources */ = {isa = PBXBuildFile; fileRef = AD2B2E6B16FECF270024F163 /* glow2.png */; };
 		AD8D689C16F70AC80020EC7B /* player.png in Resources */ = {isa = PBXBuildFile; fileRef = AD8D689B16F70AC80020EC7B /* player.png */; };
 		AD8D68A416F7131F0020EC7B /* TBPoint.m in Sources */ = {isa = PBXBuildFile; fileRef = AD8D68A316F7131E0020EC7B /* TBPoint.m */; };
 		AD8D68A716F793430020EC7B /* TBPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = AD8D68A616F793430020EC7B /* TBPlayer.m */; };
 		AD8D68A916F7B9C80020EC7B /* bullet.png in Resources */ = {isa = PBXBuildFile; fileRef = AD8D68A816F7B9C80020EC7B /* bullet.png */; };
+		ADA6314B1788DA7B005B6B17 /* TBBullet.m in Sources */ = {isa = PBXBuildFile; fileRef = ADA6314A1788DA7B005B6B17 /* TBBullet.m */; };
+		ADA6314E1788DCAA005B6B17 /* TBBlock.m in Sources */ = {isa = PBXBuildFile; fileRef = ADA6314D1788DCA9005B6B17 /* TBBlock.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXBuildRule section */
@@ -84,12 +88,18 @@
 		AD11545016F6D06900A9FE87 /* block2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = block2.png; sourceTree = "<group>"; };
 		AD2B2E6616FE902C0024F163 /* TBBlockMachine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TBBlockMachine.h; sourceTree = "<group>"; };
 		AD2B2E6716FE902C0024F163 /* TBBlockMachine.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TBBlockMachine.m; sourceTree = "<group>"; };
+		AD2B2E6916FEC9FE0024F163 /* glow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = glow.png; sourceTree = "<group>"; };
+		AD2B2E6B16FECF270024F163 /* glow2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = glow2.png; path = images/glow2.png; sourceTree = "<group>"; };
 		AD8D689B16F70AC80020EC7B /* player.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = player.png; sourceTree = "<group>"; };
 		AD8D68A216F7131E0020EC7B /* TBPoint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TBPoint.h; sourceTree = "<group>"; };
 		AD8D68A316F7131E0020EC7B /* TBPoint.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TBPoint.m; sourceTree = "<group>"; };
 		AD8D68A516F793430020EC7B /* TBPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TBPlayer.h; sourceTree = "<group>"; };
 		AD8D68A616F793430020EC7B /* TBPlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TBPlayer.m; sourceTree = "<group>"; };
 		AD8D68A816F7B9C80020EC7B /* bullet.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bullet.png; sourceTree = "<group>"; };
+		ADA631491788DA7B005B6B17 /* TBBullet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TBBullet.h; sourceTree = "<group>"; };
+		ADA6314A1788DA7B005B6B17 /* TBBullet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TBBullet.m; sourceTree = "<group>"; };
+		ADA6314C1788DCA9005B6B17 /* TBBlock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TBBlock.h; sourceTree = "<group>"; };
+		ADA6314D1788DCA9005B6B17 /* TBBlock.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TBBlock.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -112,6 +122,8 @@
 		AD1153D616F467D600A9FE87 = {
 			isa = PBXGroup;
 			children = (
+				ADA6314C1788DCA9005B6B17 /* TBBlock.h */,
+				ADA6314D1788DCA9005B6B17 /* TBBlock.m */,
 				AD11540316F4686400A9FE87 /* GLKit.framework */,
 				AD11540116F4685A00A9FE87 /* OpenGLES.framework */,
 				AD1153FF16F4685100A9FE87 /* QuartzCore.framework */,
@@ -147,6 +159,7 @@
 				AD1153F216F467D600A9FE87 /* AppDelegate.m */,
 				AD11544A16F5843500A9FE87 /* TBWorld.h */,
 				AD11544B16F5843500A9FE87 /* TBWorld.m */,
+				AD2B2E6B16FECF270024F163 /* glow2.png */,
 				AD2B2E6616FE902C0024F163 /* TBBlockMachine.h */,
 				AD2B2E6716FE902C0024F163 /* TBBlockMachine.m */,
 				AD8D68A216F7131E0020EC7B /* TBPoint.h */,
@@ -161,6 +174,8 @@
 				AD11540516F4694100A9FE87 /* MainStoryboard.storyboard */,
 				AD11540716F46BD200A9FE87 /* TBViewController.h */,
 				AD11540816F46BD200A9FE87 /* TBViewController.m */,
+				ADA631491788DA7B005B6B17 /* TBBullet.h */,
+				ADA6314A1788DA7B005B6B17 /* TBBullet.m */,
 			);
 			path = TrashBlaster;
 			sourceTree = "<group>";
@@ -182,6 +197,7 @@
 		AD11543A16F5273000A9FE87 /* images */ = {
 			isa = PBXGroup;
 			children = (
+				AD2B2E6916FEC9FE0024F163 /* glow.png */,
 				AD11545016F6D06900A9FE87 /* block2.png */,
 				AD8D68A816F7B9C80020EC7B /* bullet.png */,
 				AD8D689B16F70AC80020EC7B /* player.png */,
@@ -261,6 +277,8 @@
 				AD11545116F6D06900A9FE87 /* block2.png in Resources */,
 				AD8D689C16F70AC80020EC7B /* player.png in Resources */,
 				AD8D68A916F7B9C80020EC7B /* bullet.png in Resources */,
+				AD2B2E6A16FEC9FE0024F163 /* glow.png in Resources */,
+				AD2B2E6C16FECF270024F163 /* glow2.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -280,6 +298,8 @@
 				AD8D68A416F7131F0020EC7B /* TBPoint.m in Sources */,
 				AD8D68A716F793430020EC7B /* TBPlayer.m in Sources */,
 				AD2B2E6816FE902C0024F163 /* TBBlockMachine.m in Sources */,
+				ADA6314B1788DA7B005B6B17 /* TBBullet.m in Sources */,
+				ADA6314E1788DCAA005B6B17 /* TBBlock.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

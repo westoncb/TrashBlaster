@@ -11,8 +11,12 @@
 #import "TBSprite.h"
 
 @class TBWorld;
+@class TBBlock;
 
-@interface TBPlayer : TBEntity
+@interface TBPlayer : TBEntity {
+    TBBlock *_deathBlock;
+}
+
 @property NSMutableArray * destPoints;
 @property TBSprite * bulletSprite;
 - (void)addDestPoint:(float)destx;

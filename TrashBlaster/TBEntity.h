@@ -17,22 +17,27 @@
 @property GLKVector2 deceleration;
 @property GLKVector2 velocity;
 @property GLKVector2 position;
+@property GLKVector2 scale;
 @property CGSize size;
 @property float collisionxoff;
 @property float collisionyoff;
 @property CGSize collisionsize;
 @property TBSprite *sprite;
 @property BOOL alive;
+@property BOOL keepImageAfterDeath;
 @property float xChange;
 @property float yChange;
 @property int type;
 @property float maxSpeed;
 @property (weak) TBWorld *world;
+@property NSMutableArray *collidesWith;
+@property int life;
 
 typedef enum {
     BLOCK,
     PLAYER,
-    BULLET
+    BULLET,
+    DECORATION
 } EntityType;
 
 - (id)initWithSprite:(TBSprite *)sprite;

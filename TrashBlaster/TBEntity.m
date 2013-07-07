@@ -15,17 +15,20 @@
 @end
 
 @implementation TBEntity
+@synthesize life = _life;
 
 - (id)initWithSprite:(TBSprite *)sprite {
     self = [super init];
     if(self) {
         _sprite = sprite;
+        _collidesWith = [NSMutableArray array];
         self.size = CGSizeMake(sprite.size.width, sprite.size.height);
         self.collisionsize = CGSizeMake(self.size.width, self.size.height);
         self.acceleration = GLKVector2Make(0, 0);
         self.deceleration = GLKVector2Make(0, 0);
         self.velocity = GLKVector2Make(0, 0);
         self.position = GLKVector2Make(0, 0);
+        self.scale = GLKVector2Make(1, 1);
         self.alive = true;
         self.maxSpeed = NSIntegerMax;
     }
@@ -79,6 +82,7 @@
 - (void)render {
     GLKMatrix4 modelMatrix = GLKMatrix4Identity;
     modelMatrix = GLKMatrix4Translate(modelMatrix, self.position.x, self.position.y, 0);
+    modelMatrix = GLKMatrix4Scale(modelMatrix, self.scale.x, self.scale.y, 1.0f);
     [self.sprite render:modelMatrix];
 }
 
@@ -90,18 +94,16 @@
 }
 
 - (void)handleCollision:(TBEntity *)collider wasTheProtruder:(BOOL)retractSelf {    
-    if(retractSelf) {
-        self.velocity = GLKVector2MultiplyScalar(self.velocity, -0.1f);
-        do {
-            [self updateMotion:_lastDelta];
-        } while ((fabsf(self.xChange) > .001f || fabsf(self.yChange)) > .001f && [collider doCollisionCheck:self]);
-        
-        
-        self.velocity = GLKVector2Make(self.velocity.x, 0);
-        self.acceleration = GLKVector2Make(self.acceleration.x, 0);
-    }
-    
-    //NSLog(@"collide");
+//    if(retractSelf) {
+//        self.velocity = GLKVector2MultiplyScalar(self.velocity, -0.1f);
+//        do {
+//            [self updateMotion:_lastDelta];
+//        } while ((fabsf(self.xChange) > .001f || fabsf(self.yChange)) > .001f && [collider doCollisionCheck:self]);
+//        
+//        
+//        self.velocity = GLKVector2Make(self.velocity.x, 0);
+//        self.acceleration = GLKVector2Make(self.acceleration.x, 0);
+//    }
 }
 
 - (float)collisionx1 {
@@ -140,6 +142,16 @@
 }
 
 - (NSString *)description {
-    return [NSString stringWithFormat:@"entity width: %f, height: %f", self.size.width, self.size.height];
+    return [NSString stringWithFormat:@"entity type: %i, width: %f, height: %f", self.type, self.size.width, self.size.height];
+}
+
+- (void)setLife:(int)life {
+    _life = life;
+    if (_life <= 0)
+        self.alive = false;
+}
+
+- (int)life {
+    return _life;
 }
 @end

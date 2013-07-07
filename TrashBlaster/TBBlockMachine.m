@@ -9,6 +9,7 @@
 #import "TBBlockMachine.h"
 #import "TBEntity.h"
 #import <GLKit/GLKit.h>
+#import "TBBlock.h"
 
 @class TBWorld;
 
@@ -25,10 +26,10 @@
 @implementation TBBlockMachine
 
 - (id)initWithWorld:(TBWorld*)world {
-    self = [super self];
+    self = [super init];
     if(self) {
         _world = world;
-        self.blockDelay = .3f;
+        self.blockDelay = 1.0f;
         self.BLOCK_ACCELERATION = -400;
         self.initialBlockVelocity = -60;
         self.blockSprite = [[TBSprite alloc] initWithFile:@"block.png"];
@@ -48,7 +49,7 @@
 }
 
 - (TBEntity *) createBlock {
-    TBEntity *block = [[TBEntity alloc] initWithSprite:self.blockSprite];
+    TBBlock *block = [[TBBlock alloc] initWithSprite:self.blockSprite];
     int randX = arc4random_uniform(TBWorld.WIDTH);
     int colIndex = round(randX/32);
     int newX = colIndex*32;
@@ -61,6 +62,8 @@
         block.collisionyoff = 3;
         block.collisionsize = CGSizeMake(block.size.width-6, block.size.height-6);
         block.type = BLOCK;
+        [block.collidesWith addObject:[NSNumber numberWithInt:PLAYER]];
+        [block.collidesWith addObject:[NSNumber numberWithInt:BULLET]];
     }
     return block;
 }

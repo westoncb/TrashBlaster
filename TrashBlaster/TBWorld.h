@@ -13,7 +13,7 @@
 
 static GLKBaseEffect *effect;
 static const int WIDTH = 320;
-static const int HEIGHt = 480;
+static const int HEIGHT = 480;
 static const int FLOOR_HEIGHT = 31;
 
 @interface TBWorld : NSObject
@@ -27,6 +27,7 @@ static const int FLOOR_HEIGHT = 31;
 
 - (id)init;
 - (void)addEntity:(TBEntity *)entity;
+- (void)removeEntity:(TBEntity *)entity;
 - (void)update:(float)delta;
 - (void)render;
 - (void)movePlayerTo:(GLKVector2)dest;

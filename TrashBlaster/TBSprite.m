@@ -28,6 +28,7 @@ typedef struct {
 @end
 
 @implementation TBSprite : NSObject
+@synthesize size = _size;
 
 - (id)initWithFile:(NSString *)fileName {
     if ((self = [super init])) {
@@ -48,24 +49,34 @@ typedef struct {
         }
         
         self.size = CGSizeMake(self.textureInfo.width, self.textureInfo.height);
-        
-        TexturedQuad newQuad;
-        newQuad.bl.geometryVertex = CGPointMake(0, 0);
-        newQuad.br.geometryVertex = CGPointMake(self.textureInfo.width, 0);
-        newQuad.tl.geometryVertex = CGPointMake(0, self.textureInfo.height);
-        newQuad.tr.geometryVertex = CGPointMake(self.textureInfo.width, self.textureInfo.height);
-        
-        newQuad.bl.textureVertex = CGPointMake(0, 0);
-        newQuad.br.textureVertex = CGPointMake(1, 0);
-        newQuad.tl.textureVertex = CGPointMake(0, 1);
-        newQuad.tr.textureVertex = CGPointMake(1, 1);
-        self.quad = newQuad;
     }
     return self;
 }
 
-- (void)render:(GLKMatrix4)modelMatrix {
+- (void)createQuad {
+    TexturedQuad newQuad;
+    newQuad.bl.geometryVertex = CGPointMake(0, 0);
+    newQuad.br.geometryVertex = CGPointMake(self.size.width+0.5f, 0);
+    newQuad.tl.geometryVertex = CGPointMake(0, self.size.height+0.5f);
+    newQuad.tr.geometryVertex = CGPointMake(self.size.width+0.5f, self.size.height+0.5f);
     
+    newQuad.bl.textureVertex = CGPointMake(0, 0);
+    newQuad.br.textureVertex = CGPointMake(1, 0);
+    newQuad.tl.textureVertex = CGPointMake(0, 1);
+    newQuad.tr.textureVertex = CGPointMake(1, 1);
+    self.quad = newQuad;
+}
+
+- (void)setSize:(CGSize)size {
+    _size = size;
+    [self createQuad];
+}
+
+- (CGSize)size {
+    return _size;
+}
+
+- (void)render:(GLKMatrix4)modelMatrix {
     TBWorld.effect.texture2d0.name = self.textureInfo.name;
     TBWorld.effect.texture2d0.enabled = YES;
     

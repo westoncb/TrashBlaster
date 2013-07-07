@@ -9,6 +9,8 @@
 #import "TBPlayer.h"
 #import "TBPoint.h"
 #import "TBSprite.h"
+#import "TBBullet.h"
+#import "TBBlock.h"
 
 @interface TBPlayer()
 @property const float INITIAL_SPEED;
@@ -19,7 +21,7 @@
 @property (weak) TBWorld *world;
 
 @property float lastBulletTime;
-@property float reloadTIme;
+@property float reloadTime;
 @end
 @implementation TBPlayer
 
@@ -31,11 +33,14 @@
         self.maxSpeed = 300;
         self.ACCELERATION = 6000;
         self.DECELERATION = 12000;
-        self.reloadTIme = .5f;
+        self.reloadTime = 0.1f;
         self.lastBulletTime = 0;
         self.type = PLAYER;
         self.world = world;
+        self.collisionxoff = 7;
+        self.collisionsize = CGSizeMake(self.collisionsize.width - 14, self.collisionsize.height);
         self.position = GLKVector2Make(TBWorld.WIDTH/2 - self.size.width/2, TBWorld.FLOOR_HEIGHT);
+        self.keepImageAfterDeath = true;
         _bulletSprite = theBulletSprite;
     }
     
@@ -43,8 +48,10 @@
 }
 
 - (void)addDestPoint:(float)destx {
-    TBPoint *point = [[TBPoint alloc] init:destx y:0];
-    [self.destPoints addObject:point];
+    if (!_deathBlock) {
+        TBPoint *point = [[TBPoint alloc] init:destx y:0];
+        [self.destPoints addObject:point];
+    }
 }
 
 - (void)update:(float)dt {
@@ -76,22 +83,59 @@
     }
     
     self.lastBulletTime += dt;
-    if(self.lastBulletTime > self.reloadTIme) {
-        self.lastBulletTime -= self.reloadTIme;
+    if(self.lastBulletTime > self.reloadTime) {
+        self.lastBulletTime -= self.reloadTime;
         [self fireBullet];
+    }
+    
+    if (_deathBlock) {
+        float distanceFromGround = _deathBlock.position.y - TBWorld.FLOOR_HEIGHT;
+        float scale = (distanceFromGround/self.size.height);
+        float minScale = 10.0f/self.size.height;
+        if (scale < minScale)
+            scale = minScale;
+        self.scale = GLKVector2Make(self.scale.x, scale);
+        if (distanceFromGround < 1)
+            self.alive = false;
     }
     
     [super update:dt];
 }
 
+- (void)handleCollision:(TBEntity *)collider wasTheProtruder:(BOOL)retractSelf {
+    [super handleCollision:collider wasTheProtruder:retractSelf];
+    
+    if (collider.type == BLOCK) {
+        TBBlock *block = (TBBlock *)collider;
+        if (block.velocity.y < -50 && !_deathBlock)
+            [self initiateDeathSequenceWithBlock:block];
+    }
+}
+
+- (void)initiateDeathSequenceWithBlock:(TBBlock *)block
+{
+    float distanceFromGround = block.position.y - TBWorld.FLOOR_HEIGHT;
+    
+    if (distanceFromGround > self.size.height/2.0f) {
+        self.reloadTime = INT_MAX;
+        _deathBlock = block;
+        self.velocity = GLKVector2Make(0, 0);
+        self.acceleration = GLKVector2Make(0, 0);
+        [self.destPoints removeAllObjects];
+    } else {
+        
+    }
+}
+
 - (void)fireBullet {
-    TBEntity *bullet = [[TBEntity alloc] initWithSprite:self.bulletSprite];
-    [self.world addEntity:bullet];
+    TBBullet *bullet = [[TBBullet alloc] initWithSprite:self.bulletSprite];
     bullet.position = GLKVector2Make(self.position.x + self.size.width/2 - self.bulletSprite.size.width/2, self.position.y + self.size.height);
-    bullet.velocity = GLKVector2Make(0, 300);
+    bullet.velocity = GLKVector2Make(self.velocity.x/2, 300);
     bullet.collisionxoff = 0;
     bullet.collisionyoff = 0;
     bullet.collisionsize = CGSizeMake(7, 24);
     bullet.type = BULLET;
+    [bullet.collidesWith addObject:[NSNumber numberWithInt:BLOCK]];
+    [self.world addEntity:bullet];
 }
 @end
