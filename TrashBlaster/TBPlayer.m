@@ -95,7 +95,7 @@
         if (scale < minScale)
             scale = minScale;
         self.scale = GLKVector2Make(self.scale.x, scale);
-        if (distanceFromGround < 1)
+        if (distanceFromGround < 1 || _deathBlock.velocity.y == 0)
             self.alive = false;
     }
     
@@ -119,6 +119,7 @@
     if (distanceFromGround > self.size.height/2.0f) {
         self.reloadTime = INT_MAX;
         _deathBlock = block;
+        _deathBlock.life = INT_MAX;
         self.velocity = GLKVector2Make(0, 0);
         self.acceleration = GLKVector2Make(0, 0);
         [self.destPoints removeAllObjects];
