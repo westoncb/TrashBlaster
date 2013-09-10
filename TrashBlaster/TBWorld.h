@@ -28,7 +28,7 @@ static const int FLOOR_HEIGHT = 31;
 - (id)init;
 - (void)addEntity:(TBEntity *)entity;
 - (void)removeEntity:(TBEntity *)entity;
-- (void)update:(float)delta;
+- (BOOL)update:(float)delta;
 - (void)render;
 - (void)movePlayerTo:(GLKVector2)dest;
 @end

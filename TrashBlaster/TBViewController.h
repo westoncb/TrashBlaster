@@ -9,6 +9,9 @@
 #import <GLKit/GLKit.h>
 #import <UIKit/UIKit.h>
 
-@interface TBViewController : GLKViewController
+@interface TBViewController : GLKViewController {
+    float restartTime;
+    BOOL firstTime;
+}
 
 @end

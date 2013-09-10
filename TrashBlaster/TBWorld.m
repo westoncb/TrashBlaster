@@ -80,10 +80,15 @@
 
 }
 
-- (void)update:(float)delta {
+- (BOOL)update:(float)delta {
     [self.blockMachine update:delta];
     
     for (TBEntity * entity in self.entities) {
+        
+        if (entity.type == PLAYER && !entity.alive) {
+            return YES;
+        }
+        
         [entity update:delta];
     }
     for (TBEntity * entity in self.addEntityBuffer) {
@@ -99,6 +104,8 @@
     [self removeDistantBullets];
     [self cleanupDeadEntities];
     [self checkForCollisions];
+    
+    return NO;
 }
 
 - (void)cleanupDeadEntities
