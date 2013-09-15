@@ -71,7 +71,8 @@ const float RESTART_DELAY = 1.0f;
             restartTime = 0;
         }
     } else if (restartTime > RESTART_DELAY || firstTime) {
-        self.world = [[TBWorld alloc] init];
+        [TBWorld destroy];
+        self.world = [TBWorld instance];
         restartTime = 0;
         firstTime = NO;
     } else {

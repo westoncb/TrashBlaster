@@ -11,6 +11,7 @@
 #import "TBSprite.h"
 #import "TBBullet.h"
 #import "TBBlock.h"
+#import "TBAnimatedSprite.h"
 
 @interface TBPlayer()
 @property const float INITIAL_SPEED;
@@ -18,15 +19,14 @@
 @property const float DECELERATION;
 @property BOOL startedMoving;
 @property BOOL goingRight;
-@property (weak) TBWorld *world;
 
 @property float lastBulletTime;
 @property float reloadTime;
 @end
 @implementation TBPlayer
 
-- (id)initWithSprite:(TBSprite *)sprite bulletSprite:(TBSprite *)theBulletSprite world:(TBWorld *)world {
-    self = [super initWithSprite:sprite];
+- (id)initWithStateSprite:(TBStateSprite *)stateSprite bulletSprite:(TBSprite *)bulletSprite {
+    self = [super initWithDrawable:stateSprite];
     if (self) {
         self.destPoints = [NSMutableArray array];
         self.INITIAL_SPEED = 50;
@@ -36,12 +36,13 @@
         self.reloadTime = 0.1f;
         self.lastBulletTime = 0;
         self.type = PLAYER;
-        self.world = world;
         self.collisionxoff = 7;
         self.collisionsize = CGSizeMake(self.collisionsize.width - 14, self.collisionsize.height);
         self.position = GLKVector2Make(TBWorld.WIDTH/2 - self.size.width/2, TBWorld.FLOOR_HEIGHT);
         self.keepImageAfterDeath = true;
-        _bulletSprite = theBulletSprite;
+        _bulletSprite = bulletSprite;
+        _stateSprite = stateSprite;
+        _shooting = YES;
     }
     
     return self;
@@ -67,10 +68,15 @@
             self.velocity = GLKVector2MultiplyScalar(direction, self.INITIAL_SPEED);
             self.acceleration = GLKVector2MultiplyScalar(direction, self.ACCELERATION);
             self.startedMoving = true;
-            if(direction.x > 0)
+            if(direction.x > 0) {
                 self.goingRight = true;
-            else
+                [_stateSprite changeState:@"run"];
+            }
+            else {
                 self.goingRight = false;
+                [_stateSprite changeState:@"run_xf"];
+            }
+            _shooting = YES;
         } else if(self.startedMoving && ((direction.x < 0 && self.goingRight) || (direction.x > 0 && !self.goingRight))) { //Arrived: start stopping
             [self.destPoints removeObjectAtIndex:0];
             self.acceleration = GLKVector2Make(0, 0);
@@ -79,15 +85,19 @@
             //destination, we can use 'direction'
             self.deceleration = GLKVector2MultiplyScalar(direction, self.DECELERATION);
             self.startedMoving = false;
+            [_stateSprite changeState:@"shoot"];
+//            _shooting = NO;
         }
     }
-    
-    self.lastBulletTime += dt;
-    if(self.lastBulletTime > self.reloadTime) {
-        self.lastBulletTime -= self.reloadTime;
-        [self fireBullet];
+
+    if (_shooting) {
+        self.lastBulletTime += dt;
+        if(self.lastBulletTime > self.reloadTime) {
+            self.lastBulletTime -= self.reloadTime;
+            [self fireBullet];
+        }
     }
-    
+
     if (_deathBlock) {
         float distanceFromGround = _deathBlock.position.y - TBWorld.FLOOR_HEIGHT;
         float scale = (distanceFromGround/self.size.height);
@@ -129,14 +139,28 @@
 }
 
 - (void)fireBullet {
-    TBBullet *bullet = [[TBBullet alloc] initWithSprite:self.bulletSprite];
-    bullet.position = GLKVector2Make(self.position.x + self.size.width/2 - self.bulletSprite.size.width/2, self.position.y + self.size.height);
-    bullet.velocity = GLKVector2Make(self.velocity.x/2, 300);
+    TBBullet *bullet = [[TBBullet alloc] initWithDrawable:self.bulletSprite];
+    if (self.velocity.x == 0) {
+        bullet.position = GLKVector2Make(self.position.x + self.size.width/2 - self.bulletSprite.size.width/2, self.position.y + self.size.height);
+        bullet.velocity = GLKVector2Make(0, 300);
+        bullet.rotation = 0.0f;
+    }
+    else {
+        float xAdder = - 10.0f;
+        if (self.goingRight) {
+            xAdder = self.size.width + 20.0f;
+        }
+        bullet.position = GLKVector2Make(self.position.x + xAdder, self.position.y + self.size.height/2 - 12.0f);
+        float sign = self.velocity.x/fabsf(self.velocity.x);
+        float velocity = sign*300 + self.velocity.x;
+        bullet.velocity = GLKVector2Make(velocity, 0);
+        bullet.rotation = sign*(M_PI/2.0f)*-1;
+    }
     bullet.collisionxoff = 0;
     bullet.collisionyoff = 0;
     bullet.collisionsize = CGSizeMake(7, 24);
     bullet.type = BULLET;
     [bullet.collidesWith addObject:[NSNumber numberWithInt:BLOCK]];
-    [self.world addEntity:bullet];
+    [[TBWorld instance] addEntity:bullet];
 }
 @end

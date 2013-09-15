@@ -7,9 +7,11 @@
 //
 
 #import "TBEntity.h"
+#import "TBSprite.h"
 
 @interface TBBlock : TBEntity {
     BOOL _hitPlayer;
 }
 
+- (id)initWithSprite:(TBSprite *)sprite;
 @end

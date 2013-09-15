@@ -8,21 +8,26 @@
 
 #import <GLKit/GLKit.h>
 #import <Foundation/Foundation.h>
-#import "TBSprite.h"
+#import "TBDrawable.h"
 #import "TBWorld.h"
 
 
-@interface TBEntity : NSObject
+@interface TBEntity : NSObject {
+    NSMutableArray *_subEntities;
+}
+
+@property TBEntity *parent;
 @property GLKVector2 acceleration;
 @property GLKVector2 deceleration;
 @property GLKVector2 velocity;
 @property GLKVector2 position;
 @property GLKVector2 scale;
+@property float rotation;
 @property CGSize size;
 @property float collisionxoff;
 @property float collisionyoff;
 @property CGSize collisionsize;
-@property TBSprite *sprite;
+@property id<TBDrawable> drawable;
 @property BOOL alive;
 @property BOOL keepImageAfterDeath;
 @property float xChange;
@@ -40,10 +45,11 @@ typedef enum {
     DECORATION
 } EntityType;
 
-- (id)initWithSprite:(TBSprite *)sprite;
+- (id)initWithDrawable:(id<TBDrawable>)drawable;
 - (void)update:(float)dt;
 - (void)render;
 - (BOOL)doCollisionCheck:(TBEntity *)other;
 - (void)handleCollision:(TBEntity *)collider wasTheProtruder:(BOOL)retractSelf;
+- (void)addSubEntity:(TBEntity *)entity;
 //- (BOOL)doBoundsIntersect:(TBEntity *)first other:(TBEntity *)other;
 @end

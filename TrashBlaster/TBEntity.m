@@ -17,12 +17,12 @@
 @implementation TBEntity
 @synthesize life = _life;
 
-- (id)initWithSprite:(TBSprite *)sprite {
+- (id)initWithDrawable:(id<TBDrawable>)drawable {
     self = [super init];
     if(self) {
-        _sprite = sprite;
+        _drawable = drawable;
         _collidesWith = [NSMutableArray array];
-        self.size = CGSizeMake(sprite.size.width, sprite.size.height);
+        self.size = CGSizeMake(drawable.size.width, drawable.size.height);
         self.collisionsize = CGSizeMake(self.size.width, self.size.height);
         self.acceleration = GLKVector2Make(0, 0);
         self.deceleration = GLKVector2Make(0, 0);
@@ -31,6 +31,8 @@
         self.scale = GLKVector2Make(1, 1);
         self.alive = true;
         self.maxSpeed = NSIntegerMax;
+        self.type = DECORATION;
+        _subEntities = [NSMutableArray array];
     }
     
     return self;
@@ -69,6 +71,13 @@
     
     [self updateMotion:dt];
     self.lastDelta = dt;
+    [self.drawable updateWithTimeDelta:dt];
+}
+
+- (void)addSubEntity:(TBEntity *)entity
+{
+    entity.parent = entity;
+    [_subEntities addObject:entity];
 }
 
 - (void)updateMotion:(float)dt {
@@ -80,10 +89,21 @@
 }
 
 - (void)render {
-    GLKMatrix4 modelMatrix = GLKMatrix4Identity;
+    [self renderWithStartingMatrix:GLKMatrix4Identity];
+}
+
+- (void)renderWithStartingMatrix:(GLKMatrix4)modelMatrix
+{
     modelMatrix = GLKMatrix4Translate(modelMatrix, self.position.x, self.position.y, 0);
     modelMatrix = GLKMatrix4Scale(modelMatrix, self.scale.x, self.scale.y, 1.0f);
-    [self.sprite render:modelMatrix];
+    modelMatrix = GLKMatrix4Translate(modelMatrix, self.size.width/2, self.size.height/2, 0);
+    modelMatrix = GLKMatrix4Rotate(modelMatrix, _rotation, 0, 0, 1);
+    modelMatrix = GLKMatrix4Translate(modelMatrix, -self.size.width/2, -self.size.height/2, 0);
+    [self.drawable renderWithModelMatrix:modelMatrix];
+    
+    for (TBEntity *entity in _subEntities) {
+        [entity renderWithStartingMatrix:modelMatrix];
+    }
 }
 
 - (BOOL)doCollisionCheck:(TBEntity *)other {
@@ -147,8 +167,15 @@
 
 - (void)setLife:(int)life {
     _life = life;
-    if (_life <= 0)
+    if (_life <= 0) {
         self.alive = false;
+        [self handleDeath];
+    }
+}
+
+- (void)handleDeath
+{
+
 }
 
 - (int)life {

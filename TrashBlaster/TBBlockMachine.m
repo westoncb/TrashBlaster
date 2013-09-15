@@ -10,6 +10,7 @@
 #import "TBEntity.h"
 #import <GLKit/GLKit.h>
 #import "TBBlock.h"
+#import "TBSprite.h"
 
 @class TBWorld;
 
@@ -18,20 +19,18 @@
 @property float blockDelay;
 @property float initialBlockVelocity;
 @property const float BLOCK_ACCELERATION;
-@property (weak) TBWorld * world;
 @property TBSprite * blockSprite;
 
 @end
 
 @implementation TBBlockMachine
 
-- (id)initWithWorld:(TBWorld*)world {
+- (id)init {
     self = [super init];
     if(self) {
-        _world = world;
         self.blockDelay = 1.0f;
-        self.BLOCK_ACCELERATION = -400;
-        self.initialBlockVelocity = -60;
+        self.BLOCK_ACCELERATION = -100;
+        self.initialBlockVelocity = -20;
         self.blockSprite = [[TBSprite alloc] initWithFile:@"block.png"];
     }
     
@@ -44,7 +43,7 @@
         self.timePassed -= self.blockDelay;
         
         TBEntity *block = [self createBlock];
-        [self.world addEntity:block];
+        [[TBWorld instance] addEntity:block];
     }
 }
 

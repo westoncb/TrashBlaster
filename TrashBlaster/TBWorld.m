@@ -7,10 +7,12 @@
 //
 
 #import "TBWorld.h"
-#import "TBSprite.h"
 #import "TBPlayer.h"
 #import <stdlib.h>
 #import "TBBlockMachine.h"
+#import "TBStateSprite.h"
+
+static TBWorld *_world;
 
 @interface TBWorld()
 @property NSMutableArray * entities;
@@ -25,6 +27,19 @@
 @end
 
 @implementation TBWorld
+
++ (TBWorld *)instance
+{
+    if (!_world)
+        _world = [[TBWorld alloc] init];
+    
+    return _world;
+}
+
++ (void)destroy
+{
+    _world = nil;
+}
 
 - (id)init {
     self = super.init;
@@ -41,19 +56,31 @@
         
         self.bgSprite = [[TBSprite alloc] initWithFile:@"background.png"];
         
-        TBEntity *background = [[TBEntity alloc] initWithSprite:self.bgSprite];
+        TBEntity *background = [[TBEntity alloc] initWithDrawable:self.bgSprite];
         background.type = DECORATION;
         [self addEntity:background];
         
         TBSprite *bulletSprite = [[TBSprite alloc] initWithFile:@"bullet.png"];
-        TBSprite *playerSprite  = [[TBSprite alloc] initWithFile:@"player.png"];
-        playerSprite.size = CGSizeMake(40, 80);
-        _player = [[TBPlayer alloc] initWithSprite:playerSprite bulletSprite:bulletSprite world:self];
+        TBAnimationInfo animationInfo;
+        animationInfo.frameWidth = 40;
+        animationInfo.frameHeight = 40;
+        animationInfo.frameCount = 4;
+        animationInfo.frameLength = 100;
+        animationInfo.loop = YES;
+        _runSprite  = [[TBAnimatedSprite alloc] initWithFile:@"playersheet.png" animationInfo:animationInfo];
+        _shootSprite = [[TBSprite alloc] initWithFile:@"player.png"];
+        _runSprite.size = CGSizeMake(60, 60);
+        _shootSprite.size = CGSizeMake(40, 80);
+        NSMutableDictionary *stateMap = [[NSMutableDictionary alloc] init];
+        [stateMap setValue:_runSprite forKey:@"run"];
+        [stateMap setValue:_runSprite forKey:@"run_xf"];
+        [stateMap setValue:_shootSprite forKey:@"shoot"];
+        TBStateSprite *playerSprite = [[TBStateSprite alloc] initWithStateMap:stateMap initialState:@"shoot"];
+        _player = [[TBPlayer alloc] initWithStateSprite:playerSprite bulletSprite:bulletSprite];
         [_player.collidesWith addObject:[NSNumber numberWithInt:BLOCK]];
         [self addEntity:_player];
     
-        self.blockMachine = [[TBBlockMachine alloc] initWithWorld:self];
-        
+        self.blockMachine = [[TBBlockMachine alloc] init];
     }
     
     return self;
@@ -196,7 +223,8 @@
 
 - (void)render {
     for (TBEntity * entity in self.entities) {
-        [entity render];
+        if (!entity.parent)
+            [entity render];
     }
 }
 

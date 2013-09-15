@@ -9,9 +9,9 @@
 #import "TBBullet.h"
 
 @implementation TBBullet
-- (id)initWithSprite:(TBSprite *)sprite
+- (id)initWithDrawable:(id<TBDrawable>)drawable
 {
-    self = [super initWithSprite:sprite];
+    self = [super initWithDrawable:drawable];
     
     if (self) {
         _damage = 10;

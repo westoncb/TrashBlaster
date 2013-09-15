@@ -8,6 +8,8 @@
 
 #import <Foundation/Foundation.h>
 #import <GLKit/GLKit.h>
+#import "TBSprite.h"
+#import "TBAnimatedSprite.h"
 
 @class TBEntity;
 
@@ -16,7 +18,12 @@ static const int WIDTH = 320;
 static const int HEIGHT = 480;
 static const int FLOOR_HEIGHT = 31;
 
-@interface TBWorld : NSObject
+@interface TBWorld : NSObject {
+    TBAnimatedSprite *_runSprite;
+    TBSprite *_shootSprite;
+}
+
+
 @property const int WIDTH;
 @property const int HEIGHT;
 @property const int FLOOR_HEIGHT;
@@ -24,8 +31,9 @@ static const int FLOOR_HEIGHT = 31;
 + (int) WIDTH;
 + (int) HEIGHT;
 + (int) FLOOR_HEIGHT;
++ (TBWorld *)instance;
++ (void)destroy;
 
-- (id)init;
 - (void)addEntity:(TBEntity *)entity;
 - (void)removeEntity:(TBEntity *)entity;
 - (BOOL)update:(float)delta;

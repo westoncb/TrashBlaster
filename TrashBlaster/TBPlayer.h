@@ -9,16 +9,19 @@
 #import <Foundation/Foundation.h>
 #import "TBEntity.h"
 #import "TBSprite.h"
+#import "TBStateSprite.h"
 
 @class TBWorld;
 @class TBBlock;
 
 @interface TBPlayer : TBEntity {
     TBBlock *_deathBlock;
+    TBStateSprite *_stateSprite;
+    BOOL _shooting;
 }
 
 @property NSMutableArray * destPoints;
 @property TBSprite * bulletSprite;
 - (void)addDestPoint:(float)destx;
-- (id)initWithSprite:(TBSprite *)sprite bulletSprite:(TBSprite *)bulletSprite world:(TBWorld *)world;
+- (id)initWithStateSprite:(TBStateSprite *)stateSprite bulletSprite:(TBSprite *)bulletSprite;
 @end

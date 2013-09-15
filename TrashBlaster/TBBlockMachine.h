@@ -13,7 +13,7 @@
     int blocksInColumns[10];
 }
 
-- (id)initWithWorld:(TBWorld*)world;
+- (id)init;
 - (void)update:(float)delta;
 - (int)blocksInColumn:(int)col;
 - (void)alterColumnCount:(int)col adder:(int)adder;

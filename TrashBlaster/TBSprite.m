@@ -8,27 +8,10 @@
 #import "TBSprite.h"
 #import "TBWorld.h"
 
-typedef struct {
-    CGPoint geometryVertex;
-    CGPoint textureVertex;
-} TexturedVertex;
-
-typedef struct {
-    TexturedVertex bl;
-    TexturedVertex br;
-    TexturedVertex tl;
-    TexturedVertex tr;
-} TexturedQuad;
-
-@interface TBSprite()
-
-@property (assign) TexturedQuad quad;
-@property (strong) GLKTextureInfo * textureInfo;
-
-@end
-
 @implementation TBSprite : NSObject
 @synthesize size = _size;
+@synthesize xFlip = _xFlip;
+@synthesize yFlip = _yFlip;
 
 - (id)initWithFile:(NSString *)fileName {
     if ((self = [super init])) {
@@ -76,9 +59,46 @@ typedef struct {
     return _size;
 }
 
-- (void)render:(GLKMatrix4)modelMatrix {
+- (void)setXFlip:(BOOL)xFlip
+{
+    _xFlip = xFlip;
+}
+
+- (BOOL)xFlip
+{
+    return _xFlip;
+}
+
+- (void)setYFlip:(BOOL)yFlip
+{
+    _yFlip = yFlip;
+}
+
+- (BOOL)yFlip
+{
+    return _yFlip;
+}
+
+- (void)updateWithTimeDelta:(float)delta
+{
+    
+}
+
+- (void)renderWithModelMatrix:(GLKMatrix4)modelMatrix {
     TBWorld.effect.texture2d0.name = self.textureInfo.name;
     TBWorld.effect.texture2d0.enabled = YES;
+    
+    if (_xFlip) {
+        modelMatrix = GLKMatrix4Scale(modelMatrix, -1, 1, 1.0f);
+        modelMatrix = GLKMatrix4Translate(modelMatrix, -_size.width, 0, 0);
+    }
+    
+    if (_yFlip) {
+//        modelMatrix = GLKMatrix4Translate(modelMatrix, 0, -_size.height/2.0f, 0);
+        modelMatrix = GLKMatrix4Scale(modelMatrix, 1, -1, 1.0f);
+//        modelMatrix = GLKMatrix4Translate(modelMatrix, 0, _size.height/2.0f, 0);
+    }
+    
     
     TBWorld.effect.transform.modelviewMatrix = modelMatrix;
     
