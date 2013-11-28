@@ -7,7 +7,6 @@
 //
 
 #import "TBPlayer.h"
-#import "TBPoint.h"
 #import "TBSprite.h"
 #import "TBBullet.h"
 #import "TBBlock.h"
@@ -37,28 +36,28 @@
         self.lastBulletTime = 0;
         self.type = PLAYER;
         self.collisionxoff = 7;
-        self.collisionsize = CGSizeMake(self.collisionsize.width - 14, self.collisionsize.height);
+        self.collisionsize = CGSizeMake(self.collisionsize.width - 20, self.collisionsize.height);
         self.position = GLKVector2Make(TBWorld.WIDTH/2 - self.size.width/2, TBWorld.FLOOR_HEIGHT);
         self.keepImageAfterDeath = true;
         _bulletSprite = bulletSprite;
         _stateSprite = stateSprite;
-        _shooting = YES;
     }
     
     return self;
 }
 
-- (void)addDestPoint:(float)destx {
+- (void)addDestPointWithDestX:(float)destX destY:(float)destY
+{
     if (!_deathBlock) {
-        TBPoint *point = [[TBPoint alloc] init:destx y:0];
+        TBPoint *point = [[TBPoint alloc] init:destX y:destY];
         [self.destPoints addObject:point];
     }
 }
 
 - (void)update:(float)dt {
     if (self.destPoints.count > 0) {
-        TBPoint *destPoint = [self.destPoints objectAtIndex:0];
-        float destX = ((int)destPoint.x)/32*32;
+        _destPoint = [self.destPoints objectAtIndex:0];
+        float destX = ((int)_destPoint.x)/32*32;
         GLKVector2 point = GLKVector2Make(destX, self.position.y);
         GLKVector2 offset = GLKVector2Subtract(point, self.position);
         GLKVector2 direction = GLKVector2Normalize(offset);
@@ -76,7 +75,8 @@
                 self.goingRight = false;
                 [_stateSprite changeState:@"run_xf"];
             }
-            _shooting = YES;
+            
+            _running = YES;
         } else if(self.startedMoving && ((direction.x < 0 && self.goingRight) || (direction.x > 0 && !self.goingRight))) { //Arrived: start stopping
             [self.destPoints removeObjectAtIndex:0];
             self.acceleration = GLKVector2Make(0, 0);
@@ -86,16 +86,14 @@
             self.deceleration = GLKVector2MultiplyScalar(direction, self.DECELERATION);
             self.startedMoving = false;
             [_stateSprite changeState:@"shoot"];
-//            _shooting = NO;
+            _running = NO;
         }
     }
 
-    if (_shooting) {
-        self.lastBulletTime += dt;
-        if(self.lastBulletTime > self.reloadTime) {
-            self.lastBulletTime -= self.reloadTime;
-            [self fireBullet];
-        }
+    self.lastBulletTime += dt;
+    if(self.lastBulletTime > self.reloadTime) {
+        self.lastBulletTime -= self.reloadTime;
+        [self fireBullet];
     }
 
     if (_deathBlock) {
@@ -140,21 +138,31 @@
 
 - (void)fireBullet {
     TBBullet *bullet = [[TBBullet alloc] initWithDrawable:self.bulletSprite];
-    if (self.velocity.x == 0) {
+    if (!_running) {
         bullet.position = GLKVector2Make(self.position.x + self.size.width/2 - self.bulletSprite.size.width/2, self.position.y + self.size.height);
+        
         bullet.velocity = GLKVector2Make(0, 300);
         bullet.rotation = 0.0f;
     }
     else {
-        float xAdder = - 10.0f;
+        float xAdder = -10.0f;
         if (self.goingRight) {
             xAdder = self.size.width + 20.0f;
         }
         bullet.position = GLKVector2Make(self.position.x + xAdder, self.position.y + self.size.height/2 - 12.0f);
-        float sign = self.velocity.x/fabsf(self.velocity.x);
-        float velocity = sign*300 + self.velocity.x;
-        bullet.velocity = GLKVector2Make(velocity, 0);
-        bullet.rotation = sign*(M_PI/2.0f)*-1;
+        
+        GLKVector2 bulletPath = GLKVector2Make(_destPoint.x - bullet.position.x, _destPoint.y - bullet.position.y);
+        
+        if ((self.goingRight && bulletPath.x < 0) || (!self.goingRight && bulletPath.x > 0) || !_running)
+            bulletPath.x = 0;
+        
+        GLKVector2 bulletDirection = GLKVector2Normalize(bulletPath);
+        
+        bullet.velocity = GLKVector2MultiplyScalar(bulletDirection, 300.0f);
+        
+        float positiveRotation = (acos(bulletDirection.x) - M_PI/2);
+        float negativeRoatation = M_PI*2 - positiveRotation;
+        bullet.rotation = bulletPath.y > 0 ? positiveRotation : negativeRoatation;
     }
     bullet.collisionxoff = 0;
     bullet.collisionyoff = 0;

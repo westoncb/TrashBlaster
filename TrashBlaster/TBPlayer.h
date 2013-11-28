@@ -10,6 +10,7 @@
 #import "TBEntity.h"
 #import "TBSprite.h"
 #import "TBStateSprite.h"
+#import "TBPoint.h"
 
 @class TBWorld;
 @class TBBlock;
@@ -17,11 +18,12 @@
 @interface TBPlayer : TBEntity {
     TBBlock *_deathBlock;
     TBStateSprite *_stateSprite;
-    BOOL _shooting;
+    TBPoint *_destPoint;
+    BOOL _running;
 }
 
 @property NSMutableArray * destPoints;
 @property TBSprite * bulletSprite;
-- (void)addDestPoint:(float)destx;
+- (void)addDestPointWithDestX:(float)destX destY:(float)destY;
 - (id)initWithStateSprite:(TBStateSprite *)stateSprite bulletSprite:(TBSprite *)bulletSprite;
 @end

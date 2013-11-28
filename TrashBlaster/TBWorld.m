@@ -18,9 +18,10 @@ static TBWorld *_world;
 @property NSMutableArray * entities;
 @property NSMutableArray * colliders;
 @property NSMutableArray * blocks;
-@property NSMutableArray * addEntityBuffer; //add to the buffer instead because something might want to add to 'entities' while we are
+@property NSMutableArray * addEntityBuffer; //add to the buffer instead because something might want to add to 'entities' while we
+                                            //are iterating that collection
 @property NSMutableArray * removeEntityBuffer;
-                                         //iterating that collection
+
 @property TBSprite * bgSprite;
 @property TBPlayer * player;
 @property TBBlockMachine * blockMachine;
@@ -104,7 +105,6 @@ static TBWorld *_world;
         [self.colliders removeObject:entity];
     if([self.blocks containsObject:entity])
         [self.blocks removeObject:entity];
-
 }
 
 - (BOOL)update:(float)delta {
@@ -170,7 +170,7 @@ static TBWorld *_world;
 }
 
 - (void)movePlayerTo:(GLKVector2)dest {
-    [self.player addDestPoint:dest.x];
+    [self.player addDestPointWithDestX:dest.x destY:dest.y];
 }
 
 - (void)checkForCollisions {

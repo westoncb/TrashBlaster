@@ -35,7 +35,7 @@ const float RESTART_DELAY = 1.0f;
 
 - (void)handleTapFrom:(UITapGestureRecognizer *)recognizer {
     CGPoint touchLocation = [recognizer locationInView:recognizer.view];
-    touchLocation = CGPointMake(touchLocation.x, 320 - touchLocation.y);
+    touchLocation = CGPointMake(touchLocation.x, recognizer.view.bounds.size.height - touchLocation.y);
     
     GLKVector2 target = GLKVector2Make(touchLocation.x, touchLocation.y);
     
