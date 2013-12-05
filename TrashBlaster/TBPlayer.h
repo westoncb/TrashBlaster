@@ -20,6 +20,7 @@
     TBStateSprite *_stateSprite;
     TBPoint *_destPoint;
     BOOL _running;
+    BOOL _jumping;
 }
 
 @property NSMutableArray * destPoints;

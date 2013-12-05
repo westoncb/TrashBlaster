@@ -21,15 +21,22 @@ typedef struct {
     TexturedVertex tr;
 } TexturedQuad;
 
-@interface TBSprite : NSObject <TBDrawable>
+@interface TBSprite : NSObject <TBDrawable> {
+    float _renderX;
+    float _renderY;
+    float _renderWidth;
+    float _renderHeight;
+}
 
 @property BOOL xFlip;
 @property BOOL yFlip;
 @property CGSize size;
 @property (assign) TexturedQuad quad;
 @property (strong) GLKTextureInfo * textureInfo;
+@property BOOL syncRenderSizeAndQuadSize;
 
 - (id)initWithFile:(NSString *)fileName;
+- (id)initWithFile:(NSString *)fileName xStart:(float)xStart yStart:(float)yStart width:(float)width height:(float)height;
 - (void)renderWithModelMatrix:(GLKMatrix4)modelMatrix;
 - (void)updateWithTimeDelta:(float)delta;
 @end

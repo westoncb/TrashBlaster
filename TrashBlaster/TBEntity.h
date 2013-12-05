@@ -52,4 +52,6 @@ typedef enum {
 - (void)handleCollision:(TBEntity *)collider wasTheProtruder:(BOOL)retractSelf;
 - (void)addSubEntity:(TBEntity *)entity;
 //- (BOOL)doBoundsIntersect:(TBEntity *)first other:(TBEntity *)other;
+- (void)updateMotion:(float)dt;
+- (GLKVector2)vetNewPosition:(GLKVector2)newPosition;
 @end

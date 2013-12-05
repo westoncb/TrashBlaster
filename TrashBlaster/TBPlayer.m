@@ -11,6 +11,7 @@
 #import "TBBullet.h"
 #import "TBBlock.h"
 #import "TBAnimatedSprite.h"
+#import "TBBlockMachine.h"
 
 @interface TBPlayer()
 @property const float INITIAL_SPEED;
@@ -35,7 +36,7 @@
         self.reloadTime = 0.1f;
         self.lastBulletTime = 0;
         self.type = PLAYER;
-        self.collisionxoff = 7;
+        self.collisionxoff = 10;
         self.collisionsize = CGSizeMake(self.collisionsize.width - 20, self.collisionsize.height);
         self.position = GLKVector2Make(TBWorld.WIDTH/2 - self.size.width/2, TBWorld.FLOOR_HEIGHT);
         self.keepImageAfterDeath = true;
@@ -54,18 +55,35 @@
     }
 }
 
+- (void)addToAcceleration:(GLKVector2)newAcceleration
+{
+    self.acceleration = GLKVector2Add(self.acceleration, newAcceleration);
+}
+
+- (void)addToVelocity:(GLKVector2)newVelocity
+{
+    self.velocity = GLKVector2Add(self.velocity, newVelocity);
+}
+
 - (void)update:(float)dt {
     if (self.destPoints.count > 0) {
         _destPoint = [self.destPoints objectAtIndex:0];
-        float destX = ((int)_destPoint.x)/32*32;
-        GLKVector2 point = GLKVector2Make(destX, self.position.y);
+        int colIndex = [[TBWorld instance] xPositionToColumn:_destPoint.x];
+        TBBlock *topBlock = [[TBWorld instance].blockMachine getTopSettledBlockAtColIndex:colIndex];
+        
+        float destX = colIndex*32;
+        float destY = self.position.y; //(topBlock != nil) ? (topBlock.position.y + topBlock.size.height) : TBWorld.FLOOR_HEIGHT;
+        
+        self.acceleration = GLKVector2Make(0, GRAVITY_ACCELERATION); //gravity
+        
+        GLKVector2 point = GLKVector2Make(destX, destY);
         GLKVector2 offset = GLKVector2Subtract(point, self.position);
         GLKVector2 direction = GLKVector2Normalize(offset);
         
         if(!self.startedMoving) { //Begin motion toward the next point
             self.deceleration = GLKVector2Make(0, 0);
-            self.velocity = GLKVector2MultiplyScalar(direction, self.INITIAL_SPEED);
-            self.acceleration = GLKVector2MultiplyScalar(direction, self.ACCELERATION);
+            [self addToVelocity:GLKVector2MultiplyScalar(direction, self.INITIAL_SPEED)];
+            [self addToAcceleration:GLKVector2MultiplyScalar(direction, self.ACCELERATION)];
             self.startedMoving = true;
             if(direction.x > 0) {
                 self.goingRight = true;
@@ -79,7 +97,7 @@
             _running = YES;
         } else if(self.startedMoving && ((direction.x < 0 && self.goingRight) || (direction.x > 0 && !self.goingRight))) { //Arrived: start stopping
             [self.destPoints removeObjectAtIndex:0];
-            self.acceleration = GLKVector2Make(0, 0);
+            self.acceleration = GLKVector2Make(0, GRAVITY_ACCELERATION); //gravity
             
             //It seems like the reverse direction should be used here, but since we only reach this point if we have PASSED our
             //destination, we can use 'direction'
@@ -97,7 +115,7 @@
     }
 
     if (_deathBlock) {
-        float distanceFromGround = _deathBlock.position.y - TBWorld.FLOOR_HEIGHT;
+        float distanceFromGround = _deathBlock.position.y - [self getGroundHeightBeneathPlayer];
         float scale = (distanceFromGround/self.size.height);
         float minScale = 10.0f/self.size.height;
         if (scale < minScale)
@@ -110,19 +128,91 @@
     [super update:dt];
 }
 
-- (void)handleCollision:(TBEntity *)collider wasTheProtruder:(BOOL)retractSelf {
+- (void)jump
+{
+    _jumping = YES;
+    [self addToVelocity:GLKVector2Make(0, 150)];
+}
+
+- (void)updateMotion:(float)dt
+{
+    if (!_deathBlock)
+        [super updateMotion:dt];
+}
+
+- (float)getGroundHeightBeneathPlayer
+{
+    return [self getGroundHeightAtPoint:self.position.x + self.size.width/2.0f];
+}
+
+- (float)getGroundHeightAtPoint:(float)posX
+{
+    TBWorld *world = [TBWorld instance];
+    TBBlockMachine *blockMachine = world.blockMachine;
+    
+    //Determine floor height
+    int column = [world xPositionToColumn:posX];
+    TBBlock *underBlock = [blockMachine getTopSettledBlockAtColIndex:column];
+    //    NSLog(@"resting: %i", underBlock.resting);
+    float floorHeight = underBlock.position.y + underBlock.size.height;
+    
+    if (underBlock == blockMachine.dummyBlock || !underBlock)
+        floorHeight = FLOOR_HEIGHT;
+    
+    return floorHeight;
+}
+
+- (GLKVector2)vetNewPosition:(GLKVector2)newPosition
+{
+    TBWorld *world = [TBWorld instance];
+    TBBlockMachine *blockMachine = world.blockMachine;
+    
+    float playerXCenter = newPosition.x + self.size.width/2.0f;
+    int column = [world xPositionToColumn:playerXCenter];
+    TBBlock *underBlock = [blockMachine getTopSettledBlockAtColIndex:column];
+    float floorHeight = [self getGroundHeightAtPoint:playerXCenter];
+    
+    //Floor collision
+    GLKVector2 finalPosition = newPosition;
+    if (newPosition.y < floorHeight) {
+        self.velocity = GLKVector2Make(self.velocity.x, 0.0f);
+        finalPosition = GLKVector2Make(newPosition.x, floorHeight);
+        _jumping = NO;
+    }
+    
+    //Jump when encountering an obstacle
+    float offset = _goingRight ? 10 : -10;
+    GLKVector2 testPoint = GLKVector2Make(playerXCenter + offset, self.position.y);
+    int nextColumn = [world xPositionToColumn:testPoint.x];
+    
+    TBBlock *nextBlock = [blockMachine getTopSettledBlockAtColIndex:nextColumn];
+    if (nextBlock &&
+        nextBlock != blockMachine.dummyBlock &&
+        !_jumping &&
+        nextBlock != underBlock &&
+        self.position.y < nextBlock.position.y) {
+        
+        [self jump];
+        
+    }
+    
+    return finalPosition;
+}
+
+- (void)handleCollision:(TBEntity *)collider wasTheProtruder:(BOOL)retractSelf
+{
     [super handleCollision:collider wasTheProtruder:retractSelf];
     
     if (collider.type == BLOCK) {
         TBBlock *block = (TBBlock *)collider;
-        if (block.velocity.y < -50 && !_deathBlock)
+        if (block.velocity.y < -50 && !_deathBlock && [block shouldDamagePlayer])
             [self initiateDeathSequenceWithBlock:block];
     }
 }
 
 - (void)initiateDeathSequenceWithBlock:(TBBlock *)block
 {
-    float distanceFromGround = block.position.y - TBWorld.FLOOR_HEIGHT;
+    float distanceFromGround = block.position.y - [self getGroundHeightBeneathPlayer];
     
     if (distanceFromGround > self.size.height/2.0f) {
         self.reloadTime = INT_MAX;

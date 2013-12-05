@@ -17,8 +17,6 @@
 @interface TBBlockMachine ()
 @property float timePassed;
 @property float blockDelay;
-@property float initialBlockVelocity;
-@property const float BLOCK_ACCELERATION;
 @property TBSprite * blockSprite;
 
 @end
@@ -29,9 +27,13 @@
     self = [super init];
     if(self) {
         self.blockDelay = 1.0f;
-        self.BLOCK_ACCELERATION = -100;
-        self.initialBlockVelocity = -20;
         self.blockSprite = [[TBSprite alloc] initWithFile:@"block.png"];
+        _dummyBlock = [[TBBlock alloc] initWithSprite:self.blockSprite];
+        _dummyBlock.position = GLKVector2Make(0, INT_MAX);
+        _topBlocks = [NSMutableArray arrayWithCapacity:NUM_COLS];
+        for (int i = 0; i < NUM_COLS; i++) {
+            [_topBlocks addObject:_dummyBlock];
+        }
     }
     
     return self;
@@ -50,21 +52,51 @@
 - (TBEntity *) createBlock {
     TBBlock *block = [[TBBlock alloc] initWithSprite:self.blockSprite];
     int randX = arc4random_uniform(TBWorld.WIDTH);
-    int colIndex = round(randX/32);
-    int newX = colIndex*32;
+    int colIndex = round(randX/COL_WIDTH);
+    int newX = colIndex*COL_WIDTH;
     
     if(blocksInColumns[colIndex]*block.collisionsize.height < TBWorld.HEIGHT) {
         block.position = GLKVector2Make(newX, TBWorld.HEIGHT);
-        block.velocity = GLKVector2Make(0, self.initialBlockVelocity);
-        block.acceleration = GLKVector2Make(0, self.BLOCK_ACCELERATION);
-        block.collisionxoff = 2;
-        block.collisionyoff = 3;
-        block.collisionsize = CGSizeMake(block.size.width-6, block.size.height-6);
-        block.type = BLOCK;
+        block.rowIndex = blocksInColumns[colIndex];
         [block.collidesWith addObject:[NSNumber numberWithInt:PLAYER]];
         [block.collidesWith addObject:[NSNumber numberWithInt:BULLET]];
+        [block setToFallingState];
+        
+        TBBlock *topBlock = [_topBlocks objectAtIndex:colIndex];
+        [topBlock setBlockAbove:block];
+        [block setBlockBelow:topBlock];
+        [_topBlocks setObject:block atIndexedSubscript:colIndex];
     }
+    
     return block;
+}
+
+- (void)setTopBlockAtColIndex:(int)colIndex block:(TBBlock *)block
+{
+    [_topBlocks setObject:block atIndexedSubscript:colIndex];
+}
+
+- (TBBlock *)getTopBlockAtColIndex:(int)colIndex
+{
+    if (colIndex >= NUM_COLS)
+        colIndex = NUM_COLS - 1;
+    if (colIndex < 0)
+        colIndex = 0;
+    
+    return (TBBlock *)[_topBlocks objectAtIndex:colIndex];
+}
+
+- (TBBlock *)getTopSettledBlockAtColIndex:(int)colIndex
+{
+    TBBlock *candidate = [self getTopBlockAtColIndex:colIndex];
+    while (!candidate.resting && candidate != self.dummyBlock) {
+        candidate = [candidate getBlockBelow];
+    }
+    
+    if (candidate == self.dummyBlock)
+        candidate = nil;
+    
+    return candidate;
 }
 
 - (int)blocksInColumn:(int)col {

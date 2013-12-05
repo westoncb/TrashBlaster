@@ -68,7 +68,6 @@
     
     self.velocity = GLKVector2Add(self.velocity, velocityDecrement);
     
-    
     [self updateMotion:dt];
     self.lastDelta = dt;
     [self.drawable updateWithTimeDelta:dt];
@@ -83,9 +82,15 @@
 - (void)updateMotion:(float)dt {
     GLKVector2 positionIncrement = GLKVector2MultiplyScalar(self.velocity, dt);
     GLKVector2 old = GLKVector2Make(self.position.x, self.position.y);
-    self.position = GLKVector2Add(self.position, positionIncrement);
+    GLKVector2 newPosition = GLKVector2Add(self.position, positionIncrement);
+    self.position = [self vetNewPosition:newPosition];
     self.xChange = self.position.x - old.x;
     self.yChange = self.position.y - old.y;
+}
+
+- (GLKVector2)vetNewPosition:(GLKVector2)newPosition
+{
+    return newPosition;
 }
 
 - (void)render {
@@ -113,7 +118,7 @@
         return FALSE;
 }
 
-- (void)handleCollision:(TBEntity *)collider wasTheProtruder:(BOOL)retractSelf {    
+- (void)handleCollision:(TBEntity *)collider wasTheProtruder:(BOOL)retractSelf {
 //    if(retractSelf) {
 //        self.velocity = GLKVector2MultiplyScalar(self.velocity, -0.1f);
 //        do {

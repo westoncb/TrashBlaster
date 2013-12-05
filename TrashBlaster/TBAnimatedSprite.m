@@ -50,9 +50,9 @@
     
     TexturedQuad quad;
     quad.bl.geometryVertex = CGPointMake(0, 0);
-    quad.br.geometryVertex = CGPointMake(self.size.width+0.5f, 0);
-    quad.tl.geometryVertex = CGPointMake(0, self.size.height+0.5f);
-    quad.tr.geometryVertex = CGPointMake(self.size.width+0.5f, self.size.height+0.5f);
+    quad.br.geometryVertex = CGPointMake(self.size.width, 0);
+    quad.tl.geometryVertex = CGPointMake(0, self.size.height);
+    quad.tr.geometryVertex = CGPointMake(self.size.width, self.size.height);
     
     quad.bl.textureVertex = CGPointMake(relXStart, relYStart);
     quad.br.textureVertex = CGPointMake(relXFinish, relYStart);

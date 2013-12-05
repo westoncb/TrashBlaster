@@ -9,8 +9,10 @@
 #import "TBWorld.h"
 #import "TBPlayer.h"
 #import <stdlib.h>
-#import "TBBlockMachine.h"
 #import "TBStateSprite.h"
+#import "TBBlockMachine.h"
+#import "TBBlock.h"
+#import "TBStringSprite.h"
 
 static TBWorld *_world;
 
@@ -24,7 +26,6 @@ static TBWorld *_world;
 
 @property TBSprite * bgSprite;
 @property TBPlayer * player;
-@property TBBlockMachine * blockMachine;
 @end
 
 @implementation TBWorld
@@ -80,11 +81,40 @@ static TBWorld *_world;
         _player = [[TBPlayer alloc] initWithStateSprite:playerSprite bulletSprite:bulletSprite];
         [_player.collidesWith addObject:[NSNumber numberWithInt:BLOCK]];
         [self addEntity:_player];
+        
+        TBStringSprite *scoreTextSprite = [[TBStringSprite alloc] initWithString:@"Score:"];
+        _scoreTextEntity = [[TBEntity alloc] initWithDrawable:scoreTextSprite];
+        _scoreTextEntity.position = GLKVector2Make(0, 0);
+        _scoreTextEntity.scale = GLKVector2Make(1.3f, 1.3f);
+        
+        [self addEntity:_scoreTextEntity];
+        [self setScore:0];
     
         self.blockMachine = [[TBBlockMachine alloc] init];
     }
     
     return self;
+}
+
+- (void)addToScore:(int)amount
+{
+    _score += amount;
+    [self setScore:_score];
+}
+
+- (void)setScore:(int)score
+{
+    _score = score;
+    
+    if (_scoreEntity)
+        [self removeEntity:_scoreEntity];
+        
+    TBStringSprite *scoreSprite = [[TBStringSprite alloc] initWithString:[NSString stringWithFormat:@"%i", score]];
+    _scoreEntity = [[TBEntity alloc] initWithDrawable:scoreSprite];
+    _scoreEntity.position = GLKVector2Make(_scoreTextEntity.size.width * 1.3f, 0);
+    _scoreEntity.scale = GLKVector2Make(1.3f, 1.3f);
+    
+    [self addEntity:_scoreEntity];
 }
 
 - (void)addEntity:(TBEntity *)entity {
@@ -150,20 +180,30 @@ static TBWorld *_world;
     }
 }
 
+- (int)xPositionToColumn:(float)xPosition
+{
+    return ((int)xPosition)/32;
+}
+
 - (void)checkForBlockCollisions {
-    for (TBEntity * block in self.blocks) {
+    for (TBBlock * block in self.blocks) {
         if (block.type == PLAYER) {
             continue;
         }
         
-        int colIndex = block.position.x/block.size.width;
-        int blocksInCol = [self.blockMachine blocksInColumn:colIndex];
-        int collisionThreshold = blocksInCol*block.collisionsize.height + TBWorld.FLOOR_HEIGHT - block.collisionyoff;
+        int colIndex = [block getColumnIndex];
+        int collisionThreshold = TBWorld.FLOOR_HEIGHT - block.collisionyoff;
+        
+        TBBlock *blockBelow = [block getBlockBelow];
+        if (blockBelow.resting && blockBelow != self.blockMachine.dummyBlock) {
+            collisionThreshold = blockBelow.position.y + blockBelow.size.height - block.collisionyoff;
+        }
         
         if(block.position.y < collisionThreshold && fabsf(block.velocity.y) > 0) {
-            block.acceleration = GLKVector2Make(0, 0);
-            block.velocity = GLKVector2Make(0, 0);
+            [block setToRestingState];
+
             block.position = GLKVector2Make(block.position.x, collisionThreshold);
+            
             [self.blockMachine alterColumnCount:colIndex adder:1];
         }
     }

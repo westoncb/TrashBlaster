@@ -8,10 +8,27 @@
 
 #import "TBEntity.h"
 #import "TBSprite.h"
+#import "TBBlock.h"
 
 @interface TBBlock : TBEntity {
     BOOL _hitPlayer;
+    BOOL _initialFall;
+    TBBlock *_blockAbove;
+    TBBlock *_blockBelow;
+    int _pointValue;
 }
 
+@property int rowIndex;
+@property BOOL resting;
+
 - (id)initWithSprite:(TBSprite *)sprite;
+- (int)getColumnIndex;
+- (void)setBlockAbove:(TBBlock *)block;
+- (void)removeBlockAbove;
+- (void)setBlockBelow:(TBBlock *)block;
+- (void)removeBlockBelow;
+- (TBBlock *)getBlockBelow;
+- (void)setToFallingState;
+- (void)setToRestingState;
+- (BOOL)shouldDamagePlayer;
 @end

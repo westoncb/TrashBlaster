@@ -13,40 +13,79 @@
 @synthesize xFlip = _xFlip;
 @synthesize yFlip = _yFlip;
 
-- (id)initWithFile:(NSString *)fileName {
-    if ((self = [super init])) {
-        // 2
-        NSDictionary * options = [NSDictionary dictionaryWithObjectsAndKeys:
-                                  [NSNumber numberWithBool:YES],
-                                  GLKTextureLoaderOriginBottomLeft,
-                                  nil];
+- (id)initWithFile:(NSString *)fileName xStart:(float)xStart yStart:(float)yStart width:(float)width height:(float)height
+{
+    self = [super init];
+    if(self) {
+        _renderX = xStart;
+        _renderY = yStart;
+        _renderWidth = width;
+        _renderHeight = height;
         
-        // 3
-        NSError * error;
-        NSString *path = [[NSBundle mainBundle] pathForResource:fileName ofType:nil];
-        // 4
-        self.textureInfo = [GLKTextureLoader textureWithContentsOfFile:path options:options error:&error];
-        if (self.textureInfo == nil) {
-            NSLog(@"Error loading file: %@", [error localizedDescription]);
-            return nil;
-        }
+        [self loadTextureFromFileName:fileName];
+        
+        _syncRenderSizeAndQuadSize = NO;
+        
+        self.size = CGSizeMake(self.textureInfo.width, self.textureInfo.height);
+    }
+    
+    return self;
+}
+
+- (id)initWithFile:(NSString *)fileName
+{
+    if ((self = [super init])) {
+
+        [self loadTextureFromFileName:fileName];
+        
+        _renderX = 0;
+        _renderY = 0;
+        _renderWidth = self.textureInfo.width;
+        _renderHeight = self.textureInfo.height;
         
         self.size = CGSizeMake(self.textureInfo.width, self.textureInfo.height);
     }
     return self;
 }
 
+- (void)loadTextureFromFileName:(NSString *)fileName
+{
+    NSDictionary * options = [NSDictionary dictionaryWithObjectsAndKeys:
+                              [NSNumber numberWithBool:YES],
+                              GLKTextureLoaderOriginBottomLeft,
+                              nil];
+    
+    
+    NSError * error;
+    NSString *path = [[NSBundle mainBundle] pathForResource:fileName ofType:nil];
+    
+    self.textureInfo = [GLKTextureLoader textureWithContentsOfFile:path options:options error:&error];
+    if (self.textureInfo == nil) {
+        NSLog(@"Error loading file: %@", [error localizedDescription]);
+    }
+}
+
 - (void)createQuad {
     TexturedQuad newQuad;
     newQuad.bl.geometryVertex = CGPointMake(0, 0);
-    newQuad.br.geometryVertex = CGPointMake(self.size.width+0.5f, 0);
-    newQuad.tl.geometryVertex = CGPointMake(0, self.size.height+0.5f);
-    newQuad.tr.geometryVertex = CGPointMake(self.size.width+0.5f, self.size.height+0.5f);
+    newQuad.br.geometryVertex = CGPointMake(self.size.width, 0);
+    newQuad.tl.geometryVertex = CGPointMake(0, self.size.height);
+    newQuad.tr.geometryVertex = CGPointMake(self.size.width, self.size.height);
     
-    newQuad.bl.textureVertex = CGPointMake(0, 0);
-    newQuad.br.textureVertex = CGPointMake(1, 0);
-    newQuad.tl.textureVertex = CGPointMake(0, 1);
-    newQuad.tr.textureVertex = CGPointMake(1, 1);
+    if (self.syncRenderSizeAndQuadSize) {
+        
+    }
+    
+    float relX = _renderX / self.textureInfo.width;
+    float relY = _renderY / self.textureInfo.height;
+    float relWidth = _renderWidth / self.textureInfo.width;
+    float relHeight = _renderHeight / self.textureInfo.height;
+    
+    newQuad.bl.textureVertex = CGPointMake(relX, relY);
+    newQuad.br.textureVertex = CGPointMake(relX + relWidth, relY);
+    newQuad.tl.textureVertex = CGPointMake(relX, relY + relHeight);
+    newQuad.tr.textureVertex = CGPointMake(relX + relWidth, relY + relHeight);
+    
     self.quad = newQuad;
 }
 
@@ -94,11 +133,8 @@
     }
     
     if (_yFlip) {
-//        modelMatrix = GLKMatrix4Translate(modelMatrix, 0, -_size.height/2.0f, 0);
         modelMatrix = GLKMatrix4Scale(modelMatrix, 1, -1, 1.0f);
-//        modelMatrix = GLKMatrix4Translate(modelMatrix, 0, _size.height/2.0f, 0);
     }
-    
     
     TBWorld.effect.transform.modelviewMatrix = modelMatrix;
     
@@ -106,6 +142,7 @@
     
     glEnableVertexAttribArray(GLKVertexAttribPosition);
     glEnableVertexAttribArray(GLKVertexAttribTexCoord0);
+//    glEnableVertexAttribArray(GLKVertexAttribColor);
     
     long offset = (long)&_quad;
     glVertexAttribPointer(GLKVertexAttribPosition, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void *) (offset + offsetof(TexturedVertex, geometryVertex)));

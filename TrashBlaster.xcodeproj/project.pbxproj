@@ -37,6 +37,8 @@
 		AD2B2E6C16FECF270024F163 /* glow2.png in Resources */ = {isa = PBXBuildFile; fileRef = AD2B2E6B16FECF270024F163 /* glow2.png */; };
 		AD345BB317E52F5A00E5F66E /* tinyexplosion.png in Resources */ = {isa = PBXBuildFile; fileRef = AD345BB217E52F5A00E5F66E /* tinyexplosion.png */; };
 		AD345BB517E53A7B00E5F66E /* bigexplosion.png in Resources */ = {isa = PBXBuildFile; fileRef = AD345BB417E53A7B00E5F66E /* bigexplosion.png */; };
+		AD4B52CF18501FB900EF2967 /* TBStringSprite.m in Sources */ = {isa = PBXBuildFile; fileRef = AD4B52CE18501FB900EF2967 /* TBStringSprite.m */; };
+		AD4B52D118502A2000EF2967 /* bitmapfont.gif in Resources */ = {isa = PBXBuildFile; fileRef = AD4B52D018502A2000EF2967 /* bitmapfont.gif */; };
 		AD7E21C917E163D9003DD9DC /* TBAnimatedSprite.m in Sources */ = {isa = PBXBuildFile; fileRef = AD7E21C817E163D9003DD9DC /* TBAnimatedSprite.m */; };
 		AD7E21CB17E29E88003DD9DC /* playersheet.png in Resources */ = {isa = PBXBuildFile; fileRef = AD7E21CA17E29E87003DD9DC /* playersheet.png */; };
 		AD7E21CE17E3E2B2003DD9DC /* TBStateSprite.m in Sources */ = {isa = PBXBuildFile; fileRef = AD7E21CD17E3E2B2003DD9DC /* TBStateSprite.m */; };
@@ -100,6 +102,9 @@
 		AD2B2E6B16FECF270024F163 /* glow2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = glow2.png; path = images/glow2.png; sourceTree = "<group>"; };
 		AD345BB217E52F5A00E5F66E /* tinyexplosion.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = tinyexplosion.png; sourceTree = "<group>"; };
 		AD345BB417E53A7B00E5F66E /* bigexplosion.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bigexplosion.png; sourceTree = "<group>"; };
+		AD4B52CD18501FB900EF2967 /* TBStringSprite.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TBStringSprite.h; sourceTree = "<group>"; };
+		AD4B52CE18501FB900EF2967 /* TBStringSprite.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TBStringSprite.m; sourceTree = "<group>"; };
+		AD4B52D018502A2000EF2967 /* bitmapfont.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = bitmapfont.gif; sourceTree = "<group>"; };
 		AD7E21C617E16281003DD9DC /* TBDrawable.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TBDrawable.h; sourceTree = "<group>"; };
 		AD7E21C717E163D9003DD9DC /* TBAnimatedSprite.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TBAnimatedSprite.h; sourceTree = "<group>"; };
 		AD7E21C817E163D9003DD9DC /* TBAnimatedSprite.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TBAnimatedSprite.m; sourceTree = "<group>"; };
@@ -138,6 +143,8 @@
 		AD1153D616F467D600A9FE87 = {
 			isa = PBXGroup;
 			children = (
+				AD4B52CD18501FB900EF2967 /* TBStringSprite.h */,
+				AD4B52CE18501FB900EF2967 /* TBStringSprite.m */,
 				ADA6314C1788DCA9005B6B17 /* TBBlock.h */,
 				ADA6314D1788DCA9005B6B17 /* TBBlock.m */,
 				AD11540316F4686400A9FE87 /* GLKit.framework */,
@@ -220,6 +227,7 @@
 		AD11543A16F5273000A9FE87 /* images */ = {
 			isa = PBXGroup;
 			children = (
+				AD4B52D018502A2000EF2967 /* bitmapfont.gif */,
 				AD345BB417E53A7B00E5F66E /* bigexplosion.png */,
 				AD345BB217E52F5A00E5F66E /* tinyexplosion.png */,
 				AD7E21CA17E29E87003DD9DC /* playersheet.png */,
@@ -295,6 +303,7 @@
 				AD1153F916F467D600A9FE87 /* Default-568h@2x.png in Resources */,
 				AD11540616F4694100A9FE87 /* MainStoryboard.storyboard in Resources */,
 				AD11544116F5273000A9FE87 /* background.png in Resources */,
+				AD4B52D118502A2000EF2967 /* bitmapfont.gif in Resources */,
 				AD11544216F5273000A9FE87 /* block.png in Resources */,
 				AD11544316F5273000A9FE87 /* catacombs.png in Resources */,
 				AD11544416F5273000A9FE87 /* draygon.png in Resources */,
@@ -320,6 +329,7 @@
 			files = (
 				AD1153EF16F467D600A9FE87 /* main.m in Sources */,
 				AD1153F316F467D600A9FE87 /* AppDelegate.m in Sources */,
+				AD4B52CF18501FB900EF2967 /* TBStringSprite.m in Sources */,
 				AD11540916F46BD200A9FE87 /* TBViewController.m in Sources */,
 				AD11540C16F50B7C00A9FE87 /* TBSprite.m in Sources */,
 				AD11544916F57DB800A9FE87 /* TBEntity.m in Sources */,
