@@ -21,10 +21,17 @@ typedef struct {
 @interface TBAnimatedSprite : NSObject <TBDrawable> {
     int _frameClock;
     CGSize _imageSize;
+    NSMutableArray *_linkedSprites;
 }
 
 @property TBSprite *sprite;
 @property TBAnimationInfo animationInfo;
+@property float xOffset;
+@property float yOffset;
 
 - (id)initWithFile:(NSString *)fileName animationInfo:(TBAnimationInfo)animationInfo;
+- (id)initWithFile:(NSString *)fileName animationInfo:(TBAnimationInfo)animationInfo xOffset:(float)xOffset yOffset:(float)yOffset;
+- (id)initWithFile:(NSString *)fileName animationInfo:(TBAnimationInfo)animationInfo row:(int)row;
+- (void)linkSprite:(TBAnimatedSprite *)sprite;
+- (void)unlinkSprite:(TBAnimatedSprite *)sprite;
 @end

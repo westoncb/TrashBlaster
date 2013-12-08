@@ -30,7 +30,20 @@ const float RESTART_DELAY = 1.0f;
     UITapGestureRecognizer *tapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTapFrom:)];
     [self.view addGestureRecognizer:tapRecognizer];
     
+    UIPanGestureRecognizer *panRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePanFrom:)];
+    [self.view addGestureRecognizer:panRecognizer];
+    
     firstTime = YES;
+}
+
+- (void)handlePanFrom:(UIPanGestureRecognizer *)recognizer
+{
+    CGPoint touchLocation = [recognizer locationInView:recognizer.view];
+    [self.world handlePanWithPoint:touchLocation];
+    
+    if (recognizer.state == UIGestureRecognizerStateEnded) {
+        [self.world handleFingerLiftedWithPoint:touchLocation];
+    }
 }
 
 - (void)handleTapFrom:(UITapGestureRecognizer *)recognizer {
@@ -41,6 +54,8 @@ const float RESTART_DELAY = 1.0f;
     
     [self.world movePlayerTo:target];
 }
+
+
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {

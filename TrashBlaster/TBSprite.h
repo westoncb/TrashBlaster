@@ -33,10 +33,10 @@ typedef struct {
 @property CGSize size;
 @property (assign) TexturedQuad quad;
 @property (strong) GLKTextureInfo * textureInfo;
-@property BOOL syncRenderSizeAndQuadSize;
 
 - (id)initWithFile:(NSString *)fileName;
 - (id)initWithFile:(NSString *)fileName xStart:(float)xStart yStart:(float)yStart width:(float)width height:(float)height;
+- (id)initWithFile:(NSString *)fileName col:(int)col row:(int)row;
 - (void)renderWithModelMatrix:(GLKMatrix4)modelMatrix;
 - (void)updateWithTimeDelta:(float)delta;
 @end

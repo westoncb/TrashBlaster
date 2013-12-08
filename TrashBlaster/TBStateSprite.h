@@ -17,8 +17,11 @@
     BOOL _xFlip;
     BOOL _yFlip;
     NSDictionary *_stateMap;
+    NSMutableArray *_linkedSprites;
 }
 
 - (id)initWithStateMap:(NSDictionary *)stateMap initialState:(NSString *)initialState;
 - (void)changeState:(NSString *)state;
+- (void)linkSprite:(TBStateSprite *)sprite;
+- (void)unlinkSprite:(TBStateSprite *)sprite;
 @end

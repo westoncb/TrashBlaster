@@ -15,10 +15,21 @@
     
     if (self) {
         _stateMap = stateMap;
+        _linkedSprites = [NSMutableArray array];
         [self changeState:initialState];
     }
     
     return self;
+}
+
+- (void)linkSprite:(TBStateSprite *)sprite
+{
+    [_linkedSprites addObject:sprite];
+}
+
+- (void)unlinkSprite:(TBStateSprite *)sprite
+{
+    [_linkedSprites removeObject:sprite];
 }
 
 - (void)changeState:(NSString *)state
@@ -28,6 +39,10 @@
     _activeSize = _activeSprite.size;
     
     [self updateActiveSprite];
+    
+    for (TBStateSprite *sprite in _linkedSprites) {
+        [sprite changeState:state];
+    }
 }
 
 - (void)updateActiveSprite
@@ -44,16 +59,28 @@
     
     if (_sizeOverride)
         [_activeSprite setSize:_activeSize];
+    
+    for (TBStateSprite *sprite in _linkedSprites) {
+        [sprite updateActiveSprite];
+    }
 }
 
 - (void)renderWithModelMatrix:(GLKMatrix4)modelMatrix
 {
     [_activeSprite renderWithModelMatrix:modelMatrix];
+    
+    for (TBStateSprite *sprite in _linkedSprites) {
+        [sprite renderWithModelMatrix:modelMatrix];
+    }
 }
 
 - (void)updateWithTimeDelta:(float)delta
 {
     [_activeSprite updateWithTimeDelta:delta];
+    
+    for (TBStateSprite *sprite in _linkedSprites) {
+        [sprite updateWithTimeDelta:delta];
+    }
 }
 
 - (void)setSize:(CGSize)size
@@ -61,6 +88,10 @@
     _activeSize = size;
     _sizeOverride = YES;
     [self updateActiveSprite];
+    
+    for (TBStateSprite *sprite in _linkedSprites) {
+        [sprite setSize:size];
+    }
 }
 
 - (CGSize)size
@@ -72,6 +103,10 @@
 {
     _xFlip = xFlip;
     [self updateActiveSprite];
+    
+    for (TBStateSprite *sprite in _linkedSprites) {
+        [sprite setXFlip:xFlip];
+    }
 }
 
 - (BOOL)xFlip
@@ -83,6 +118,10 @@
 {
     _yFlip = yFlip;
     [self updateActiveSprite];
+    
+    for (TBStateSprite *sprite in _linkedSprites) {
+        [sprite setXFlip:yFlip];
+    }
 }
 
 - (BOOL)yFlip

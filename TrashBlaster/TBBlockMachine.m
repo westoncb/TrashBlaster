@@ -26,7 +26,7 @@
 - (id)init {
     self = [super init];
     if(self) {
-        self.blockDelay = 1.0f;
+        self.blockDelay = 0.75f;
         self.blockSprite = [[TBSprite alloc] initWithFile:@"block.png"];
         _dummyBlock = [[TBBlock alloc] initWithSprite:self.blockSprite];
         _dummyBlock.position = GLKVector2Make(0, INT_MAX);
@@ -51,12 +51,12 @@
 
 - (TBEntity *) createBlock {
     TBBlock *block = [[TBBlock alloc] initWithSprite:self.blockSprite];
-    int randX = arc4random_uniform(TBWorld.WIDTH);
+    int randX = arc4random_uniform(WIDTH);
     int colIndex = round(randX/COL_WIDTH);
     int newX = colIndex*COL_WIDTH;
     
-    if(blocksInColumns[colIndex]*block.collisionsize.height < TBWorld.HEIGHT) {
-        block.position = GLKVector2Make(newX, TBWorld.HEIGHT);
+    if(blocksInColumns[colIndex]*block.collisionsize.height < HEIGHT) {
+        block.position = GLKVector2Make(newX, HEIGHT);
         block.rowIndex = blocksInColumns[colIndex];
         [block.collidesWith addObject:[NSNumber numberWithInt:PLAYER]];
         [block.collidesWith addObject:[NSNumber numberWithInt:BULLET]];

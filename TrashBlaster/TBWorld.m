@@ -7,12 +7,14 @@
 //
 
 #import "TBWorld.h"
-#import "TBPlayer.h"
+#import "TBCreature.h"
+#import "TBNPC.h"
 #import <stdlib.h>
 #import "TBStateSprite.h"
 #import "TBBlockMachine.h"
 #import "TBBlock.h"
 #import "TBStringSprite.h"
+#import "TBEventManager.h"
 
 static TBWorld *_world;
 
@@ -25,7 +27,7 @@ static TBWorld *_world;
 @property NSMutableArray * removeEntityBuffer;
 
 @property TBSprite * bgSprite;
-@property TBPlayer * player;
+@property TBCreature * player;
 @end
 
 @implementation TBWorld
@@ -56,44 +58,178 @@ static TBWorld *_world;
         self.addEntityBuffer = [NSMutableArray array];
         self.removeEntityBuffer = [NSMutableArray array];
         
-        self.bgSprite = [[TBSprite alloc] initWithFile:@"background.png"];
+        BOOL bezier = NO;
         
-        TBEntity *background = [[TBEntity alloc] initWithDrawable:self.bgSprite];
-        background.type = DECORATION;
-        [self addEntity:background];
-        
-        TBSprite *bulletSprite = [[TBSprite alloc] initWithFile:@"bullet.png"];
-        TBAnimationInfo animationInfo;
-        animationInfo.frameWidth = 40;
-        animationInfo.frameHeight = 40;
-        animationInfo.frameCount = 4;
-        animationInfo.frameLength = 100;
-        animationInfo.loop = YES;
-        _runSprite  = [[TBAnimatedSprite alloc] initWithFile:@"playersheet.png" animationInfo:animationInfo];
-        _shootSprite = [[TBSprite alloc] initWithFile:@"player.png"];
-        _runSprite.size = CGSizeMake(60, 60);
-        _shootSprite.size = CGSizeMake(40, 80);
-        NSMutableDictionary *stateMap = [[NSMutableDictionary alloc] init];
-        [stateMap setValue:_runSprite forKey:@"run"];
-        [stateMap setValue:_runSprite forKey:@"run_xf"];
-        [stateMap setValue:_shootSprite forKey:@"shoot"];
-        TBStateSprite *playerSprite = [[TBStateSprite alloc] initWithStateMap:stateMap initialState:@"shoot"];
-        _player = [[TBPlayer alloc] initWithStateSprite:playerSprite bulletSprite:bulletSprite];
-        [_player.collidesWith addObject:[NSNumber numberWithInt:BLOCK]];
-        [self addEntity:_player];
-        
-        TBStringSprite *scoreTextSprite = [[TBStringSprite alloc] initWithString:@"Score:"];
-        _scoreTextEntity = [[TBEntity alloc] initWithDrawable:scoreTextSprite];
-        _scoreTextEntity.position = GLKVector2Make(0, 0);
-        _scoreTextEntity.scale = GLKVector2Make(1.3f, 1.3f);
-        
-        [self addEntity:_scoreTextEntity];
-        [self setScore:0];
-    
-        self.blockMachine = [[TBBlockMachine alloc] init];
+        if (bezier) {
+            
+            int points = 5;
+            int radius = 45;
+            
+            _controlPoints = [NSMutableArray arrayWithCapacity:points];
+            _bezierSampleSize = 100;
+            _bezierCurve = [NSMutableArray arrayWithCapacity:_bezierSampleSize];
+            
+            for (int i = 0; i < _bezierSampleSize; i++) {
+                TBSprite *sprite = [[TBSprite alloc] initWithFile:@"player2stand.png"];
+                TBEntity *entity = [[TBEntity alloc] initWithDrawable:sprite];
+                
+                [self addEntity:entity];
+                [_bezierCurve addObject:entity];
+            }
+            
+            for (int i = 0; i < points; i++) {
+                TBSprite *sprite = [[TBSprite alloc] initWithFile:@"tinyexplosion.png"];
+                TBEntity *entity = [[TBEntity alloc] initWithDrawable:sprite];
+                
+                float rotation = (M_PI*2/points)*i;
+                
+                entity.position = GLKVector2Make(TBWorld.WIDTH/2 + cosf(rotation)*radius,
+                                                 TBWorld.HEIGHT/2 + sinf(rotation)*radius);
+                entity.type = CONTROL_POINT;
+                
+                [self addEntity:entity];
+                [_controlPoints addObject:entity];
+            }
+        } else {
+            self.bgSprite = [[TBSprite alloc] initWithFile:@"background2.png"];
+            
+            TBEntity *background = [[TBEntity alloc] initWithDrawable:self.bgSprite];
+            background.size = CGSizeMake(TBWorld.WIDTH, TBWorld.HEIGHT);
+            background.type = DECORATION;
+            [self addEntity:background];
+            
+            [self createPlayer];
+            
+            TBStringSprite *scoreTextSprite = [[TBStringSprite alloc] initWithString:@"Score:"];
+            _scoreTextEntity = [[TBEntity alloc] initWithDrawable:scoreTextSprite];
+            _scoreTextEntity.position = GLKVector2Make(0, 0);
+            _scoreTextEntity.scale = GLKVector2Make(1.3f, 1.3f);
+            
+            [self addEntity:_scoreTextEntity];
+            [self setScore:0];
+            
+            self.blockMachine = [[TBBlockMachine alloc] init];
+        }
     }
     
     return self;
+}
+
+- (void)createPlayer
+{
+    TBSprite *bulletSprite = [[TBSprite alloc] initWithFile:@"bullet.png"];
+    TBAnimationInfo animationInfo;
+    animationInfo.frameWidth = 64;
+    animationInfo.frameHeight = 64;
+    animationInfo.frameCount = 9;
+    animationInfo.frameLength = 50;
+    animationInfo.loop = YES;
+    _runSprite  = [[TBAnimatedSprite alloc] initWithFile:@"baseplayer.png" animationInfo:animationInfo row:2];
+    _shootSprite = [[TBSprite alloc] initWithFile:@"baseplayer.png" col:4 row:1];
+    
+    //shirt
+    TBAnimatedSprite *walkingShirtSprite = [[TBAnimatedSprite alloc] initWithFile:@"TORSO_plate_armor_torso.png" animationInfo:animationInfo row:2];
+    TBSprite *shootingShirtSprite = [[TBSprite alloc] initWithFile:@"TORSO_plate_armor_torso.png" col:4 row:1];
+    NSMutableDictionary *shirtMap = [[NSMutableDictionary alloc] init];
+    [shirtMap setValue:walkingShirtSprite forKey:@"run"];
+    [shirtMap setValue:walkingShirtSprite forKey:@"run_xf"];
+    [shirtMap setValue:shootingShirtSprite forKey:@"shoot"];
+    TBStateSprite *shirtSprite = [[TBStateSprite alloc] initWithStateMap:shirtMap initialState:@"shoot"];
+    
+    //shoes
+    TBAnimatedSprite *walkingShoesSprite = [[TBAnimatedSprite alloc] initWithFile:@"FEET_plate_armor_shoes.png" animationInfo:animationInfo row:2];
+    TBSprite *shootingShoesSprite = [[TBSprite alloc] initWithFile:@"FEET_plate_armor_shoes.png" col:4 row:1];
+    NSMutableDictionary *shoesMap = [[NSMutableDictionary alloc] init];
+    [shoesMap setValue:walkingShoesSprite forKey:@"run"];
+    [shoesMap setValue:walkingShoesSprite forKey:@"run_xf"];
+    [shoesMap setValue:shootingShoesSprite forKey:@"shoot"];
+    TBStateSprite *shoesSprite = [[TBStateSprite alloc] initWithStateMap:shoesMap initialState:@"shoot"];
+    
+    //helmet
+    TBAnimatedSprite *walkingHelmetSprite = [[TBAnimatedSprite alloc] initWithFile:@"HEAD_plate_armor_helmet.png" animationInfo:animationInfo row:2];
+    TBSprite *shootingHelmetSprite = [[TBSprite alloc] initWithFile:@"HEAD_plate_armor_helmet.png" col:4 row:1];
+    NSMutableDictionary *helmetMap = [[NSMutableDictionary alloc] init];
+    [helmetMap setValue:walkingHelmetSprite forKey:@"run"];
+    [helmetMap setValue:walkingHelmetSprite forKey:@"run_xf"];
+    [helmetMap setValue:shootingHelmetSprite forKey:@"shoot"];
+    TBStateSprite *helmetSprite = [[TBStateSprite alloc] initWithStateMap:helmetMap initialState:@"shoot"];
+    
+    //gloves
+    TBAnimatedSprite *walkingGlovesSprite = [[TBAnimatedSprite alloc] initWithFile:@"HANDS_plate_armor_gloves.png" animationInfo:animationInfo row:2];
+    TBSprite *shootingGlovesSprite = [[TBSprite alloc] initWithFile:@"HANDS_plate_armor_gloves.png" col:4 row:1];
+    NSMutableDictionary *glovesMap = [[NSMutableDictionary alloc] init];
+    [glovesMap setValue:walkingGlovesSprite forKey:@"run"];
+    [glovesMap setValue:walkingGlovesSprite forKey:@"run_xf"];
+    [glovesMap setValue:shootingGlovesSprite forKey:@"shoot"];
+    TBStateSprite *glovesSprite = [[TBStateSprite alloc] initWithStateMap:glovesMap initialState:@"shoot"];
+    
+    //pants
+    TBAnimatedSprite *walkingPantsSprite = [[TBAnimatedSprite alloc] initWithFile:@"LEGS_plate_armor_pants.png" animationInfo:animationInfo row:2];
+    TBSprite *shootingPantsSprite = [[TBSprite alloc] initWithFile:@"LEGS_plate_armor_pants.png" col:4 row:1];
+    NSMutableDictionary *pantsMap = [[NSMutableDictionary alloc] init];
+    [pantsMap setValue:walkingPantsSprite forKey:@"run"];
+    [pantsMap setValue:walkingPantsSprite forKey:@"run_xf"];
+    [pantsMap setValue:shootingPantsSprite forKey:@"shoot"];
+    TBStateSprite *pantsSprite = [[TBStateSprite alloc] initWithStateMap:pantsMap initialState:@"shoot"];
+    
+    //arms
+    TBAnimatedSprite *walkingArmsSprite = [[TBAnimatedSprite alloc] initWithFile:@"TORSO_plate_armor_arms_shoulders.png" animationInfo:animationInfo row:2];
+    TBSprite *shootingArmsSprite = [[TBSprite alloc] initWithFile:@"TORSO_plate_armor_arms_shoulders.png" col:4 row:1];
+    NSMutableDictionary *armsMap = [[NSMutableDictionary alloc] init];
+    [armsMap setValue:walkingArmsSprite forKey:@"run"];
+    [armsMap setValue:walkingArmsSprite forKey:@"run_xf"];
+    [armsMap setValue:shootingArmsSprite forKey:@"shoot"];
+    TBStateSprite *armsSprite = [[TBStateSprite alloc] initWithStateMap:armsMap initialState:@"shoot"];
+    
+    NSMutableDictionary *stateMap = [[NSMutableDictionary alloc] init];
+    [stateMap setValue:_runSprite forKey:@"run"];
+    [stateMap setValue:_runSprite forKey:@"run_xf"];
+    [stateMap setValue:_shootSprite forKey:@"shoot"];
+    TBStateSprite *playerSprite = [[TBStateSprite alloc] initWithStateMap:stateMap initialState:@"shoot"];
+    [playerSprite linkSprite:shirtSprite];
+    [playerSprite linkSprite:shoesSprite];
+    [playerSprite linkSprite:helmetSprite];
+    [playerSprite linkSprite:glovesSprite];
+    [playerSprite linkSprite:pantsSprite];
+    [playerSprite linkSprite:armsSprite];
+    _player = [[TBCreature alloc] initWithStateSprite:playerSprite bulletSprite:bulletSprite];
+    [_player.collidesWith addObject:[NSNumber numberWithInt:BLOCK]];
+    [_player activateGun];
+    _player.canShoot = YES;
+    
+    [self addEntity:_player];
+}
+
+- (void)addCreature
+{
+    TBSprite *bulletSprite = [[TBSprite alloc] initWithFile:@"bullet.png"];
+    TBAnimationInfo animationInfo;
+    animationInfo.frameWidth = 64;
+    animationInfo.frameHeight = 64;
+    animationInfo.frameCount = 8;
+    animationInfo.frameLength = 90;
+    animationInfo.loop = YES;
+    _runSprite  = [[TBAnimatedSprite alloc] initWithFile:@"player2.png" animationInfo:animationInfo];
+    _shootSprite = [[TBSprite alloc] initWithFile:@"player2stand.png"];
+    _runSprite.size = CGSizeMake(64, 64);
+    _shootSprite.size = CGSizeMake(64, 64);
+    NSMutableDictionary *stateMap = [[NSMutableDictionary alloc] init];
+    [stateMap setValue:_runSprite forKey:@"run"];
+    [stateMap setValue:_runSprite forKey:@"run_xf"];
+    [stateMap setValue:_shootSprite forKey:@"shoot"];
+    TBStateSprite *creatureSprite = [[TBStateSprite alloc] initWithStateMap:stateMap initialState:@"shoot"];
+    TBCreature *creature = [[TBNPC alloc] initWithStateSprite:creatureSprite bulletSprite:bulletSprite];
+    creature.INITIAL_SPEED = 25;
+    creature.maxSpeed = 75;
+    creature.ACCELERATION = 2000;
+    creature.DECELERATION = 12000;
+    creature.power = 100;
+    creature.keepImageAfterDeath = NO;
+    [creature.collidesWith addObject:[NSNumber numberWithInt:BLOCK]];
+    creature.type = NPC;
+    creature.canShoot = YES;
+    creature.reloadTime = 0.5;
+    [self addEntity:creature];
 }
 
 - (void)addToScore:(int)amount
@@ -139,6 +275,7 @@ static TBWorld *_world;
 
 - (BOOL)update:(float)delta {
     [self.blockMachine update:delta];
+    [[TBEventManager instance] updateWithTimeDelta:delta];
     
     for (TBEntity * entity in self.entities) {
         
@@ -165,17 +302,71 @@ static TBWorld *_world;
     return NO;
 }
 
+- (void)render {
+    for (TBEntity * entity in self.entities) {
+        if (!entity.parent)
+            [entity render];
+    }
+    
+    [self renderBezierCurve];
+}
+
+- (void)renderBezierCurve
+{
+    CGPoint controlPoints[_controlPoints.count];
+    int j = 0;
+    for (TBEntity *entity in _controlPoints) {
+        CGPoint point = CGPointMake(entity.position.x, entity.position.y);
+        controlPoints[j] = point;
+        j++;
+    }
+    
+    int samples = _bezierSampleSize;
+    for (int i = 0; i < samples; i++) {
+        float t = (1.0f/samples)*i;
+        CGPoint point = [self findPointOnBezierCurveWithT:t controlPoints:controlPoints count:_controlPoints.count];
+        TBEntity *entity = [_bezierCurve objectAtIndex:i];
+        entity.position = GLKVector2Make(point.x, point.y);
+    }
+}
+
+- (CGPoint)findPointOnBezierCurveWithT:(float)t controlPoints:(CGPoint[])controlPoints count:(int)count
+{
+    if (count == 1)
+        return controlPoints[0];
+    
+    CGPoint nextControlPoints[count - 1];
+    int controlPointIndex = 0;
+    CGPoint last;
+    
+    for (int i = 0; i < count; i++) {
+        CGPoint point = controlPoints[i];
+        
+        if (i > 0) {
+            float xInterp = last.x + t*(point.x - last.x);
+            float yInterp = last.y + t*(point.y - last.x);
+            nextControlPoints[controlPointIndex] = CGPointMake(xInterp, yInterp);
+            controlPointIndex++;
+        }
+        
+        last = point;
+    }
+    
+    return [self findPointOnBezierCurveWithT:t controlPoints:nextControlPoints count:(count-1)];
+}
+
 - (void)cleanupDeadEntities
 {
     for (TBEntity *entity in self.entities) {
-        if (!entity.alive)
+        if (!entity.alive) {
             [self removeEntity:entity];
+        }
     }
 }
 
 - (void) removeDistantBullets {
     for (TBEntity * entity in self.entities) {
-        if(entity.type == BULLET && entity.position.y > TBWorld.HEIGHT + 50)
+        if(entity.type == BULLET && (entity.position.y > TBWorld.HEIGHT + 50 || entity.position.y < 0 || entity.position.x < 0 || entity.position.x > TBWorld.WIDTH + 50))
             [self removeEntity:entity];
     }
 }
@@ -243,6 +434,39 @@ static TBWorld *_world;
     
 }
 
+- (void)handlePanWithPoint:(CGPoint)point
+{
+    point = CGPointMake(point.x, (TBWorld.HEIGHT) - point.y);
+    for (TBEntity *entity in _entities) {
+        if (entity.type == CONTROL_POINT) {
+            float x1 = entity.position.x;
+            float x2 = x1 + entity.size.width;
+            float y1 = entity.position.y;
+            float y2 = y1 + entity.size.height;
+            
+            if (x1 <= point.x && point.x <= x2 && y1 <= point.y && point.y <= y2) {
+                if (!entity.dragging) {
+                    entity.touchPoint = CGPointMake(point.x - entity.position.x, point.y - entity.position.y);
+                    entity.dragging = YES;
+                }
+            }
+            
+            if (entity.dragging) {
+                entity.position = GLKVector2Make(point.x - entity.touchPoint.x, point.y - entity.touchPoint.y);
+            }
+        }
+    }
+}
+
+- (void)handleFingerLiftedWithPoint:(CGPoint)point
+{
+    for (TBEntity *entity in _entities) {
+        if (entity.type == CONTROL_POINT) {
+            entity.dragging = NO;
+        }
+    }
+}
+
 + (GLKBaseEffect*)effect {
     return effect;
 }
@@ -259,13 +483,6 @@ static TBWorld *_world;
 }
 + (int) FLOOR_HEIGHT {
     return FLOOR_HEIGHT;
-}
-
-- (void)render {
-    for (TBEntity * entity in self.entities) {
-        if (!entity.parent)
-            [entity render];
-    }
 }
 
 @end

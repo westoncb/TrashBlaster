@@ -24,12 +24,16 @@
         
         [self loadTextureFromFileName:fileName];
         
-        _syncRenderSizeAndQuadSize = NO;
-        
-        self.size = CGSizeMake(self.textureInfo.width, self.textureInfo.height);
+        self.size = CGSizeMake(width, height);
     }
     
     return self;
+}
+
+/*This is a convenience function for dealing with images of a particular format (64px by 64px cells, 9 cols and 4 rows)*/
+- (id)initWithFile:(NSString *)fileName col:(int)col row:(int)row
+{
+    return [self initWithFile:fileName xStart:col*64 yStart:row*64 width:64 height:64];
 }
 
 - (id)initWithFile:(NSString *)fileName
@@ -71,10 +75,6 @@
     newQuad.br.geometryVertex = CGPointMake(self.size.width, 0);
     newQuad.tl.geometryVertex = CGPointMake(0, self.size.height);
     newQuad.tr.geometryVertex = CGPointMake(self.size.width, self.size.height);
-    
-    if (self.syncRenderSizeAndQuadSize) {
-        
-    }
     
     float relX = _renderX / self.textureInfo.width;
     float relY = _renderY / self.textureInfo.height;

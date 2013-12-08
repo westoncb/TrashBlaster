@@ -9,7 +9,7 @@
 #import "TBAnimatedSprite.h"
 
 @implementation TBAnimatedSprite
-- (id)initWithFile:(NSString *)fileName animationInfo:(TBAnimationInfo)animationInfo
+- (id)initWithFile:(NSString *)fileName animationInfo:(TBAnimationInfo)animationInfo xOffset:(float)xOffset yOffset:(float)yOffset
 {
     self = [super init];
     
@@ -19,14 +19,45 @@
         _animationInfo = animationInfo;
         _sprite.size = CGSizeMake(_animationInfo.frameWidth, _animationInfo.frameHeight);
         
+        _linkedSprites = [NSMutableArray array];
+        
         _frameClock = 0;
+        _xOffset = xOffset;
+        _yOffset = yOffset;
     }
     
     return self;
 }
 
+/*This is a convenience function for dealing with images of a particular format (64px by 64px cells, 9 cols and 4 rows)*/
+- (id)initWithFile:(NSString *)fileName animationInfo:(TBAnimationInfo)animationInfo row:(int)row
+{
+    return [self initWithFile:fileName animationInfo:animationInfo xOffset:0 yOffset:row*64];
+}
+
+- (id)initWithFile:(NSString *)fileName animationInfo:(TBAnimationInfo)animationInfo
+{
+    return [self initWithFile:fileName animationInfo:animationInfo xOffset:0 yOffset:0];
+}
+
+- (void)linkSprite:(TBAnimatedSprite *)sprite
+{
+    [_linkedSprites addObject:sprite];
+}
+
+- (void)unlinkSprite:(TBAnimatedSprite *)sprite
+{
+    [_linkedSprites removeObject:sprite];
+}
+
 - (void)updateWithTimeDelta:(float)delta
 {
+    [_sprite updateWithTimeDelta:delta];
+    
+    for (TBAnimatedSprite *sprite in _linkedSprites) {
+        [sprite updateWithTimeDelta:delta];
+    }
+    
     int millis = (int)(delta*1000);
     _frameClock += millis;
     int absoluteFrameIndex = _frameClock / _animationInfo.frameLength;
@@ -38,8 +69,8 @@
     int frameWidth = _animationInfo.frameWidth;
     int frameHeight = _animationInfo.frameHeight;
     
-    int xStart = frameInCycle * frameWidth;
-    int yStart = 0;
+    int xStart = _xOffset + frameInCycle * frameWidth;
+    int yStart = _yOffset;
     int xFinish = xStart + frameWidth;
     int yFinish = yStart + frameHeight;
     
@@ -67,6 +98,10 @@
 - (void)renderWithModelMatrix:(GLKMatrix4)modelMatrix
 {
     [_sprite renderWithModelMatrix:modelMatrix];
+    
+    for (TBAnimatedSprite *sprite in _linkedSprites) {
+        [sprite renderWithModelMatrix:modelMatrix];
+    }
 }
 
 - (void)setSize:(CGSize)size

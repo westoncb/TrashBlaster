@@ -8,10 +8,11 @@
 
 #import "TBBlock.h"
 #import "TBBullet.h"
-#import "TBPlayer.h"
+#import "TBCreature.h"
 #import "TBExplosion.h"
 #import "TBBlockMachine.h"
 #import "TBStringSprite.h"
+#import "TBEvent.h"
 
 @implementation TBBlock
 - (id)initWithSprite:(TBSprite *)sprite
@@ -20,14 +21,14 @@
     
     if (self) {
         self.collisionxoff = 2;
-        self.collisionyoff = 3;
+        self.collisionyoff = 6;
         self.collisionsize = CGSizeMake(self.size.width-6, self.size.height-6);
-        self.position = GLKVector2Make(0, TBWorld.HEIGHT - (self.size.height-self.collisionyoff));
+        self.position = GLKVector2Make(0, HEIGHT - (self.size.height-self.collisionyoff));
         self.type = BLOCK;
-        self.life = 90;
+        self.life = 75;
         _resting = NO;
         _initialFall = YES;
-        _pointValue = 10;
+        _pointValue = 50;
     }
     
     return self;
@@ -84,12 +85,20 @@
 {
     TBStringSprite *stringSprite = [[TBStringSprite alloc] initWithString:[NSString stringWithFormat:@"%i", _pointValue]];
     TBEntity *stringEntity = [[TBEntity alloc] initWithDrawable:stringSprite];
-    stringEntity.scale = GLKVector2Make(1.0f, 1.0f);
+    stringEntity.scale = GLKVector2Make(2.0f, 2.0f);
     stringEntity.position = GLKVector2Make(0, 0);
     stringEntity.position = point;
     stringEntity.velocity = self.velocity;
-//    stringEntity.velocity = GLKVector2Add(stringEntity.velocity, GLKVector2Make(0, 200));
-//    stringEntity.acceleration = GLKVector2Make(0, -250);
+    
+    TBEvent *event = [[TBEvent alloc] initWithHandler:^(float progress) {
+        stringEntity.scale = GLKVector2Make(1.0, (1 - progress*progress*progress));
+    } completion:^{
+        stringEntity.alive = NO;
+    } duration:1.0f repeat:NO];
+    [event start];
+    
+    stringEntity.velocity = GLKVector2Add(stringEntity.velocity, GLKVector2Make(0, 200));
+    stringEntity.acceleration = GLKVector2Make(0, -250);
     [[TBWorld instance] addEntity:stringEntity];
 }
 
@@ -106,6 +115,13 @@
     TBExplosion *explosion = [[TBExplosion alloc] initWithDrawable:sprite duration:animationLength];
     explosion.position = point;
     explosion.velocity = GLKVector2MultiplyScalar(self.velocity, 0.75f);
+    
+    TBEvent *event = [[TBEvent alloc] initWithHandler:^(float progress) {
+        self.scale = GLKVector2Make(1.0, (1 - progress*progress*progress));
+    } completion:^{
+        self.alive = NO;
+    } duration:1.0f repeat:NO];
+    [event start];
     
     [[TBWorld instance] addEntity:explosion];
 }

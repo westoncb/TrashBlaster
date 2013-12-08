@@ -14,6 +14,7 @@
 
 @interface TBEntity : NSObject {
     NSMutableArray *_subEntities;
+    NSMutableArray *_attachmentPoints;
 }
 
 @property TBEntity *parent;
@@ -37,12 +38,16 @@
 @property (weak) TBWorld *world;
 @property NSMutableArray *collidesWith;
 @property int life;
+@property BOOL dragging;
+@property CGPoint touchPoint;
 
 typedef enum {
     BLOCK,
     PLAYER,
     BULLET,
-    DECORATION
+    DECORATION,
+    NPC,
+    CONTROL_POINT
 } EntityType;
 
 - (id)initWithDrawable:(id<TBDrawable>)drawable;
@@ -51,6 +56,7 @@ typedef enum {
 - (BOOL)doCollisionCheck:(TBEntity *)other;
 - (void)handleCollision:(TBEntity *)collider wasTheProtruder:(BOOL)retractSelf;
 - (void)addSubEntity:(TBEntity *)entity;
+- (void)addSubEntity:(TBEntity *)entity attachX:(float)x attachY:(float)y;
 //- (BOOL)doBoundsIntersect:(TBEntity *)first other:(TBEntity *)other;
 - (void)updateMotion:(float)dt;
 - (GLKVector2)vetNewPosition:(GLKVector2)newPosition;

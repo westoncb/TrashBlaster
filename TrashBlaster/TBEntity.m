@@ -33,6 +33,7 @@
         self.maxSpeed = NSIntegerMax;
         self.type = DECORATION;
         _subEntities = [NSMutableArray array];
+        _attachmentPoints = [NSMutableArray array];
     }
     
     return self;
@@ -73,10 +74,18 @@
     [self.drawable updateWithTimeDelta:dt];
 }
 
-- (void)addSubEntity:(TBEntity *)entity
+- (void)addSubEntity:(TBEntity *)entity attachX:(float)x attachY:(float)y
 {
     entity.parent = entity;
     [_subEntities addObject:entity];
+    
+    NSValue *valuePoint = [NSValue valueWithCGPoint:CGPointMake(x, y)];
+    [_attachmentPoints addObject:valuePoint];
+}
+
+- (void)addSubEntity:(TBEntity *)entity
+{
+    [self addSubEntity:entity attachX:0 attachY:0];
 }
 
 - (void)updateMotion:(float)dt {
@@ -101,13 +110,19 @@
 {
     modelMatrix = GLKMatrix4Translate(modelMatrix, self.position.x, self.position.y, 0);
     modelMatrix = GLKMatrix4Scale(modelMatrix, self.scale.x, self.scale.y, 1.0f);
-    modelMatrix = GLKMatrix4Translate(modelMatrix, self.size.width/2, self.size.height/2, 0);
+    modelMatrix = GLKMatrix4Translate(modelMatrix, self.size.width/2, 0, 0);
     modelMatrix = GLKMatrix4Rotate(modelMatrix, _rotation, 0, 0, 1);
-    modelMatrix = GLKMatrix4Translate(modelMatrix, -self.size.width/2, -self.size.height/2, 0);
+    modelMatrix = GLKMatrix4Translate(modelMatrix, -self.size.width/2, 0, 0);
     [self.drawable renderWithModelMatrix:modelMatrix];
     
-    for (TBEntity *entity in _subEntities) {
+    for (int i = 0; i < _subEntities.count; i++) {
+        TBEntity *entity = [_subEntities objectAtIndex:i];
+        NSValue *valuePoint = [_attachmentPoints objectAtIndex:i];
+        CGPoint attachPoint = [valuePoint CGPointValue];
+        
+        modelMatrix = GLKMatrix4Translate(modelMatrix, attachPoint.x, attachPoint.y, 0);
         [entity renderWithStartingMatrix:modelMatrix];
+        modelMatrix = GLKMatrix4Translate(modelMatrix, -attachPoint.x, -attachPoint.y, 0);
     }
 }
 
@@ -124,7 +139,6 @@
 //        do {
 //            [self updateMotion:_lastDelta];
 //        } while ((fabsf(self.xChange) > .001f || fabsf(self.yChange)) > .001f && [collider doCollisionCheck:self]);
-//        
 //        
 //        self.velocity = GLKVector2Make(self.velocity.x, 0);
 //        self.acceleration = GLKVector2Make(self.acceleration.x, 0);
