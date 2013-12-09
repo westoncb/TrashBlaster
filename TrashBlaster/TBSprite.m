@@ -12,6 +12,7 @@
 @synthesize size = _size;
 @synthesize xFlip = _xFlip;
 @synthesize yFlip = _yFlip;
+@synthesize color = _color;
 
 - (id)initWithFile:(NSString *)fileName xStart:(float)xStart yStart:(float)yStart width:(float)width height:(float)height
 {
@@ -24,7 +25,11 @@
         
         [self loadTextureFromFileName:fileName];
         
-        self.size = CGSizeMake(width, height);
+        _color = GLKVector4Make(1, 1, 1, 1);
+        _additiveBlending = NO;
+        _colorBlending = NO;
+        _size = CGSizeMake(width, height);
+        [self createQuad];
     }
     
     return self;
@@ -46,8 +51,12 @@
         _renderY = 0;
         _renderWidth = self.textureInfo.width;
         _renderHeight = self.textureInfo.height;
+        _color = GLKVector4Make(1, 1, 1, 1);
+        _additiveBlending = NO;
+        _colorBlending = NO;
         
-        self.size = CGSizeMake(self.textureInfo.width, self.textureInfo.height);
+        _size = CGSizeMake(self.textureInfo.width, self.textureInfo.height);
+        [self createQuad];
     }
     return self;
 }
@@ -86,7 +95,23 @@
     newQuad.tl.textureVertex = CGPointMake(relX, relY + relHeight);
     newQuad.tr.textureVertex = CGPointMake(relX + relWidth, relY + relHeight);
     
+    newQuad.bl.colorVertex = self.color;
+    newQuad.br.colorVertex = self.color;
+    newQuad.tl.colorVertex = self.color;
+    newQuad.tr.colorVertex = self.color;
+    
     self.quad = newQuad;
+}
+
+- (void)setColor:(GLKVector4)color
+{
+    _color = color;
+    [self createQuad];
+}
+
+- (GLKVector4)color
+{
+    return _color;
 }
 
 - (void)setSize:(CGSize)size {
@@ -136,17 +161,25 @@
         modelMatrix = GLKMatrix4Scale(modelMatrix, 1, -1, 1.0f);
     }
     
+    if (self.additiveBlending)
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+    else if (self.colorBlending)
+        glBlendFunc(GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR);
+    else
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    
     TBWorld.effect.transform.modelviewMatrix = modelMatrix;
     
     [TBWorld.effect prepareToDraw];
     
     glEnableVertexAttribArray(GLKVertexAttribPosition);
     glEnableVertexAttribArray(GLKVertexAttribTexCoord0);
-//    glEnableVertexAttribArray(GLKVertexAttribColor);
+    glEnableVertexAttribArray(GLKVertexAttribColor);
     
     long offset = (long)&_quad;
     glVertexAttribPointer(GLKVertexAttribPosition, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void *) (offset + offsetof(TexturedVertex, geometryVertex)));
     glVertexAttribPointer(GLKVertexAttribTexCoord0, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void *) (offset + offsetof(TexturedVertex, textureVertex)));
+    glVertexAttribPointer(GLKVertexAttribColor, 4, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void *) (offset + offsetof(TexturedVertex, colorVertex)));
     
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 }

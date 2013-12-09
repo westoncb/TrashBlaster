@@ -15,7 +15,7 @@
     BOOL _initialFall;
     TBBlock *_blockAbove;
     TBBlock *_blockBelow;
-    int _pointValue;
+    float _initialLife;
 }
 
 @property int rowIndex;

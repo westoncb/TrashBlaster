@@ -23,6 +23,8 @@
     BOOL _jumping;
     TBEntity *_gun;
     NSMutableArray *_circle;
+    NSMutableArray *_glows;
+    NSMutableArray *_skeletons;
 }
 
 @property NSMutableArray * destPoints;
@@ -37,4 +39,7 @@
 - (void)addDestPointWithDestX:(float)destX destY:(float)destY;
 - (id)initWithStateSprite:(TBStateSprite *)stateSprite bulletSprite:(TBSprite *)bulletSprite;
 - (void)activateGun;
+- (void)increaseGlow;
+- (void)endGlow;
+- (void)fireBullet;
 @end

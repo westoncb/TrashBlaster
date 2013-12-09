@@ -13,6 +13,7 @@
 #import "TBBlockMachine.h"
 #import "TBStringSprite.h"
 #import "TBEvent.h"
+#import "TBGame.h"
 
 @implementation TBBlock
 - (id)initWithSprite:(TBSprite *)sprite
@@ -25,10 +26,10 @@
         self.collisionsize = CGSizeMake(self.size.width-6, self.size.height-6);
         self.position = GLKVector2Make(0, HEIGHT - (self.size.height-self.collisionyoff));
         self.type = BLOCK;
-        self.life = 75;
+        _initialLife = 75;
+        self.life = _initialLife;
         _resting = NO;
         _initialFall = YES;
-        _pointValue = 50;
     }
     
     return self;
@@ -43,6 +44,8 @@
             self.velocity = GLKVector2Make(0, 0);
         TBBullet *bullet = (TBBullet *)collider;
         self.life -= bullet.damage;
+//        TBSprite *sprite = (TBSprite *)self.drawable;
+//        sprite.color = GLKVector4Make(1, (self.life/_initialLife), (self.life/_initialLife), 1.0f);
         [self createBulletHitEffectAtPoint:bullet.position];
         
     } else if (collider.type == PLAYER) {
@@ -73,7 +76,8 @@
     [tempBlockAbove setToFallingState];
     [tempBlockAbove setBlockBelow:_blockBelow];
     
-    [[TBWorld instance] addToScore:_pointValue];
+    [[TBGame instance] blockWasDestroyed];
+    [[TBWorld instance] blockWasDestroyed];
 }
 
 - (int)getColumnIndex
@@ -83,22 +87,38 @@
 
 - (void)createPointDisplayAtPoint:(GLKVector2)point
 {
-    TBStringSprite *stringSprite = [[TBStringSprite alloc] initWithString:[NSString stringWithFormat:@"%i", _pointValue]];
+    int pointValue = [[TBGame instance] getCurrentBlockValue];
+    TBStringSprite *stringSprite = [[TBStringSprite alloc] initWithString:[NSString stringWithFormat:@"%i", pointValue]];
     TBEntity *stringEntity = [[TBEntity alloc] initWithDrawable:stringSprite];
-    stringEntity.scale = GLKVector2Make(2.0f, 2.0f);
-    stringEntity.position = GLKVector2Make(0, 0);
-    stringEntity.position = point;
+    float bonusRatio = [TBGame instance].bonusLevel/((float)MAX_BONUS_LEVEL);
+    if (bonusRatio > 1)
+        bonusRatio = 1;
+    
+    float scale = 1 + bonusRatio;
+    stringEntity.scale = GLKVector2Make(scale, scale);
+    stringSprite.color = GLKVector4Make((1 - bonusRatio), 1, (1 - bonusRatio), 1);
+    stringEntity.position = GLKVector2Make(point.x + self.size.width/2 - stringEntity.size.width/2, point.y + stringSprite.size.height/2);
+
+    //Keep the string on screen
+    if (stringEntity.position.x + stringEntity.size.width > WIDTH)
+        stringEntity.position = GLKVector2Make(WIDTH - stringEntity.size.width, stringEntity.position.y);
+    else if (stringEntity.position.x < 0)
+        stringEntity.position = GLKVector2Make(0, stringEntity.position.y);
+    
     stringEntity.velocity = self.velocity;
     
+    //Shrink it down on the y-axis through time
     TBEvent *event = [[TBEvent alloc] initWithHandler:^(float progress) {
-        stringEntity.scale = GLKVector2Make(1.0, (1 - progress*progress*progress));
+        stringEntity.scale = GLKVector2Make(scale, scale*(1 - progress*progress*progress));
     } completion:^{
         stringEntity.alive = NO;
     } duration:1.0f repeat:NO];
     [event start];
     
+    //Popping effect
     stringEntity.velocity = GLKVector2Add(stringEntity.velocity, GLKVector2Make(0, 200));
     stringEntity.acceleration = GLKVector2Make(0, -250);
+    
     [[TBWorld instance] addEntity:stringEntity];
 }
 
@@ -115,13 +135,14 @@
     TBExplosion *explosion = [[TBExplosion alloc] initWithDrawable:sprite duration:animationLength];
     explosion.position = point;
     explosion.velocity = GLKVector2MultiplyScalar(self.velocity, 0.75f);
+//    self.scale = GLKVector2Make(2, 2);
     
-    TBEvent *event = [[TBEvent alloc] initWithHandler:^(float progress) {
-        self.scale = GLKVector2Make(1.0, (1 - progress*progress*progress));
-    } completion:^{
-        self.alive = NO;
-    } duration:1.0f repeat:NO];
-    [event start];
+//    TBEvent *event = [[TBEvent alloc] initWithHandler:^(float progress) {
+//        self.scale = GLKVector2Make(2.0, 2*(1 - progress*progress*progress));
+//    } completion:^{
+//        self.alive = NO;
+//    } duration:0.35f repeat:NO];
+//    [event start];
     
     [[TBWorld instance] addEntity:explosion];
 }

@@ -8,10 +8,12 @@
 #import <Foundation/Foundation.h>
 #import <GLKit/GLKit.h>
 #import "TBDrawable.h"
+#import <UIKit/UIKit.h>
 
 typedef struct {
     CGPoint geometryVertex;
     CGPoint textureVertex;
+    GLKVector4 colorVertex;
 } TexturedVertex;
 
 typedef struct {
@@ -33,6 +35,9 @@ typedef struct {
 @property CGSize size;
 @property (assign) TexturedQuad quad;
 @property (strong) GLKTextureInfo * textureInfo;
+@property GLKVector4 color;
+@property BOOL additiveBlending;
+@property BOOL colorBlending;
 
 - (id)initWithFile:(NSString *)fileName;
 - (id)initWithFile:(NSString *)fileName xStart:(float)xStart yStart:(float)yStart width:(float)width height:(float)height;

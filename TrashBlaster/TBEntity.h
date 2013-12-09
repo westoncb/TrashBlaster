@@ -14,7 +14,7 @@
 
 @interface TBEntity : NSObject {
     NSMutableArray *_subEntities;
-    NSMutableArray *_attachmentPoints;
+    NSMutableDictionary *_attachmentPoints;
 }
 
 @property TBEntity *parent;
@@ -23,6 +23,7 @@
 @property GLKVector2 velocity;
 @property GLKVector2 position;
 @property GLKVector2 scale;
+@property int layer;
 @property float rotation;
 @property CGSize size;
 @property float collisionxoff;
@@ -57,7 +58,10 @@ typedef enum {
 - (void)handleCollision:(TBEntity *)collider wasTheProtruder:(BOOL)retractSelf;
 - (void)addSubEntity:(TBEntity *)entity;
 - (void)addSubEntity:(TBEntity *)entity attachX:(float)x attachY:(float)y;
+- (void)changeAttachmentPointForSubEntity:(TBEntity *)entity attachX:(float)x attachY:(float)y;
+- (void)removeSubEntity:(TBEntity *)entity;
 //- (BOOL)doBoundsIntersect:(TBEntity *)first other:(TBEntity *)other;
 - (void)updateMotion:(float)dt;
 - (GLKVector2)vetNewPosition:(GLKVector2)newPosition;
+- (CGSize)baseSize;
 @end

@@ -26,7 +26,7 @@
 - (id)init {
     self = [super init];
     if(self) {
-        self.blockDelay = 0.75f;
+        self.blockDelay = 0.5f;
         self.blockSprite = [[TBSprite alloc] initWithFile:@"block.png"];
         _dummyBlock = [[TBBlock alloc] initWithSprite:self.blockSprite];
         _dummyBlock.position = GLKVector2Make(0, INT_MAX);

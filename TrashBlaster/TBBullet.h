@@ -8,6 +8,10 @@
 
 #import "TBEntity.h"
 
-@interface TBBullet : TBEntity
+@interface TBBullet : TBEntity {
+    TBEntity *_glow;
+}
+
 @property int damage;
+
 @end

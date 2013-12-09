@@ -15,6 +15,8 @@
 #import "TBBlock.h"
 #import "TBStringSprite.h"
 #import "TBEventManager.h"
+#import "TBGame.h"
+#import "TBPlayer.h"
 
 static TBWorld *_world;
 
@@ -27,7 +29,7 @@ static TBWorld *_world;
 @property NSMutableArray * removeEntityBuffer;
 
 @property TBSprite * bgSprite;
-@property TBCreature * player;
+@property TBPlayer * player;
 @end
 
 @implementation TBWorld
@@ -43,76 +45,92 @@ static TBWorld *_world;
 + (void)destroy
 {
     _world = nil;
+    [TBGame destroy];
 }
 
 - (id)init {
     self = super.init;
-    if(self) {
-        TBWorld.effect = [[GLKBaseEffect alloc] init];
-        GLKMatrix4 projectionMatrix = GLKMatrix4MakeOrtho(0, TBWorld.WIDTH, 0, TBWorld.HEIGHT, -1024, 1024);
-        TBWorld.effect.transform.projectionMatrix = projectionMatrix;
-        
-        self.entities = [NSMutableArray array];
-        self.colliders = [NSMutableArray array];
-        self.blocks = [NSMutableArray array];
-        self.addEntityBuffer = [NSMutableArray array];
-        self.removeEntityBuffer = [NSMutableArray array];
-        
-        BOOL bezier = NO;
-        
-        if (bezier) {
-            
-            int points = 5;
-            int radius = 45;
-            
-            _controlPoints = [NSMutableArray arrayWithCapacity:points];
-            _bezierSampleSize = 100;
-            _bezierCurve = [NSMutableArray arrayWithCapacity:_bezierSampleSize];
-            
-            for (int i = 0; i < _bezierSampleSize; i++) {
-                TBSprite *sprite = [[TBSprite alloc] initWithFile:@"player2stand.png"];
-                TBEntity *entity = [[TBEntity alloc] initWithDrawable:sprite];
-                
-                [self addEntity:entity];
-                [_bezierCurve addObject:entity];
-            }
-            
-            for (int i = 0; i < points; i++) {
-                TBSprite *sprite = [[TBSprite alloc] initWithFile:@"tinyexplosion.png"];
-                TBEntity *entity = [[TBEntity alloc] initWithDrawable:sprite];
-                
-                float rotation = (M_PI*2/points)*i;
-                
-                entity.position = GLKVector2Make(TBWorld.WIDTH/2 + cosf(rotation)*radius,
-                                                 TBWorld.HEIGHT/2 + sinf(rotation)*radius);
-                entity.type = CONTROL_POINT;
-                
-                [self addEntity:entity];
-                [_controlPoints addObject:entity];
-            }
-        } else {
-            self.bgSprite = [[TBSprite alloc] initWithFile:@"background2.png"];
-            
-            TBEntity *background = [[TBEntity alloc] initWithDrawable:self.bgSprite];
-            background.size = CGSizeMake(TBWorld.WIDTH, TBWorld.HEIGHT);
-            background.type = DECORATION;
-            [self addEntity:background];
-            
-            [self createPlayer];
-            
-            TBStringSprite *scoreTextSprite = [[TBStringSprite alloc] initWithString:@"Score:"];
-            _scoreTextEntity = [[TBEntity alloc] initWithDrawable:scoreTextSprite];
-            _scoreTextEntity.position = GLKVector2Make(0, 0);
-            _scoreTextEntity.scale = GLKVector2Make(1.3f, 1.3f);
-            
-            [self addEntity:_scoreTextEntity];
-            [self setScore:0];
-            
-            self.blockMachine = [[TBBlockMachine alloc] init];
-        }
-    }
     
     return self;
+}
+
+- (void)start
+{
+    TBWorld.effect = [[GLKBaseEffect alloc] init];
+    GLKMatrix4 projectionMatrix = GLKMatrix4MakeOrtho(0, TBWorld.WIDTH, 0, TBWorld.HEIGHT, -1024, 1024);
+    TBWorld.effect.transform.projectionMatrix = projectionMatrix;
+    
+    self.entities = [NSMutableArray array];
+    self.colliders = [NSMutableArray array];
+    self.blocks = [NSMutableArray array];
+    self.addEntityBuffer = [NSMutableArray array];
+    self.removeEntityBuffer = [NSMutableArray array];
+    
+    _doTheBezier = NO;
+    
+    if (_doTheBezier) {
+        
+        int points = 3;
+        int radius = 45;
+        
+        _controlPoints = [NSMutableArray arrayWithCapacity:points];
+        _bezierSampleSize = 100;
+        _bezierCurve = [NSMutableArray arrayWithCapacity:_bezierSampleSize];
+        
+        for (int i = 0; i < _bezierSampleSize; i++) {
+            TBSprite *sprite = [[TBSprite alloc] initWithFile:@"player2stand.png"];
+            TBEntity *entity = [[TBEntity alloc] initWithDrawable:sprite];
+            
+            [self addEntity:entity];
+            [_bezierCurve addObject:entity];
+        }
+        
+        for (int i = 0; i < points; i++) {
+            TBSprite *sprite = [[TBSprite alloc] initWithFile:@"tinyexplosion.png"];
+            TBEntity *entity = [[TBEntity alloc] initWithDrawable:sprite];
+            
+            float rotation = (M_PI*2/points)*i;
+            
+            entity.position = GLKVector2Make(TBWorld.WIDTH/2 + cosf(rotation)*radius,
+                                             TBWorld.HEIGHT/2 + sinf(rotation)*radius);
+            entity.type = CONTROL_POINT;
+            
+            [self addEntity:entity];
+            [_controlPoints addObject:entity];
+        }
+    } else {
+        self.bgSprite = [[TBSprite alloc] initWithFile:@"background2.png"];
+        
+        TBEntity *background = [[TBEntity alloc] initWithDrawable:self.bgSprite];
+        background.layer = 0;
+        background.size = CGSizeMake(TBWorld.WIDTH, TBWorld.HEIGHT);
+        background.type = DECORATION;
+        [self addEntity:background];
+        
+        [self createPlayer];
+        
+//        [self addCreature];
+//        [self addCreature];
+//        [self addCreature];
+//        [self addCreature];
+//        [self addCreature];
+//        [self addCreature];
+//        [self addCreature];
+//        [self addCreature];
+//        [self addCreature];
+//        [self addCreature];
+//        [self addCreature];
+//        [self addCreature];
+        
+        TBStringSprite *scoreTextSprite = [[TBStringSprite alloc] initWithString:@"Score:"];
+        _scoreTextEntity = [[TBEntity alloc] initWithDrawable:scoreTextSprite];
+        _scoreTextEntity.position = GLKVector2Make(0, 0);
+        _scoreTextEntity.scale = GLKVector2Make(1.3f, 1.3f);
+        
+        [self addEntity:_scoreTextEntity];
+        
+        self.blockMachine = [[TBBlockMachine alloc] init];
+    }
 }
 
 - (void)createPlayer
@@ -192,10 +210,11 @@ static TBWorld *_world;
     [playerSprite linkSprite:glovesSprite];
     [playerSprite linkSprite:pantsSprite];
     [playerSprite linkSprite:armsSprite];
-    _player = [[TBCreature alloc] initWithStateSprite:playerSprite bulletSprite:bulletSprite];
+    _player = [[TBPlayer alloc] initWithStateSprite:playerSprite bulletSprite:bulletSprite];
     [_player.collidesWith addObject:[NSNumber numberWithInt:BLOCK]];
     [_player activateGun];
     _player.canShoot = YES;
+    _player.layer = 5;
     
     [self addEntity:_player];
 }
@@ -227,33 +246,32 @@ static TBWorld *_world;
     creature.keepImageAfterDeath = NO;
     [creature.collidesWith addObject:[NSNumber numberWithInt:BLOCK]];
     creature.type = NPC;
-    creature.canShoot = YES;
-    creature.reloadTime = 0.5;
+    creature.canShoot = NO;
+    creature.reloadTime = 0.1;
     [self addEntity:creature];
 }
 
-- (void)addToScore:(int)amount
+- (void)updateScoreDisplay
 {
-    _score += amount;
-    [self setScore:_score];
-}
-
-- (void)setScore:(int)score
-{
-    _score = score;
+    TBGame *game = [TBGame instance];
     
-    if (_scoreEntity)
-        [self removeEntity:_scoreEntity];
+    if ([game getScore] != _lastScore || !_scoreEntity) {
+        if (_scoreEntity)
+            [self removeEntity:_scoreEntity];
         
-    TBStringSprite *scoreSprite = [[TBStringSprite alloc] initWithString:[NSString stringWithFormat:@"%i", score]];
-    _scoreEntity = [[TBEntity alloc] initWithDrawable:scoreSprite];
-    _scoreEntity.position = GLKVector2Make(_scoreTextEntity.size.width * 1.3f, 0);
-    _scoreEntity.scale = GLKVector2Make(1.3f, 1.3f);
-    
-    [self addEntity:_scoreEntity];
+        TBStringSprite *scoreSprite = [[TBStringSprite alloc] initWithString:[NSString stringWithFormat:@"%i", [game getScore]]];
+        _scoreEntity = [[TBEntity alloc] initWithDrawable:scoreSprite];
+        _scoreEntity.scale = GLKVector2Make(1.3f, 1.3f);
+        _scoreEntity.position = GLKVector2Make(_scoreTextEntity.size.width, 0);
+        
+        [self addEntity:_scoreEntity];
+        
+        _lastScore = [game getScore];
+    }
 }
 
-- (void)addEntity:(TBEntity *)entity {
+- (void)addEntity:(TBEntity *)entity
+{
     [self.addEntityBuffer addObject:entity];
     if(entity.type == BLOCK)
         [self.blocks addObject:entity];
@@ -276,6 +294,7 @@ static TBWorld *_world;
 - (BOOL)update:(float)delta {
     [self.blockMachine update:delta];
     [[TBEventManager instance] updateWithTimeDelta:delta];
+    [[TBGame instance] updateWithTimeDelta:delta];
     
     for (TBEntity * entity in self.entities) {
         
@@ -295,6 +314,8 @@ static TBWorld *_world;
     }
     [self.removeEntityBuffer removeAllObjects];
     
+    [self updateScoreDisplay];
+    
     [self removeDistantBullets];
     [self cleanupDeadEntities];
     [self checkForCollisions];
@@ -302,13 +323,37 @@ static TBWorld *_world;
     return NO;
 }
 
-- (void)render {
+- (void)render
+{
+    [self insertionSortOnLayer];
+    
     for (TBEntity * entity in self.entities) {
         if (!entity.parent)
             [entity render];
     }
     
-    [self renderBezierCurve];
+    if (_doTheBezier)
+        [self renderBezierCurve];
+}
+
+- (void)insertionSortOnLayer
+{
+    if (self.entities.count == 0)
+        return;
+    
+    for (int i = 0; i < self.entities.count-1; i++) {
+        int firstIndex = i+1;
+        TBEntity *first = [_entities objectAtIndex:firstIndex];
+        
+        for (int j = i; j > -1 ; j--) {
+            TBEntity *second = [_entities objectAtIndex:j];
+            if (first.layer < second.layer) {
+                [_entities setObject:second atIndexedSubscript:firstIndex];
+                [_entities setObject:first atIndexedSubscript:j];
+                firstIndex = j;
+            }
+        }
+    }
 }
 
 - (void)renderBezierCurve
@@ -400,6 +445,11 @@ static TBWorld *_world;
     }
 }
 
+- (void)blockWasDestroyed
+{
+    
+}
+
 - (void)movePlayerTo:(GLKVector2)dest {
     [self.player addDestPointWithDestX:dest.x destY:dest.y];
 }
@@ -420,7 +470,7 @@ static TBWorld *_world;
                     collision = true;
                 }
                 if(collision) {
-                    if ([entity.collidesWith containsObject:[NSNumber numberWithInt:entity2.type]]) { //left off here
+                    if ([entity.collidesWith containsObject:[NSNumber numberWithInt:entity2.type]]) {
                         [entity handleCollision:entity2 wasTheProtruder:(entity == protruder)];
                     }
                     if ([entity2.collidesWith containsObject:[NSNumber numberWithInt:entity.type]]) {
@@ -467,6 +517,18 @@ static TBWorld *_world;
     }
 }
 
+- (void)setFramesPerSecond:(int)fps
+{
+    if (_fpsEntity)
+        [self removeEntity:_fpsEntity];
+    
+    TBStringSprite *fpsSprite = [[TBStringSprite alloc] initWithString:[NSString stringWithFormat:@"%i", fps]];
+    _fpsEntity = [[TBEntity alloc] initWithDrawable:fpsSprite];
+    _fpsEntity.position = GLKVector2Make(0, HEIGHT - _fpsEntity.size.height);
+    
+    [self addEntity:_fpsEntity];
+}
+
 + (GLKBaseEffect*)effect {
     return effect;
 }
@@ -483,6 +545,11 @@ static TBWorld *_world;
 }
 + (int) FLOOR_HEIGHT {
     return FLOOR_HEIGHT;
+}
+
+- (TBPlayer *)getPlayer
+{
+    return _player;
 }
 
 @end

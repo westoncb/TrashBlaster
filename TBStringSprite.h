@@ -19,4 +19,8 @@ static const int CHARS_PER_ROW = 16;
 }
 
 -(id)initWithString:(NSString *)string;
+- (void)setColor:(GLKVector4)color;
+- (GLKVector4)color;
+- (void)setSize:(CGSize)size;
+- (CGSize)size;
 @end

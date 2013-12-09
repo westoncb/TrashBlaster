@@ -28,6 +28,7 @@ typedef struct {
 @property TBAnimationInfo animationInfo;
 @property float xOffset;
 @property float yOffset;
+@property GLKVector4 color;
 
 - (id)initWithFile:(NSString *)fileName animationInfo:(TBAnimationInfo)animationInfo;
 - (id)initWithFile:(NSString *)fileName animationInfo:(TBAnimationInfo)animationInfo xOffset:(float)xOffset yOffset:(float)yOffset;

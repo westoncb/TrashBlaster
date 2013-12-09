@@ -24,6 +24,8 @@
         _frameClock = 0;
         _xOffset = xOffset;
         _yOffset = yOffset;
+        
+        _color = GLKVector4Make(1, 1, 1, 1);
     }
     
     return self;
@@ -89,6 +91,11 @@
     quad.br.textureVertex = CGPointMake(relXFinish, relYStart);
     quad.tl.textureVertex = CGPointMake(relXStart, relYFinish);
     quad.tr.textureVertex = CGPointMake(relXFinish, relYFinish);
+    
+    quad.bl.colorVertex = self.color;
+    quad.br.colorVertex = self.color;
+    quad.tl.colorVertex = self.color;
+    quad.tr.colorVertex = self.color;
     
 //    NSLog(@"xStart: %f, xFinish: %f, yStart: %f, yFinish: %f", xStart, xFinish, yStart, yFinish);
     

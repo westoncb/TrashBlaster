@@ -14,6 +14,7 @@
 @class TBBlockMachine;
 @class TBEntity;
 @class TBBlock;
+@class TBPlayer;
 
 static GLKBaseEffect *effect;
 static const int WIDTH = 320;
@@ -26,13 +27,16 @@ static const int GRAVITY_ACCELERATION = -200;
     TBSprite *_shootSprite;
     TBEntity *_scoreEntity;
     TBEntity *_scoreTextEntity; //The text "Score: " displayed on the screen
-    int _score;
+    int _lastScore;
+    int _frameIndex;
+    TBEntity *_fpsEntity;
     
     int _bezierSampleSize;
     NSMutableArray *_controlPoints;
     NSMutableArray *_bezierCurve;
 }
 
+@property BOOL doTheBezier;
 @property TBBlockMachine * blockMachine;
 + (GLKBaseEffect*) effect;
 + (TBWorld *)instance;
@@ -44,7 +48,10 @@ static const int GRAVITY_ACCELERATION = -200;
 - (void)render;
 - (void)movePlayerTo:(GLKVector2)dest;
 - (int)xPositionToColumn:(float)xPosition;
-- (void)addToScore:(int)amount;
 - (void)handlePanWithPoint:(CGPoint)point;
 - (void)handleFingerLiftedWithPoint:(CGPoint)point;
+- (void)start;
+- (void)setFramesPerSecond:(int)fps;
+- (void)blockWasDestroyed;
+- (TBPlayer *)getPlayer;
 @end

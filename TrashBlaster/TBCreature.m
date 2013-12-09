@@ -12,6 +12,7 @@
 #import "TBBlock.h"
 #import "TBAnimatedSprite.h"
 #import "TBBlockMachine.h"
+#import "TBEvent.h"
 
 @interface TBCreature()
 @property BOOL startedMoving;
@@ -19,7 +20,10 @@
 
 @property float lastBulletTime;
 @end
+
 @implementation TBCreature
+@synthesize reloadTime = _reloadTime;
+@synthesize power = _power;
 
 - (id)initWithStateSprite:(TBStateSprite *)stateSprite bulletSprite:(TBSprite *)bulletSprite {
     self = [super initWithDrawable:stateSprite];
@@ -42,9 +46,72 @@
         _stateSprite = stateSprite;
         _canShoot = NO;
         _circle = [NSMutableArray array];
+        _glows = [NSMutableArray array];
+        _skeletons = [NSMutableArray array];
     }
     
     return self;
+}
+
+- (void)increaseGlow
+{
+    if (_glows.count < 4) {
+        TBSprite *glowSprite = [[TBSprite alloc] initWithFile:@"glow3.png"];
+        TBEntity *glow = [[TBEntity alloc] initWithDrawable:glowSprite];
+        [self addSubEntity:glow];
+        glow.scale = GLKVector2Make(0, 0);
+        glow.layer = 1;
+        glowSprite.color = GLKVector4Make(1, 0, 0, 1);
+        glowSprite.additiveBlending = YES;
+
+        [_glows addObject:glow];
+
+        TBEvent *event = [[TBEvent alloc] initWithHandler:^(float progress) {
+            glow.scale = GLKVector2Make(progress*progress, progress*progress);
+            [self changeAttachmentPointForSubEntity:glow attachX:self.size.width/2 - glow.size.width/2*progress
+                       attachY:self.size.height/2 - glow.size.height/2*progress];
+        } completion:^{
+            glow.scale = GLKVector2Make(1.0, 1.0);
+            [self changeAttachmentPointForSubEntity:glow attachX:self.size.width/2 - glow.size.width/2
+                                            attachY:self.size.height/2 - glow.size.height/2];
+        } duration:0.6f repeat:NO];
+        [event start];
+    } else if (_skeletons.count < 4) {
+        TBAnimationInfo animationInfo;
+        animationInfo.frameWidth = 64;
+        animationInfo.frameHeight = 64;
+        animationInfo.frameCount = 9;
+        animationInfo.frameLength = 50;
+        animationInfo.loop = YES;
+        
+        TBAnimatedSprite *walkingSkeletonSprite = [[TBAnimatedSprite alloc] initWithFile:@"BODY_skeleton.png" animationInfo:animationInfo row:2];
+        TBSprite *shootingSkeletonSprite = [[TBSprite alloc] initWithFile:@"BODY_skeleton.png" col:4 row:1];
+        NSMutableDictionary *shirtMap = [[NSMutableDictionary alloc] init];
+        [shirtMap setValue:walkingSkeletonSprite forKey:@"run"];
+        [shirtMap setValue:walkingSkeletonSprite forKey:@"run_xf"];
+        [shirtMap setValue:shootingSkeletonSprite forKey:@"shoot"];
+        TBStateSprite *skeletonSprite = [[TBStateSprite alloc] initWithStateMap:shirtMap initialState:@"shoot"];
+        
+        TBStateSprite *creatureSprite = (TBStateSprite *)self.drawable;
+        [creatureSprite linkSprite:skeletonSprite];
+        
+        [_skeletons addObject:skeletonSprite];
+    }
+}
+
+- (void)endGlow
+{
+    for (TBEntity *glow in _glows) {
+        [self removeSubEntity:glow];
+    }
+    
+    for (TBStateSprite *skeleton in _skeletons) {
+        TBStateSprite *creatureSprite = (TBStateSprite *)self.drawable;
+        [creatureSprite unlinkSprite:skeleton];
+    }
+    
+    [_glows removeAllObjects];
+    [_skeletons removeAllObjects];
 }
 
 - (void)activateGun
@@ -52,6 +119,7 @@
     if (!_gun) {
         TBSprite *gunSprite = [[TBSprite alloc] initWithFile:@"gun.png"];
         _gun = [[TBEntity alloc] initWithDrawable:gunSprite];
+        _gun.layer = 6;
         [self addSubEntity:_gun attachX:(self.size.width/2 - _gun.size.width/2) attachY:40];
     }
 }
@@ -116,25 +184,35 @@
         }
     }
 
-    self.lastBulletTime += dt;
-    if(_canShoot && self.lastBulletTime > self.reloadTime) {
-        self.lastBulletTime -= self.reloadTime;
-        [self fireBullet];
-    }
+    [self updateGunWithTimeDelta:dt];
 
     if (_deathBlock) {
         float distanceFromGround = _deathBlock.position.y - [self getGroundHeightBeneathPlayer];
-        float scale = (distanceFromGround/self.size.height);
-        float minScale = 10.0f/self.size.height;
-        if (scale < minScale)
-            scale = minScale;
-        self.scale = GLKVector2Make(self.scale.x, scale);
+        float yScale = (distanceFromGround/[self baseSize].height);
+        float minYScale = 0.1;
+        if (yScale < minYScale)
+            yScale = minYScale;
+        float xScale = 1.0f;
+//        float xScale = 1.0f/(yScale);
+//        if (xScale > 1.8f)
+//            xScale = 1.8f;
+        
+        self.scale = GLKVector2Make(xScale, yScale);
         if (distanceFromGround < 1 || _deathBlock.velocity.y == 0) {
             self.alive = false;
         }
     }
     
     [super update:dt];
+}
+
+- (void)updateGunWithTimeDelta:(float)delta
+{
+    self.lastBulletTime += delta;
+    if(_canShoot && self.lastBulletTime > self.reloadTime) {
+        self.lastBulletTime -= self.reloadTime;
+        [self fireBullet];
+    }
 }
 
 - (void)jump
@@ -218,7 +296,8 @@
     
     if (collider.type == BLOCK) {
         TBBlock *block = (TBBlock *)collider;
-        if (block.velocity.y < -50 && !_deathBlock && [block shouldDamagePlayer])
+        float distanceFromGround = block.position.y - [self getGroundHeightBeneathPlayer];
+        if (block.velocity.y < -50 && !_deathBlock && [block shouldDamagePlayer] && distanceFromGround <= self.size.height)
             [self initiateDeathSequenceWithBlock:block];
     }
 }
@@ -239,7 +318,28 @@
     }
 }
 
-- (void)fireBullet {
+- (float)reloadTime
+{
+    return _reloadTime;
+}
+
+- (void)setReloadTime:(float)reloadTime
+{
+    _reloadTime = reloadTime;
+}
+
+- (int)power
+{
+    return _power;
+}
+
+- (void)setPower:(int)power
+{
+    _power = power;
+}
+
+- (void)fireBullet
+{
     self.bulletSprite.yFlip = NO;
     TBBullet *bullet = [[TBBullet alloc] initWithDrawable:self.bulletSprite];
     bullet.damage = self.power;

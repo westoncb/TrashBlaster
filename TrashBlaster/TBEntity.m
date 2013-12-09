@@ -16,6 +16,7 @@
 
 @implementation TBEntity
 @synthesize life = _life;
+@synthesize size = _size;
 
 - (id)initWithDrawable:(id<TBDrawable>)drawable {
     self = [super init];
@@ -23,7 +24,7 @@
         _drawable = drawable;
         _collidesWith = [NSMutableArray array];
         self.size = CGSizeMake(drawable.size.width, drawable.size.height);
-        self.collisionsize = CGSizeMake(self.size.width, self.size.height);
+        self.collisionsize = CGSizeMake(_size.width, _size.height);
         self.acceleration = GLKVector2Make(0, 0);
         self.deceleration = GLKVector2Make(0, 0);
         self.velocity = GLKVector2Make(0, 0);
@@ -33,7 +34,7 @@
         self.maxSpeed = NSIntegerMax;
         self.type = DECORATION;
         _subEntities = [NSMutableArray array];
-        _attachmentPoints = [NSMutableArray array];
+        _attachmentPoints = [NSMutableDictionary dictionary];
     }
     
     return self;
@@ -78,14 +79,25 @@
 {
     entity.parent = entity;
     [_subEntities addObject:entity];
-    
+
+    [self changeAttachmentPointForSubEntity:entity attachX:x attachY:y];
+}
+
+- (void)changeAttachmentPointForSubEntity:(TBEntity *)entity attachX:(float)x attachY:(float)y
+{
     NSValue *valuePoint = [NSValue valueWithCGPoint:CGPointMake(x, y)];
-    [_attachmentPoints addObject:valuePoint];
+    [_attachmentPoints setObject:valuePoint forKey:[entity key]];
 }
 
 - (void)addSubEntity:(TBEntity *)entity
 {
     [self addSubEntity:entity attachX:0 attachY:0];
+}
+
+- (void)removeSubEntity:(TBEntity *)entity
+{
+    [_subEntities removeObject:entity];
+    [_attachmentPoints removeObjectForKey:[entity key]];
 }
 
 - (void)updateMotion:(float)dt {
@@ -113,16 +125,31 @@
     modelMatrix = GLKMatrix4Translate(modelMatrix, self.size.width/2, 0, 0);
     modelMatrix = GLKMatrix4Rotate(modelMatrix, _rotation, 0, 0, 1);
     modelMatrix = GLKMatrix4Translate(modelMatrix, -self.size.width/2, 0, 0);
+    
+    for (int i = 0; i < _subEntities.count; i++) {
+        TBEntity *entity = [_subEntities objectAtIndex:i];
+        if (entity.layer < self.layer) {
+            NSValue *valuePoint = [_attachmentPoints objectForKey:[entity key]];
+            CGPoint attachPoint = [valuePoint CGPointValue];
+            
+            modelMatrix = GLKMatrix4Translate(modelMatrix, attachPoint.x, attachPoint.y, 0);
+            [entity renderWithStartingMatrix:modelMatrix];
+            modelMatrix = GLKMatrix4Translate(modelMatrix, -attachPoint.x, -attachPoint.y, 0);
+        }
+    }
+    
     [self.drawable renderWithModelMatrix:modelMatrix];
     
     for (int i = 0; i < _subEntities.count; i++) {
         TBEntity *entity = [_subEntities objectAtIndex:i];
-        NSValue *valuePoint = [_attachmentPoints objectAtIndex:i];
-        CGPoint attachPoint = [valuePoint CGPointValue];
-        
-        modelMatrix = GLKMatrix4Translate(modelMatrix, attachPoint.x, attachPoint.y, 0);
-        [entity renderWithStartingMatrix:modelMatrix];
-        modelMatrix = GLKMatrix4Translate(modelMatrix, -attachPoint.x, -attachPoint.y, 0);
+        if (entity.layer >= self.layer) {
+            NSValue *valuePoint = [_attachmentPoints objectForKey:[entity key]];
+            CGPoint attachPoint = [valuePoint CGPointValue];
+            
+            modelMatrix = GLKMatrix4Translate(modelMatrix, attachPoint.x, attachPoint.y, 0);
+            [entity renderWithStartingMatrix:modelMatrix];
+            modelMatrix = GLKMatrix4Translate(modelMatrix, -attachPoint.x, -attachPoint.y, 0);
+        }
     }
 }
 
@@ -177,24 +204,44 @@
 
 - (NSComparisonResult)compare:(TBEntity *)otherObject {
     return otherObject.position.y - self.position.y;
-    
 }
 
 - (NSString *)description {
-    return [NSString stringWithFormat:@"entity type: %i, width: %f, height: %f", self.type, self.size.width, self.size.height];
+    return [NSString stringWithFormat:@"layer: %i", self.layer];
 }
 
 - (void)setLife:(int)life {
     _life = life;
     if (_life <= 0) {
         self.alive = false;
-        [self handleDeath];
+    [self handleDeath];
     }
+}
+
+- (NSString *)key
+{
+    return [NSString stringWithFormat:@"%i", self.hash];
 }
 
 - (void)handleDeath
 {
 
+}
+
+- (void)setSize:(CGSize)size
+{
+    _size = size;
+}
+
+- (CGSize)size
+{
+    CGSize baseSize = [_drawable size];
+    return CGSizeMake(self.scale.x*baseSize.width, self.scale.y*baseSize.height);
+}
+
+- (CGSize)baseSize
+{
+    return [_drawable size];
 }
 
 - (int)life {

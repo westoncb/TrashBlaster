@@ -35,6 +35,7 @@
     
     TBSprite *sprite = [[TBSprite alloc] initWithFile:@"bitmapfont.gif" xStart:x yStart:y width:CHAR_WIDTH height:CHAR_HEIGHT];
     sprite.size = CGSizeMake(CHAR_WIDTH, CHAR_HEIGHT);
+    sprite.colorBlending = YES;
     
     return sprite;
 }
@@ -46,14 +47,10 @@
 
 - (void)renderWithModelMatrix:(GLKMatrix4)modelMatrix
 {
-    glBlendFunc(GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR);
-    
     for (TBSprite *sprite in _characters) {
         [sprite renderWithModelMatrix:modelMatrix];
         modelMatrix = GLKMatrix4Translate(modelMatrix, CHAR_WIDTH - 2, 0, 0);
     }
-    
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 - (void)setSize:(CGSize)size
@@ -68,6 +65,19 @@
     TBSprite *sprite = [_characters objectAtIndex:0];
     CGSize size = CGSizeMake(sprite.size.width*_characters.count, sprite.size.height);
     return size;
+}
+
+- (void)setColor:(GLKVector4)color
+{
+    for (TBSprite *sprite in _characters) {
+        sprite.color = color;
+    }
+}
+
+- (GLKVector4)color
+{
+    TBSprite *sprite = [_characters objectAtIndex:0];
+    return sprite.color;
 }
 
 - (void)setXFlip:(BOOL)xFlip

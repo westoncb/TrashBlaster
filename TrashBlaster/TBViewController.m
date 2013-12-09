@@ -23,6 +23,8 @@ const float RESTART_DELAY = 1.0f;
         NSLog(@"Failed to create ES context");
     }
     
+    self.preferredFramesPerSecond = 75;
+    
     GLKView *view = (GLKView *)self.view;
     view.context = self.context;
     [EAGLContext setCurrentContext:self.context];
@@ -38,11 +40,13 @@ const float RESTART_DELAY = 1.0f;
 
 - (void)handlePanFrom:(UIPanGestureRecognizer *)recognizer
 {
-    CGPoint touchLocation = [recognizer locationInView:recognizer.view];
-    [self.world handlePanWithPoint:touchLocation];
-    
-    if (recognizer.state == UIGestureRecognizerStateEnded) {
-        [self.world handleFingerLiftedWithPoint:touchLocation];
+    if (self.world.doTheBezier) {
+        CGPoint touchLocation = [recognizer locationInView:recognizer.view];
+        [self.world handlePanWithPoint:touchLocation];
+        
+        if (recognizer.state == UIGestureRecognizerStateEnded) {
+            [self.world handleFingerLiftedWithPoint:touchLocation];
+        }
     }
 }
 
@@ -54,8 +58,6 @@ const float RESTART_DELAY = 1.0f;
     
     [self.world movePlayerTo:target];
 }
-
-
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
@@ -79,6 +81,7 @@ const float RESTART_DELAY = 1.0f;
     NSTimeInterval timeSinceLastUpdate = self.timeSinceLastUpdate;
     
     if (self.world) {
+//        [self.world setFramesPerSecond:self.framesPerSecond];
         BOOL reset = [self.world update:timeSinceLastUpdate];
         
         if (reset) {
@@ -88,6 +91,7 @@ const float RESTART_DELAY = 1.0f;
     } else if (restartTime > RESTART_DELAY || firstTime) {
         [TBWorld destroy];
         self.world = [TBWorld instance];
+        [self.world start];
         restartTime = 0;
         firstTime = NO;
     } else {

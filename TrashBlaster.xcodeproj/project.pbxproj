@@ -45,7 +45,6 @@
 		AD4B52DA18505E8B00EF2967 /* TBNPC.m in Sources */ = {isa = PBXBuildFile; fileRef = AD4B52D918505E8B00EF2967 /* TBNPC.m */; };
 		AD4B52E118508D2800EF2967 /* player3.png in Resources */ = {isa = PBXBuildFile; fileRef = AD4B52DF18508D2800EF2967 /* player3.png */; };
 		AD7E21C917E163D9003DD9DC /* TBAnimatedSprite.m in Sources */ = {isa = PBXBuildFile; fileRef = AD7E21C817E163D9003DD9DC /* TBAnimatedSprite.m */; };
-		AD7E21CB17E29E88003DD9DC /* playersheet.png in Resources */ = {isa = PBXBuildFile; fileRef = AD7E21CA17E29E87003DD9DC /* playersheet.png */; };
 		AD7E21CE17E3E2B2003DD9DC /* TBStateSprite.m in Sources */ = {isa = PBXBuildFile; fileRef = AD7E21CD17E3E2B2003DD9DC /* TBStateSprite.m */; };
 		AD8D689C16F70AC80020EC7B /* player.png in Resources */ = {isa = PBXBuildFile; fileRef = AD8D689B16F70AC80020EC7B /* player.png */; };
 		AD8D68A416F7131F0020EC7B /* TBPoint.m in Sources */ = {isa = PBXBuildFile; fileRef = AD8D68A316F7131E0020EC7B /* TBPoint.m */; };
@@ -57,7 +56,7 @@
 		ADFB3DDB1851428F005C9A0B /* FEET_plate_armor_shoes.png in Resources */ = {isa = PBXBuildFile; fileRef = ADFB3DD81851428F005C9A0B /* FEET_plate_armor_shoes.png */; };
 		ADFB3DDC1851428F005C9A0B /* HEAD_plate_armor_helmet.png in Resources */ = {isa = PBXBuildFile; fileRef = ADFB3DD91851428F005C9A0B /* HEAD_plate_armor_helmet.png */; };
 		ADFB3DDD1851428F005C9A0B /* TORSO_plate_armor_torso.png in Resources */ = {isa = PBXBuildFile; fileRef = ADFB3DDA1851428F005C9A0B /* TORSO_plate_armor_torso.png */; };
-		ADFB3DDF18514331005C9A0B /* baseplayer@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = ADFB3DDE18514331005C9A0B /* baseplayer@2x.png */; };
+		ADFB3DDF18514331005C9A0B /* baseplayer.png in Resources */ = {isa = PBXBuildFile; fileRef = ADFB3DDE18514331005C9A0B /* baseplayer.png */; };
 		ADFB3DE2185148FB005C9A0B /* HANDS_plate_armor_gloves.png in Resources */ = {isa = PBXBuildFile; fileRef = ADFB3DE0185148FB005C9A0B /* HANDS_plate_armor_gloves.png */; };
 		ADFB3DE3185148FB005C9A0B /* LEGS_plate_armor_pants.png in Resources */ = {isa = PBXBuildFile; fileRef = ADFB3DE1185148FB005C9A0B /* LEGS_plate_armor_pants.png */; };
 		ADFB3DE518514A0A005C9A0B /* TORSO_plate_armor_arms_shoulders.png in Resources */ = {isa = PBXBuildFile; fileRef = ADFB3DE418514A0A005C9A0B /* TORSO_plate_armor_arms_shoulders.png */; };
@@ -66,6 +65,11 @@
 		ADFB3DEB1852BDED005C9A0B /* background2.png in Resources */ = {isa = PBXBuildFile; fileRef = ADFB3DEA1852BDED005C9A0B /* background2.png */; };
 		ADFFB1041852EA4500BCEEF1 /* TBEventManager.m in Sources */ = {isa = PBXBuildFile; fileRef = ADFFB1031852EA4500BCEEF1 /* TBEventManager.m */; };
 		ADFFB1071852EA6A00BCEEF1 /* TBEvent.m in Sources */ = {isa = PBXBuildFile; fileRef = ADFFB1061852EA6A00BCEEF1 /* TBEvent.m */; };
+		ADFFB10B185419FB00BCEEF1 /* TBGame.m in Sources */ = {isa = PBXBuildFile; fileRef = ADFFB10A185419FB00BCEEF1 /* TBGame.m */; };
+		ADFFB10E18541F6A00BCEEF1 /* TBPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = ADFFB10D18541F6A00BCEEF1 /* TBPlayer.m */; };
+		ADFFB1101854266C00BCEEF1 /* glow3.png in Resources */ = {isa = PBXBuildFile; fileRef = ADFFB10F1854266C00BCEEF1 /* glow3.png */; };
+		ADFFB11418542CE800BCEEF1 /* ghostplayer.png in Resources */ = {isa = PBXBuildFile; fileRef = ADFFB11318542CE800BCEEF1 /* ghostplayer.png */; };
+		ADFFB11618542D8C00BCEEF1 /* BODY_skeleton.png in Resources */ = {isa = PBXBuildFile; fileRef = ADFFB11518542D8C00BCEEF1 /* BODY_skeleton.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXBuildRule section */
@@ -149,7 +153,7 @@
 		ADFB3DD81851428F005C9A0B /* FEET_plate_armor_shoes.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = FEET_plate_armor_shoes.png; sourceTree = "<group>"; };
 		ADFB3DD91851428F005C9A0B /* HEAD_plate_armor_helmet.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = HEAD_plate_armor_helmet.png; sourceTree = "<group>"; };
 		ADFB3DDA1851428F005C9A0B /* TORSO_plate_armor_torso.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = TORSO_plate_armor_torso.png; sourceTree = "<group>"; };
-		ADFB3DDE18514331005C9A0B /* baseplayer@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "baseplayer@2x.png"; sourceTree = "<group>"; };
+		ADFB3DDE18514331005C9A0B /* baseplayer.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = baseplayer.png; sourceTree = "<group>"; };
 		ADFB3DE0185148FB005C9A0B /* HANDS_plate_armor_gloves.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = HANDS_plate_armor_gloves.png; sourceTree = "<group>"; };
 		ADFB3DE1185148FB005C9A0B /* LEGS_plate_armor_pants.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = LEGS_plate_armor_pants.png; sourceTree = "<group>"; };
 		ADFB3DE418514A0A005C9A0B /* TORSO_plate_armor_arms_shoulders.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = TORSO_plate_armor_arms_shoulders.png; sourceTree = "<group>"; };
@@ -160,6 +164,13 @@
 		ADFFB1031852EA4500BCEEF1 /* TBEventManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TBEventManager.m; sourceTree = "<group>"; };
 		ADFFB1051852EA6A00BCEEF1 /* TBEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TBEvent.h; sourceTree = "<group>"; };
 		ADFFB1061852EA6A00BCEEF1 /* TBEvent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TBEvent.m; sourceTree = "<group>"; };
+		ADFFB109185419FB00BCEEF1 /* TBGame.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TBGame.h; sourceTree = "<group>"; };
+		ADFFB10A185419FB00BCEEF1 /* TBGame.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TBGame.m; sourceTree = "<group>"; };
+		ADFFB10C18541F6A00BCEEF1 /* TBPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TBPlayer.h; sourceTree = "<group>"; };
+		ADFFB10D18541F6A00BCEEF1 /* TBPlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TBPlayer.m; sourceTree = "<group>"; };
+		ADFFB10F1854266C00BCEEF1 /* glow3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = glow3.png; sourceTree = "<group>"; };
+		ADFFB11318542CE800BCEEF1 /* ghostplayer.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ghostplayer.png; sourceTree = "<group>"; };
+		ADFFB11518542D8C00BCEEF1 /* BODY_skeleton.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = BODY_skeleton.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -182,6 +193,10 @@
 		AD1153D616F467D600A9FE87 = {
 			isa = PBXGroup;
 			children = (
+				ADFFB10C18541F6A00BCEEF1 /* TBPlayer.h */,
+				ADFFB10D18541F6A00BCEEF1 /* TBPlayer.m */,
+				ADFFB109185419FB00BCEEF1 /* TBGame.h */,
+				ADFFB10A185419FB00BCEEF1 /* TBGame.m */,
 				ADFFB1021852EA4500BCEEF1 /* TBEventManager.h */,
 				ADFFB1031852EA4500BCEEF1 /* TBEventManager.m */,
 				ADFFB1051852EA6A00BCEEF1 /* TBEvent.h */,
@@ -271,11 +286,14 @@
 		AD11543A16F5273000A9FE87 /* images */ = {
 			isa = PBXGroup;
 			children = (
+				ADFFB11518542D8C00BCEEF1 /* BODY_skeleton.png */,
 				AD2B2E6B16FECF270024F163 /* glow2.png */,
+				ADFFB11318542CE800BCEEF1 /* ghostplayer.png */,
+				ADFFB10F1854266C00BCEEF1 /* glow3.png */,
 				ADFB3DE818516E31005C9A0B /* point.png */,
 				ADFB3DE61851654C005C9A0B /* gun.png */,
 				ADFB3DEA1852BDED005C9A0B /* background2.png */,
-				ADFB3DDE18514331005C9A0B /* baseplayer@2x.png */,
+				ADFB3DDE18514331005C9A0B /* baseplayer.png */,
 				ADFB3DD81851428F005C9A0B /* FEET_plate_armor_shoes.png */,
 				ADFB3DD91851428F005C9A0B /* HEAD_plate_armor_helmet.png */,
 				ADFB3DDA1851428F005C9A0B /* TORSO_plate_armor_torso.png */,
@@ -332,7 +350,7 @@
 		AD1153D716F467D600A9FE87 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0460;
+				LastUpgradeCheck = 0500;
 				ORGANIZATIONNAME = "Weston Cannon Beecroft";
 			};
 			buildConfigurationList = AD1153DA16F467D600A9FE87 /* Build configuration list for PBXProject "TrashBlaster" */;
@@ -367,8 +385,10 @@
 				ADFB3DD718508F49005C9A0B /* test.png in Resources */,
 				ADFB3DE2185148FB005C9A0B /* HANDS_plate_armor_gloves.png in Resources */,
 				AD1153F916F467D600A9FE87 /* Default-568h@2x.png in Resources */,
+				ADFFB11618542D8C00BCEEF1 /* BODY_skeleton.png in Resources */,
 				AD11540616F4694100A9FE87 /* MainStoryboard.storyboard in Resources */,
 				AD4B52E118508D2800EF2967 /* player3.png in Resources */,
+				ADFFB1101854266C00BCEEF1 /* glow3.png in Resources */,
 				AD11544116F5273000A9FE87 /* background.png in Resources */,
 				AD4B52D118502A2000EF2967 /* bitmapfont.gif in Resources */,
 				AD4B52D718503EAE00EF2967 /* player2.png in Resources */,
@@ -377,6 +397,7 @@
 				ADFB3DDC1851428F005C9A0B /* HEAD_plate_armor_helmet.png in Resources */,
 				AD11544416F5273000A9FE87 /* draygon.png in Resources */,
 				AD11544516F5273000A9FE87 /* olroxsquarters.png in Resources */,
+				ADFFB11418542CE800BCEEF1 /* ghostplayer.png in Resources */,
 				ADFB3DDD1851428F005C9A0B /* TORSO_plate_armor_torso.png in Resources */,
 				AD11544616F5273000A9FE87 /* samusvaria.png in Resources */,
 				AD11545116F6D06900A9FE87 /* block2.png in Resources */,
@@ -386,9 +407,8 @@
 				ADFB3DE71851654C005C9A0B /* gun.png in Resources */,
 				AD2B2E6A16FEC9FE0024F163 /* glow.png in Resources */,
 				AD2B2E6C16FECF270024F163 /* glow2.png in Resources */,
-				ADFB3DDF18514331005C9A0B /* baseplayer@2x.png in Resources */,
+				ADFB3DDF18514331005C9A0B /* baseplayer.png in Resources */,
 				AD4B52D418503E8100EF2967 /* player2stand.png in Resources */,
-				AD7E21CB17E29E88003DD9DC /* playersheet.png in Resources */,
 				ADFB3DE518514A0A005C9A0B /* TORSO_plate_armor_arms_shoulders.png in Resources */,
 				AD345BB317E52F5A00E5F66E /* tinyexplosion.png in Resources */,
 				AD345BB517E53A7B00E5F66E /* bigexplosion.png in Resources */,
@@ -414,9 +434,11 @@
 				AD8D68A416F7131F0020EC7B /* TBPoint.m in Sources */,
 				AD8D68A716F793430020EC7B /* TBCreature.m in Sources */,
 				AD4B52DA18505E8B00EF2967 /* TBNPC.m in Sources */,
+				ADFFB10E18541F6A00BCEEF1 /* TBPlayer.m in Sources */,
 				AD2B2E6816FE902C0024F163 /* TBBlockMachine.m in Sources */,
 				ADA6314B1788DA7B005B6B17 /* TBBullet.m in Sources */,
 				ADA6314E1788DCAA005B6B17 /* TBBlock.m in Sources */,
+				ADFFB10B185419FB00BCEEF1 /* TBGame.m in Sources */,
 				AD7E21C917E163D9003DD9DC /* TBAnimatedSprite.m in Sources */,
 				AD7E21CE17E3E2B2003DD9DC /* TBStateSprite.m in Sources */,
 				AD02766D17E5287A003DB992 /* TBExplosion.m in Sources */,
