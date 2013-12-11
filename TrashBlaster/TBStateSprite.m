@@ -94,6 +94,18 @@
     }
 }
 
+- (void)setColor:(GLKVector4)color
+{
+    for (TBStateSprite *sprite in _linkedSprites) {
+        [sprite setColor:color];
+    }
+}
+
+- (GLKVector4)color
+{
+    return GLKVector4Make(1, 1, 1, 1);
+}
+
 - (CGSize)size
 {
     return _activeSize;

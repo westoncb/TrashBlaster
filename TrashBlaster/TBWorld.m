@@ -17,6 +17,8 @@
 #import "TBEventManager.h"
 #import "TBGame.h"
 #import "TBPlayer.h"
+#import "TBExplosion.h"
+#import "TBParticleEmitter.h"
 
 static TBWorld *_world;
 
@@ -130,6 +132,49 @@ static TBWorld *_world;
         [self addEntity:_scoreTextEntity];
         
         self.blockMachine = [[TBBlockMachine alloc] init];
+        
+//        TBParticleEmitter *emmitter = [[TBParticleEmitter alloc] initWithParticleCount:150
+//                                                                              lifetime:3
+//                                                                             spawnRate:0.005f
+//                                                                              position:GLKVector2Make(WIDTH/2 - 22, HEIGHT)
+//                                                                              velocity:GLKVector2Make(0, -200)
+//                                                                          acceleration:GLKVector2Make(20, 100)
+//                                                                                 scale:3.0f
+//                                                                                 color:GLKVector4Make(0.6f, 0.6f, 1, 1)];
+//        [emmitter setVariationWithLifetime:1
+//                                 spawnRate:0.00
+//                                  position:GLKVector2Make(15, 0)
+//                                  velocity:GLKVector2Make(30, 0)
+//                              acceleration:GLKVector2Make(20, 0)
+//                                     scale:0
+//                                     color:GLKVector4Make(0.5f, 0.5f, 0.3f, 0)];
+//        
+//        [self addEntity:emmitter];
+        
+//        TBParticleEmitter *emmitter = [[TBParticleEmitter alloc] initWithParticleCount:150
+//                                                                              lifetime:1.65f
+//                                                                             spawnRate:0.005f
+//                                                                              position:GLKVector2Make(WIDTH/2 - 22, HEIGHT/2)
+//                                                                              velocity:GLKVector2Make(80, 80)
+//                                                                          acceleration:GLKVector2Make(0, -100)
+//                                                                                 scale:2.0f
+//                                                                                 color:GLKVector4Make(1.0f, 0.2f, 0.2f, 1)];
+//        [emmitter setVariationWithLifetime:0.75f
+//                                 spawnRate:0.00
+//                                  position:GLKVector2Make(2, 2)
+//                                  velocity:GLKVector2Make(30, 30)
+//                              acceleration:GLKVector2Make(0, 0)
+//                                     scale:0
+//                                     color:GLKVector4Make(0, 0, 0, 0)];
+//        
+//        [self addEntity:emmitter];
+
+//        TBEvent *event = [[TBEvent alloc] initWithHandler:^(float progress) {
+//            
+//        } completion:^{
+//            emmitter.alive = NO;
+//        } duration:2.0f repeat:NO];
+//        [event start];
     }
 }
 
@@ -217,6 +262,8 @@ static TBWorld *_world;
     _player.layer = 5;
     
     [self addEntity:_player];
+    
+    
 }
 
 - (void)addCreature
@@ -243,12 +290,71 @@ static TBWorld *_world;
     creature.ACCELERATION = 2000;
     creature.DECELERATION = 12000;
     creature.power = 100;
+    creature.life = 50;
     creature.keepImageAfterDeath = NO;
     [creature.collidesWith addObject:[NSNumber numberWithInt:BLOCK]];
+    [creature.collidesWith addObject:[NSNumber numberWithInt:BULLET]];
     creature.type = NPC;
     creature.canShoot = NO;
     creature.reloadTime = 0.1;
+    creature.position = GLKVector2Make(WIDTH, FLOOR_HEIGHT);
     [self addEntity:creature];
+}
+
+- (void)createBulletHitEffectAtEntity:(TBEntity *)entity
+{
+    TBSprite *sprite = [[TBSprite alloc] initWithFile:@"tinyexplosion.png"];
+    TBExplosion *explosion = [[TBExplosion alloc] initWithDrawable:sprite duration:0.2f];
+    explosion.layer = 11;
+    GLKVector2 entityCenter = GLKVector2Make(entity.position.x + entity.size.width/2 - explosion.size.width/2,
+                                             entity.position.y + entity.size.height/2 - explosion.size.height/2);
+    float xVariation = arc4random_uniform(entity.size.width/2.0f);
+    float yVariation = arc4random_uniform(entity.size.height/2.0f);
+    xVariation -= entity.size.width/4.0f;
+    yVariation -= entity.size.height/4.0f;
+    
+    GLKVector2 position = GLKVector2Make(entityCenter.x + xVariation, entityCenter.y + yVariation);
+    explosion.position = position;
+    explosion.velocity = GLKVector2MultiplyScalar(entity.velocity, 0.9f);
+    
+    [self addEntity:explosion];
+}
+
+- (void)createPointDisplayAtEntity:(TBEntity *)entity
+{
+    int pointValue = [[TBGame instance] getCurrentBlockValue];
+    TBStringSprite *stringSprite = [[TBStringSprite alloc] initWithString:[NSString stringWithFormat:@"%i", pointValue]];
+    TBEntity *stringEntity = [[TBEntity alloc] initWithDrawable:stringSprite];
+    float bonusRatio = [TBGame instance].bonusLevel/((float)MAX_BONUS_LEVEL);
+    if (bonusRatio > 1)
+        bonusRatio = 1;
+    
+    float scale = 1 + bonusRatio*0.5f;
+    stringEntity.scale = GLKVector2Make(scale, scale);
+    stringEntity.color = GLKVector4Make((1 - bonusRatio), 1, (1 - bonusRatio), 1);
+    stringEntity.position = GLKVector2Make(entity.position.x + entity.size.width/2 - stringEntity.size.width/2, entity.position.y + stringSprite.size.height/2);
+    
+    //Keep the string on screen
+    if (stringEntity.position.x + stringEntity.size.width > WIDTH)
+        stringEntity.position = GLKVector2Make(WIDTH - stringEntity.size.width, stringEntity.position.y);
+    else if (stringEntity.position.x < 0)
+        stringEntity.position = GLKVector2Make(0, stringEntity.position.y);
+    
+    stringEntity.velocity = entity.velocity;
+    
+    //Shrink it down on the y-axis through time
+    TBEvent *event = [[TBEvent alloc] initWithHandler:^(float progress) {
+        stringEntity.scale = GLKVector2Make(scale, scale*(1 - progress*progress*progress));
+    } completion:^{
+        stringEntity.alive = NO;
+    } duration:1.0f repeat:NO];
+    [event start];
+    
+    //Popping effect
+    stringEntity.velocity = GLKVector2Add(stringEntity.velocity, GLKVector2Make(0, 200));
+    stringEntity.acceleration = GLKVector2Make(0, -250);
+    
+    [self addEntity:stringEntity];
 }
 
 - (void)updateScoreDisplay
@@ -302,7 +408,8 @@ static TBWorld *_world;
             return YES;
         }
         
-        [entity update:delta];
+        if (entity.alive)
+            [entity updateWithTimeDelta:delta];
     }
     for (TBEntity * entity in self.addEntityBuffer) {
         [self.entities addObject:entity];
@@ -404,6 +511,7 @@ static TBWorld *_world;
 {
     for (TBEntity *entity in self.entities) {
         if (!entity.alive) {
+            [entity handleDeath];
             [self removeEntity:entity];
         }
     }
@@ -443,11 +551,6 @@ static TBWorld *_world;
             [self.blockMachine alterColumnCount:colIndex adder:1];
         }
     }
-}
-
-- (void)blockWasDestroyed
-{
-    
 }
 
 - (void)movePlayerTo:(GLKVector2)dest {

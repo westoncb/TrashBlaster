@@ -26,7 +26,7 @@
 - (id)init {
     self = [super init];
     if(self) {
-        self.blockDelay = 0.5f;
+        self.blockDelay = 0.55f;
         self.blockSprite = [[TBSprite alloc] initWithFile:@"block.png"];
         _dummyBlock = [[TBBlock alloc] initWithSprite:self.blockSprite];
         _dummyBlock.position = GLKVector2Make(0, INT_MAX);
@@ -65,7 +65,7 @@
         TBBlock *topBlock = [_topBlocks objectAtIndex:colIndex];
         [topBlock setBlockAbove:block];
         [block setBlockBelow:topBlock];
-        [_topBlocks setObject:block atIndexedSubscript:colIndex];
+        [self setTopBlockAtColIndex:colIndex block:block];
     }
     
     return block;
@@ -89,12 +89,14 @@
 - (TBBlock *)getTopSettledBlockAtColIndex:(int)colIndex
 {
     TBBlock *candidate = [self getTopBlockAtColIndex:colIndex];
-    while (!candidate.resting && candidate != self.dummyBlock) {
+    while ((!candidate.resting || !candidate.alive) && candidate != self.dummyBlock) {
+        if (candidate && !candidate.alive) {
+            [_topBlocks setObject:self.dummyBlock atIndexedSubscript:colIndex];
+            [[candidate getBlockAbove] setBlockBelow:self.dummyBlock];
+        }
+        
         candidate = [candidate getBlockBelow];
     }
-    
-    if (candidate == self.dummyBlock)
-        candidate = nil;
     
     return candidate;
 }

@@ -8,14 +8,17 @@
 
 #import <Foundation/Foundation.h>
 
-static const float BONUS_SCORE_OPPORTUNITY_DURATION = 1.5f;
+static const float BONUS_SCORE_OPPORTUNITY_DURATION = 1.7f;
 static const int BASE_BLOCK_VALUE = 10;
-static const int MAX_BONUS_LEVEL = 8;
+static const int MAX_BONUS_LEVEL = 9;
+static const float MONSTER_SPAWN_DELAY = 5.0f;
 
 @interface TBGame : NSObject {
     float _timeSinceLastScore;
     int _score;
     int _scoreMultiplier;
+    
+    float _timeSinceLastMonsterSpawn;
 }
 
 @property int bonusLevel;

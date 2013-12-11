@@ -8,6 +8,8 @@
 #import "TBSprite.h"
 #import "TBWorld.h"
 
+static NSMutableDictionary *_textureCache;
+
 @implementation TBSprite : NSObject
 @synthesize size = _size;
 @synthesize xFlip = _xFlip;
@@ -17,6 +19,7 @@
 - (id)initWithFile:(NSString *)fileName xStart:(float)xStart yStart:(float)yStart width:(float)width height:(float)height
 {
     self = [super init];
+    
     if(self) {
         _renderX = xStart;
         _renderY = yStart;
@@ -63,6 +66,14 @@
 
 - (void)loadTextureFromFileName:(NSString *)fileName
 {
+    if (!_textureCache)
+        _textureCache = [NSMutableDictionary dictionary];
+    
+    //Use cached version if possible
+    self.textureInfo = [_textureCache objectForKey:fileName];
+    if (self.textureInfo)
+        return;
+    
     NSDictionary * options = [NSDictionary dictionaryWithObjectsAndKeys:
                               [NSNumber numberWithBool:YES],
                               GLKTextureLoaderOriginBottomLeft,
@@ -75,7 +86,8 @@
     self.textureInfo = [GLKTextureLoader textureWithContentsOfFile:path options:options error:&error];
     if (self.textureInfo == nil) {
         NSLog(@"Error loading file: %@", [error localizedDescription]);
-    }
+    } else
+        [_textureCache setObject:self.textureInfo forKey:fileName];
 }
 
 - (void)createQuad {

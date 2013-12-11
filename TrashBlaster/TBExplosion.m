@@ -21,10 +21,10 @@
     return self;
 }
 
-- (void)update:(float)dt {
-    [super update:dt];
+- (void)updateWithTimeDelta:(float)delta {
+    [super updateWithTimeDelta:delta];
     
-    _timePassed += dt;
+    _timePassed += delta;
     
     if (_timePassed > _duration) {
         self.alive = NO;

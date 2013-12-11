@@ -33,6 +33,7 @@
         self.alive = true;
         self.maxSpeed = NSIntegerMax;
         self.type = DECORATION;
+        _color = GLKVector4Make(1, 1, 1, 1);
         _subEntities = [NSMutableArray array];
         _attachmentPoints = [NSMutableDictionary dictionary];
     }
@@ -40,8 +41,9 @@
     return self;
 }
 
-- (void)update:(float)dt {    
-    GLKVector2 velocityIncrement = GLKVector2MultiplyScalar(self.acceleration, dt);
+- (void)updateWithTimeDelta:(float)delta
+{    
+    GLKVector2 velocityIncrement = GLKVector2MultiplyScalar(self.acceleration, delta);
     
     float newXVol = self.velocity.x + velocityIncrement.x;
     float newYVol = self.velocity.y + velocityIncrement.y;
@@ -56,7 +58,7 @@
     self.velocity = GLKVector2Add(self.velocity, velocityIncrement);
     
     //It simplifies things to handle deceleration seperately, rather than just treating it as reverse acceleration
-    GLKVector2 velocityDecrement = GLKVector2MultiplyScalar(self.deceleration, dt);
+    GLKVector2 velocityDecrement = GLKVector2MultiplyScalar(self.deceleration, delta);
     newXVol = self.velocity.x + velocityDecrement.x;
     newYVol = self.velocity.y + velocityDecrement.y;
     if (fabsf(newXVol) > fabsf(self.velocity.x)) { //deceleration should never increase speed -- dampen to zero instead
@@ -70,9 +72,9 @@
     
     self.velocity = GLKVector2Add(self.velocity, velocityDecrement);
     
-    [self updateMotion:dt];
-    self.lastDelta = dt;
-    [self.drawable updateWithTimeDelta:dt];
+    [self updateMotion:delta];
+    self.lastDelta = delta;
+    [self.drawable updateWithTimeDelta:delta];
 }
 
 - (void)addSubEntity:(TBEntity *)entity attachX:(float)x attachY:(float)y
@@ -138,7 +140,10 @@
         }
     }
     
+    GLKVector4 oldColor = [self.drawable color];
+    [self.drawable setColor:self.color];
     [self.drawable renderWithModelMatrix:modelMatrix];
+    [self.drawable setColor:oldColor];
     
     for (int i = 0; i < _subEntities.count; i++) {
         TBEntity *entity = [_subEntities objectAtIndex:i];
@@ -206,17 +211,9 @@
     return otherObject.position.y - self.position.y;
 }
 
-- (NSString *)description {
-    return [NSString stringWithFormat:@"layer: %i", self.layer];
-}
-
-- (void)setLife:(int)life {
-    _life = life;
-    if (_life <= 0) {
-        self.alive = false;
-    [self handleDeath];
-    }
-}
+//- (NSString *)description {
+//    return [NSString stringWithFormat:@"layer: %i", self.layer];
+//}
 
 - (NSString *)key
 {
@@ -242,6 +239,14 @@
 - (CGSize)baseSize
 {
     return [_drawable size];
+}
+
+- (void)setLife:(int)life {
+    _life = life;
+    
+    if (_life <= 0) {
+        self.alive = false;
+    }
 }
 
 - (int)life {

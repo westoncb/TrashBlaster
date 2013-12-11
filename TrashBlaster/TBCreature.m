@@ -13,6 +13,8 @@
 #import "TBAnimatedSprite.h"
 #import "TBBlockMachine.h"
 #import "TBEvent.h"
+#import "TBPlayer.h"
+#import "TBGame.h"
 
 @interface TBCreature()
 @property BOOL startedMoving;
@@ -61,7 +63,7 @@
         [self addSubEntity:glow];
         glow.scale = GLKVector2Make(0, 0);
         glow.layer = 1;
-        glowSprite.color = GLKVector4Make(1, 0, 0, 1);
+        glow.color = GLKVector4Make(1, 0, 0, 1);
         glowSprite.additiveBlending = YES;
 
         [_glows addObject:glow];
@@ -142,7 +144,7 @@
     self.velocity = GLKVector2Add(self.velocity, newVelocity);
 }
 
-- (void)update:(float)dt {
+- (void)updateWithTimeDelta:(float)delta {
     if (self.destPoints.count > 0) {
         _destPoint = [self.destPoints objectAtIndex:0];
         int colIndex = [[TBWorld instance] xPositionToColumn:_destPoint.x];
@@ -184,9 +186,11 @@
         }
     }
 
-    [self updateGunWithTimeDelta:dt];
+    [self updateGunWithTimeDelta:delta];
 
     if (_deathBlock) {
+        if (self.position.y + self.size.height > _deathBlock.position.y + _deathBlock.collisionyoff*2)
+            self.position = GLKVector2Make(self.position.x, _deathBlock.position.y + _deathBlock.collisionyoff*2 - self.size.height);
         float distanceFromGround = _deathBlock.position.y - [self getGroundHeightBeneathPlayer];
         float yScale = (distanceFromGround/[self baseSize].height);
         float minYScale = 0.1;
@@ -203,13 +207,13 @@
         }
     }
     
-    [super update:dt];
+    [super updateWithTimeDelta:delta];
 }
 
 - (void)updateGunWithTimeDelta:(float)delta
 {
     self.lastBulletTime += delta;
-    if(_canShoot && self.lastBulletTime > self.reloadTime) {
+    if(_canShoot && self.lastBulletTime > self.reloadTime && !_deathBlock) {
         self.lastBulletTime -= self.reloadTime;
         [self fireBullet];
     }
@@ -255,6 +259,8 @@
     
     float playerXCenter = newPosition.x + self.size.width/2.0f;
     int column = [world xPositionToColumn:playerXCenter];
+    if (column >= NUM_COLS)
+        column = NUM_COLS - 1;
     TBBlock *underBlock = [blockMachine getTopSettledBlockAtColIndex:column];
     float floorHeight = [self getGroundHeightAtPoint:playerXCenter];
     
@@ -276,7 +282,8 @@
         nextBlock != blockMachine.dummyBlock &&
         !_jumping &&
         nextBlock != underBlock &&
-        self.position.y < nextBlock.position.y) {
+        self.position.y < nextBlock.position.y &&
+        fabsf(self.velocity.x > 20)) {
         
         [self jump];
         
@@ -300,6 +307,21 @@
         if (block.velocity.y < -50 && !_deathBlock && [block shouldDamagePlayer] && distanceFromGround <= self.size.height)
             [self initiateDeathSequenceWithBlock:block];
     }
+    
+    if (self.type == NPC) {
+        if (collider.type == BULLET) {
+            TBBullet *bullet = (TBBullet *)collider;
+            self.life -= bullet.damage;
+            
+            if (self.life <= 0) {
+                if (self.type == NPC)
+                {
+                    [[TBGame instance] blockWasDestroyed];
+                    [[TBWorld instance] createPointDisplayAtEntity:self];
+                }
+            }
+        }
+    }
 }
 
 - (void)initiateDeathSequenceWithBlock:(TBBlock *)block
@@ -307,9 +329,9 @@
     float distanceFromGround = block.position.y - [self getGroundHeightBeneathPlayer];
     
     if (distanceFromGround > self.size.height/2.0f) {
-        self.reloadTime = INT_MAX;
+//        self.reloadTime = INT_MAX;
         _deathBlock = block;
-        _deathBlock.life = INT_MAX;
+//        _deathBlock.life = INT_MAX;
         self.velocity = GLKVector2Make(0, 0);
         self.acceleration = GLKVector2Make(0, 0);
         [self.destPoints removeAllObjects];
@@ -343,7 +365,7 @@
     self.bulletSprite.yFlip = NO;
     TBBullet *bullet = [[TBBullet alloc] initWithDrawable:self.bulletSprite];
     bullet.damage = self.power;
-    bullet.position = GLKVector2Make(self.position.x + self.size.width/2 - self.bulletSprite.size.width/2 + self.xChange, self.position.y + self.size.height - 10 + self.yChange);
+    bullet.position = GLKVector2Make(self.position.x + self.size.width/2 - bullet.size.width/2 + self.xChange, self.position.y + self.size.height - 10 + self.yChange);
     
     if (!_running && done) {
         bullet.velocity = GLKVector2Make(0, 300);
@@ -359,7 +381,6 @@
         GLKVector2 bulletDirection = GLKVector2Normalize(bulletPath);
         
         bullet.velocity = GLKVector2MultiplyScalar(bulletDirection, 300.0f);
-//        bullet.velocity = GLKVector2Subtract(bullet.velocity, self.velocity);
         
         float plainRotation = acos(bulletDirection.x);
         
@@ -375,11 +396,11 @@
         bullet.rotation = plainRotation - M_PI/2;
         
         float cosOfRotation = cos(plainRotation);
-        float sizeOfBullet = 25;
-        float xShift = cosOfRotation*sizeOfBullet;
+        float sizeOfGun = 25;
+        float xShift = cosOfRotation*sizeOfGun;
         
         float sinOfRotation = sin(plainRotation);
-        float yShift = sinOfRotation*sizeOfBullet;
+        float yShift = sinOfRotation*sizeOfGun;
         
         bullet.position = GLKVector2Make(bullet.position.x + xShift, bullet.position.y + yShift - 16);
     }

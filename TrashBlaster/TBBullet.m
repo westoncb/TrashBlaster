@@ -9,12 +9,14 @@
 #import "TBBullet.h"
 
 @implementation TBBullet
+
 - (id)initWithDrawable:(id<TBDrawable>)drawable
 {
     self = [super initWithDrawable:drawable];
-    
+
     if (self) {
         _damage = 10;
+        self.layer = 10;
     }
     
     return self;
@@ -25,4 +27,5 @@
     
     self.alive = false;
 }
+
 @end

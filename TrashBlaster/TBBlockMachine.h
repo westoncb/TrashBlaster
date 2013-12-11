@@ -11,8 +11,8 @@
 
 static const int NUM_COLS = 10;
 static const int COL_WIDTH = 32;
-static const float INITIAL_BLOCK_VELOCITY = -50;
-static const float BLOCK_ACCELERATION = -20;
+static const float INITIAL_BLOCK_VELOCITY = -30;
+static const float BLOCK_ACCELERATION = -75;
 
 @interface TBBlockMachine : NSObject {
     int blocksInColumns[NUM_COLS];

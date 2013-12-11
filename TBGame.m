@@ -45,11 +45,21 @@ static TBGame *_game;
     if (_timeSinceLastScore < BONUS_SCORE_OPPORTUNITY_DURATION) {
         [[[TBWorld instance] getPlayer] increaseGlow];
         
-        _bonusLevel++;
+        [self increaseBonusLevel];
+        
         _scoreMultiplier = _bonusLevel + 1;
     }
     
     _timeSinceLastScore = 0;
+}
+
+- (void)increaseBonusLevel
+{
+    _bonusLevel++;
+    
+    if (_bonusLevel > MAX_BONUS_LEVEL) {
+        _bonusLevel = MAX_BONUS_LEVEL;
+    }
 }
 
 - (int)getScore
@@ -64,7 +74,16 @@ static TBGame *_game;
     if (_timeSinceLastScore > BONUS_SCORE_OPPORTUNITY_DURATION) {
         _bonusLevel = 0;
         _scoreMultiplier = 1;
+        _timeSinceLastMonsterSpawn = 0.0f;
         [[[TBWorld instance] getPlayer] endGlow];
+    }
+    
+    if (_bonusLevel == MAX_BONUS_LEVEL) {
+        _timeSinceLastMonsterSpawn += delta;
+        if (_timeSinceLastMonsterSpawn > MONSTER_SPAWN_DELAY) {
+            _timeSinceLastMonsterSpawn = 0.0f;
+            [[TBWorld instance] addCreature];
+        }
     }
 }
 

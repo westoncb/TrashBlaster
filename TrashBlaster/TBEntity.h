@@ -23,6 +23,8 @@
 @property GLKVector2 velocity;
 @property GLKVector2 position;
 @property GLKVector2 scale;
+@property GLKVector4 color;
+@property float timeTillExpiration;
 @property int layer;
 @property float rotation;
 @property CGSize size;
@@ -48,11 +50,13 @@ typedef enum {
     BULLET,
     DECORATION,
     NPC,
-    CONTROL_POINT
+    CONTROL_POINT,
+    PARTICLE_EFFECT,
+    PARTICLE
 } EntityType;
 
 - (id)initWithDrawable:(id<TBDrawable>)drawable;
-- (void)update:(float)dt;
+- (void)updateWithTimeDelta:(float)delta;
 - (void)render;
 - (BOOL)doCollisionCheck:(TBEntity *)other;
 - (void)handleCollision:(TBEntity *)collider wasTheProtruder:(BOOL)retractSelf;
@@ -64,4 +68,5 @@ typedef enum {
 - (void)updateMotion:(float)dt;
 - (GLKVector2)vetNewPosition:(GLKVector2)newPosition;
 - (CGSize)baseSize;
+- (void)handleDeath;
 @end

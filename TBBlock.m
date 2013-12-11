@@ -14,6 +14,7 @@
 #import "TBStringSprite.h"
 #import "TBEvent.h"
 #import "TBGame.h"
+#import "TBParticleEmitter.h"
 
 @implementation TBBlock
 - (id)initWithSprite:(TBSprite *)sprite
@@ -28,8 +29,9 @@
         self.type = BLOCK;
         _initialLife = 75;
         self.life = _initialLife;
-        _resting = NO;
+        _resting = YES;
         _initialFall = YES;
+        self.layer = 8;
     }
     
     return self;
@@ -40,15 +42,15 @@
     
     if (collider.type == BULLET) {
         self.velocity = GLKVector2Make(0, self.velocity.y + 2);
-        if (self.velocity.y > 0)
-            self.velocity = GLKVector2Make(0, 0);
+        if (self.velocity.y > -20)
+            self.velocity = GLKVector2Make(0, -20);
         TBBullet *bullet = (TBBullet *)collider;
-        self.life -= bullet.damage;
-//        TBSprite *sprite = (TBSprite *)self.drawable;
-//        sprite.color = GLKVector4Make(1, (self.life/_initialLife), (self.life/_initialLife), 1.0f);
-        [self createBulletHitEffectAtPoint:bullet.position];
         
-    } else if (collider.type == PLAYER) {
+        self.life -= bullet.damage;
+        
+//        self.color = GLKVector4Make(1, (self.life/_initialLife), (self.life/_initialLife), 1.0f);
+        [[TBWorld instance] createBulletHitEffectAtEntity:self];
+    } else if (collider.type == PLAYER || collider.type == NPC) {
         if (!_hitPlayer) {
             _hitPlayer = true;
             self.velocity = GLKVector2Make(self.velocity.x, self.velocity.y * 0.75f);
@@ -59,7 +61,7 @@
 - (void)handleDeath
 {
     [self createExplosionAtPoint:self.position];
-    [self createPointDisplayAtPoint:self.position];
+    [[TBWorld instance] createPointDisplayAtEntity:self];
     
     TBBlockMachine *blockMachine = [TBWorld instance].blockMachine;
     int colIndex = [self getColumnIndex];
@@ -77,49 +79,11 @@
     [tempBlockAbove setBlockBelow:_blockBelow];
     
     [[TBGame instance] blockWasDestroyed];
-    [[TBWorld instance] blockWasDestroyed];
 }
 
 - (int)getColumnIndex
 {
     return self.position.x/self.size.width;
-}
-
-- (void)createPointDisplayAtPoint:(GLKVector2)point
-{
-    int pointValue = [[TBGame instance] getCurrentBlockValue];
-    TBStringSprite *stringSprite = [[TBStringSprite alloc] initWithString:[NSString stringWithFormat:@"%i", pointValue]];
-    TBEntity *stringEntity = [[TBEntity alloc] initWithDrawable:stringSprite];
-    float bonusRatio = [TBGame instance].bonusLevel/((float)MAX_BONUS_LEVEL);
-    if (bonusRatio > 1)
-        bonusRatio = 1;
-    
-    float scale = 1 + bonusRatio;
-    stringEntity.scale = GLKVector2Make(scale, scale);
-    stringSprite.color = GLKVector4Make((1 - bonusRatio), 1, (1 - bonusRatio), 1);
-    stringEntity.position = GLKVector2Make(point.x + self.size.width/2 - stringEntity.size.width/2, point.y + stringSprite.size.height/2);
-
-    //Keep the string on screen
-    if (stringEntity.position.x + stringEntity.size.width > WIDTH)
-        stringEntity.position = GLKVector2Make(WIDTH - stringEntity.size.width, stringEntity.position.y);
-    else if (stringEntity.position.x < 0)
-        stringEntity.position = GLKVector2Make(0, stringEntity.position.y);
-    
-    stringEntity.velocity = self.velocity;
-    
-    //Shrink it down on the y-axis through time
-    TBEvent *event = [[TBEvent alloc] initWithHandler:^(float progress) {
-        stringEntity.scale = GLKVector2Make(scale, scale*(1 - progress*progress*progress));
-    } completion:^{
-        stringEntity.alive = NO;
-    } duration:1.0f repeat:NO];
-    [event start];
-    
-    //Popping effect
-    stringEntity.velocity = GLKVector2Add(stringEntity.velocity, GLKVector2Make(0, 200));
-    stringEntity.acceleration = GLKVector2Make(0, -250);
-    
-    [[TBWorld instance] addEntity:stringEntity];
 }
 
 - (void)createExplosionAtPoint:(GLKVector2)point
@@ -133,7 +97,8 @@
     float animationLength = (animInfo.frameLength * animInfo.frameCount)/1000.0f;
     TBAnimatedSprite *sprite = [[TBAnimatedSprite alloc] initWithFile:@"bigexplosion.png" animationInfo:animInfo];
     TBExplosion *explosion = [[TBExplosion alloc] initWithDrawable:sprite duration:animationLength];
-    explosion.position = point;
+    explosion.position = GLKVector2Make(point.x + self.size.width/2 - explosion.size.width/2,
+                                        point.y + self.size.height/2 - explosion.size.height/2);
     explosion.velocity = GLKVector2MultiplyScalar(self.velocity, 0.75f);
 //    self.scale = GLKVector2Make(2, 2);
     
@@ -145,22 +110,29 @@
 //    [event start];
     
     [[TBWorld instance] addEntity:explosion];
+    
+//    [self createExplosionSmoke];
 }
 
-
-- (void)createBulletHitEffectAtPoint:(GLKVector2)point
+- (GLKVector2)vetNewPosition:(GLKVector2)newPosition
 {
-    TBSprite *sprite = [[TBSprite alloc] initWithFile:@"tinyexplosion.png"];
-    TBExplosion *explosion = [[TBExplosion alloc] initWithDrawable:sprite duration:0.2f];
-    explosion.position = point;
-    explosion.velocity = GLKVector2MultiplyScalar(self.velocity, 0.9f);
+//    float blockBelowTop = _blockBelow.position.y + _blockBelow.size.height - _blockBelow.collisionyoff;
+//    TBBlockMachine *blockMachine = [TBWorld instance].blockMachine;
+//    
+//    if (_blockBelow && _blockBelow != blockMachine.dummyBlock &&  newPosition.y < blockBelowTop)
+//        newPosition = GLKVector2Make(newPosition.x, blockBelowTop - _blockBelow.size.height);
     
-    [[TBWorld instance] addEntity:explosion];
+    return newPosition;
 }
 
 - (void)setBlockAbove:(TBBlock *)block
 {
     _blockAbove = block;
+}
+
+- (TBBlock *)getBlockAbove
+{
+    return _blockAbove;
 }
 
 - (void)removeBlockAbove
@@ -185,8 +157,10 @@
 
 - (void)setToFallingState
 {
-    [self setAcceleration:GLKVector2Make(0, BLOCK_ACCELERATION)];
-    [self setVelocity:GLKVector2Make(0, INITIAL_BLOCK_VELOCITY)];
+    if (_resting) {
+        [self setAcceleration:GLKVector2Make(0, BLOCK_ACCELERATION)];
+        [self setVelocity:GLKVector2Make(0, INITIAL_BLOCK_VELOCITY)];
+    }
     
     if (_blockAbove) {
         [_blockAbove setToFallingState];
@@ -195,8 +169,73 @@
     _resting = NO;
 }
 
+- (void)createExplosionSmoke
+{
+    TBParticleEmitter *emmitter = [[TBParticleEmitter alloc] initWithParticleCount:20
+                                                                          lifetime:0.5f
+                                                                         spawnRate:0.0001f
+                                                                          position:GLKVector2Make(-5, 0)
+                                                                          velocity:GLKVector2Make(0, 20)
+                                                                      acceleration:GLKVector2Make(0, 100)
+                                                                             scale:1.0f
+                                                                             color:GLKVector4Make(1, 1, 1, 0.75f)];
+    [emmitter setVariationWithLifetime:0.1f
+                             spawnRate:0.00
+                              position:GLKVector2Make(25, 0)
+                              velocity:GLKVector2Make(30, 0)
+                          acceleration:GLKVector2Make(20, 30)
+                                 scale:0
+                                 color:GLKVector4Make(0, 0, 0, 0)];
+    
+    [[TBWorld instance] addEntity:emmitter];
+    
+    emmitter.layer = 12;
+    emmitter.position = GLKVector2Make(self.position.x + self.size.width/2, self.position.y + self.size.height/2);
+    emmitter.velocity = self.velocity;
+    
+    TBEvent *event = [[TBEvent alloc] initWithHandler:^(float progress) {
+    } completion:^{
+        emmitter.alive = NO;
+    } duration:3 repeat:NO];
+    [event start];
+}
+
+- (void)createSmokeEffect
+{
+    TBParticleEmitter *emmitter = [[TBParticleEmitter alloc] initWithParticleCount:20
+                                                                          lifetime:0.25f
+                                                                         spawnRate:0.0001f
+                                                                          position:GLKVector2Make(-5, 7 - (self.size.height - self.collisionyoff))
+                                                                          velocity:GLKVector2Make(0, -20)
+                                                                      acceleration:GLKVector2Make(0, 100)
+                                                                             scale:2.0f
+                                                                             color:GLKVector4Make(1, 1, 1, 1)];
+    [emmitter setVariationWithLifetime:0.1f
+                             spawnRate:0.00
+                              position:GLKVector2Make(25, 0)
+                              velocity:GLKVector2Make(30, 0)
+                          acceleration:GLKVector2Make(20, 30)
+                                 scale:0.75f
+                                 color:GLKVector4Make(0, 0, 0, 0)];
+    
+    [[TBWorld instance] addEntity:emmitter];
+    
+    emmitter.layer = 12;
+    emmitter.position = GLKVector2Make(self.position.x + self.size.width/2, self.position.y + self.size.height/2);
+    
+    TBEvent *event = [[TBEvent alloc] initWithHandler:^(float progress) {
+    } completion:^{
+        emmitter.alive = NO;
+    } duration:0.5f repeat:NO];
+    [event start];
+}
+
 - (void)setToRestingState
 {
+    if (!_resting) {
+        [self createSmokeEffect];
+    }
+    
     [self setAcceleration:GLKVector2Make(0, 0)];
     [self setVelocity:GLKVector2Make(0, 0)];
     _initialFall = NO;

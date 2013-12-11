@@ -52,6 +52,8 @@
 		AD8D68A916F7B9C80020EC7B /* bullet.png in Resources */ = {isa = PBXBuildFile; fileRef = AD8D68A816F7B9C80020EC7B /* bullet.png */; };
 		ADA6314B1788DA7B005B6B17 /* TBBullet.m in Sources */ = {isa = PBXBuildFile; fileRef = ADA6314A1788DA7B005B6B17 /* TBBullet.m */; };
 		ADA6314E1788DCAA005B6B17 /* TBBlock.m in Sources */ = {isa = PBXBuildFile; fileRef = ADA6314D1788DCA9005B6B17 /* TBBlock.m */; };
+		ADC4D6E81857B82600EBDE45 /* TBParticleEmitter.m in Sources */ = {isa = PBXBuildFile; fileRef = ADC4D6E71857B82600EBDE45 /* TBParticleEmitter.m */; };
+		ADC4D6EA1857E87600EBDE45 /* particle.png in Resources */ = {isa = PBXBuildFile; fileRef = ADC4D6E91857E87600EBDE45 /* particle.png */; };
 		ADFB3DD718508F49005C9A0B /* test.png in Resources */ = {isa = PBXBuildFile; fileRef = ADFB3DD618508F49005C9A0B /* test.png */; };
 		ADFB3DDB1851428F005C9A0B /* FEET_plate_armor_shoes.png in Resources */ = {isa = PBXBuildFile; fileRef = ADFB3DD81851428F005C9A0B /* FEET_plate_armor_shoes.png */; };
 		ADFB3DDC1851428F005C9A0B /* HEAD_plate_armor_helmet.png in Resources */ = {isa = PBXBuildFile; fileRef = ADFB3DD91851428F005C9A0B /* HEAD_plate_armor_helmet.png */; };
@@ -149,6 +151,9 @@
 		ADA6314A1788DA7B005B6B17 /* TBBullet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TBBullet.m; sourceTree = "<group>"; };
 		ADA6314C1788DCA9005B6B17 /* TBBlock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TBBlock.h; sourceTree = "<group>"; };
 		ADA6314D1788DCA9005B6B17 /* TBBlock.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TBBlock.m; sourceTree = "<group>"; };
+		ADC4D6E61857B82600EBDE45 /* TBParticleEmitter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TBParticleEmitter.h; sourceTree = "<group>"; };
+		ADC4D6E71857B82600EBDE45 /* TBParticleEmitter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TBParticleEmitter.m; sourceTree = "<group>"; };
+		ADC4D6E91857E87600EBDE45 /* particle.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = particle.png; sourceTree = "<group>"; };
 		ADFB3DD618508F49005C9A0B /* test.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = test.png; sourceTree = "<group>"; };
 		ADFB3DD81851428F005C9A0B /* FEET_plate_armor_shoes.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = FEET_plate_armor_shoes.png; sourceTree = "<group>"; };
 		ADFB3DD91851428F005C9A0B /* HEAD_plate_armor_helmet.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = HEAD_plate_armor_helmet.png; sourceTree = "<group>"; };
@@ -193,6 +198,8 @@
 		AD1153D616F467D600A9FE87 = {
 			isa = PBXGroup;
 			children = (
+				ADC4D6E61857B82600EBDE45 /* TBParticleEmitter.h */,
+				ADC4D6E71857B82600EBDE45 /* TBParticleEmitter.m */,
 				ADFFB10C18541F6A00BCEEF1 /* TBPlayer.h */,
 				ADFFB10D18541F6A00BCEEF1 /* TBPlayer.m */,
 				ADFFB109185419FB00BCEEF1 /* TBGame.h */,
@@ -289,6 +296,7 @@
 				ADFFB11518542D8C00BCEEF1 /* BODY_skeleton.png */,
 				AD2B2E6B16FECF270024F163 /* glow2.png */,
 				ADFFB11318542CE800BCEEF1 /* ghostplayer.png */,
+				ADC4D6E91857E87600EBDE45 /* particle.png */,
 				ADFFB10F1854266C00BCEEF1 /* glow3.png */,
 				ADFB3DE818516E31005C9A0B /* point.png */,
 				ADFB3DE61851654C005C9A0B /* gun.png */,
@@ -376,6 +384,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				ADFB3DE3185148FB005C9A0B /* LEGS_plate_armor_pants.png in Resources */,
+				ADC4D6EA1857E87600EBDE45 /* particle.png in Resources */,
 				AD1153ED16F467D600A9FE87 /* InfoPlist.strings in Resources */,
 				ADFB3DEB1852BDED005C9A0B /* background2.png in Resources */,
 				ADFB3DE918516E31005C9A0B /* point.png in Resources */,
@@ -422,6 +431,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				ADC4D6E81857B82600EBDE45 /* TBParticleEmitter.m in Sources */,
 				AD1153EF16F467D600A9FE87 /* main.m in Sources */,
 				AD1153F316F467D600A9FE87 /* AppDelegate.m in Sources */,
 				AD4B52CF18501FB900EF2967 /* TBStringSprite.m in Sources */,

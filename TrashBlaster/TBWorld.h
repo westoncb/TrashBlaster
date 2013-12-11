@@ -19,7 +19,7 @@
 static GLKBaseEffect *effect;
 static const int WIDTH = 320;
 static const int HEIGHT = 567;
-static const int FLOOR_HEIGHT = 43;
+static const int FLOOR_HEIGHT = 39;
 static const int GRAVITY_ACCELERATION = -200;
 
 @interface TBWorld : NSObject {
@@ -52,6 +52,8 @@ static const int GRAVITY_ACCELERATION = -200;
 - (void)handleFingerLiftedWithPoint:(CGPoint)point;
 - (void)start;
 - (void)setFramesPerSecond:(int)fps;
-- (void)blockWasDestroyed;
+- (void)addCreature;
+- (void)createPointDisplayAtEntity:(TBEntity *)entity;
+- (void)createBulletHitEffectAtEntity:(TBEntity *)entity;
 - (TBPlayer *)getPlayer;
 @end

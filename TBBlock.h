@@ -28,6 +28,7 @@
 - (void)setBlockBelow:(TBBlock *)block;
 - (void)removeBlockBelow;
 - (TBBlock *)getBlockBelow;
+- (TBBlock *)getBlockAbove;
 - (void)setToFallingState;
 - (void)setToRestingState;
 - (BOOL)shouldDamagePlayer;

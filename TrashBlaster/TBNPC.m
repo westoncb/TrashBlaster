@@ -10,13 +10,13 @@
 
 @implementation TBNPC
 
-- (void)update:(float)dt {
+- (void)updateWithTimeDelta:(float)delta {
     _delay = 0.0f;
     
-    [super update:dt];
+    [super updateWithTimeDelta:delta];
     
     if (self.destPoints.count == 0) {
-        _delayedSoFar += dt;
+        _delayedSoFar += delta;
     }
     
     if (_delayedSoFar > _delay) {
