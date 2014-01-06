@@ -15,15 +15,31 @@
 @end
 
 @implementation TBEntity
+@synthesize parent = _parent;
 @synthesize life = _life;
 @synthesize size = _size;
+@synthesize collisionsize = _collisionsize;
+@synthesize collisionxoff = _collisionxoff;
+@synthesize collisionyoff = _collisionyoff;
 
 - (id)initWithDrawable:(id<TBDrawable>)drawable {
-    self = [super init];
+    self = [self init];
     if(self) {
         _drawable = drawable;
-        _collidesWith = [NSMutableArray array];
         self.size = CGSizeMake(drawable.size.width, drawable.size.height);
+    }
+    
+    return self;
+}
+
+- (id)init
+{
+    self = [super init];
+    
+    if (self) {
+        _collidesWith = [NSMutableArray array];
+        
+        self.size = CGSizeMake(1, 1);
         self.collisionsize = CGSizeMake(_size.width, _size.height);
         self.acceleration = GLKVector2Make(0, 0);
         self.deceleration = GLKVector2Make(0, 0);
@@ -75,11 +91,20 @@
     [self updateMotion:delta];
     self.lastDelta = delta;
     [self.drawable updateWithTimeDelta:delta];
+    
+    for (TBEntity *entity in _subEntities) {
+        [entity updateWithTimeDelta:delta];
+    }
+}
+
+- (void)addSubEntity:(TBEntity *)entity
+{
+    [self addSubEntity:entity attachX:0 attachY:0];
 }
 
 - (void)addSubEntity:(TBEntity *)entity attachX:(float)x attachY:(float)y
 {
-    entity.parent = entity;
+    [entity setParent:self];
     [_subEntities addObject:entity];
 
     [self changeAttachmentPointForSubEntity:entity attachX:x attachY:y];
@@ -91,13 +116,9 @@
     [_attachmentPoints setObject:valuePoint forKey:[entity key]];
 }
 
-- (void)addSubEntity:(TBEntity *)entity
-{
-    [self addSubEntity:entity attachX:0 attachY:0];
-}
-
 - (void)removeSubEntity:(TBEntity *)entity
 {
+    entity.parent = nil;
     [_subEntities removeObject:entity];
     [_attachmentPoints removeObjectForKey:[entity key]];
 }
@@ -124,6 +145,7 @@
 {
     modelMatrix = GLKMatrix4Translate(modelMatrix, self.position.x, self.position.y, 0);
     modelMatrix = GLKMatrix4Scale(modelMatrix, self.scale.x, self.scale.y, 1.0f);
+//    modelMatrix = GLKMatrix4Translate(modelMatrix, self.size.width/2*self.scale.x, self.size.height/2*self.scale.y, 0);
     modelMatrix = GLKMatrix4Translate(modelMatrix, self.size.width/2, 0, 0);
     modelMatrix = GLKMatrix4Rotate(modelMatrix, _rotation, 0, 0, 1);
     modelMatrix = GLKMatrix4Translate(modelMatrix, -self.size.width/2, 0, 0);
@@ -131,8 +153,7 @@
     for (int i = 0; i < _subEntities.count; i++) {
         TBEntity *entity = [_subEntities objectAtIndex:i];
         if (entity.layer < self.layer) {
-            NSValue *valuePoint = [_attachmentPoints objectForKey:[entity key]];
-            CGPoint attachPoint = [valuePoint CGPointValue];
+            CGPoint attachPoint = [self getAttachmentPointForSubEntity:entity];
             
             modelMatrix = GLKMatrix4Translate(modelMatrix, attachPoint.x, attachPoint.y, 0);
             [entity renderWithStartingMatrix:modelMatrix];
@@ -148,8 +169,7 @@
     for (int i = 0; i < _subEntities.count; i++) {
         TBEntity *entity = [_subEntities objectAtIndex:i];
         if (entity.layer >= self.layer) {
-            NSValue *valuePoint = [_attachmentPoints objectForKey:[entity key]];
-            CGPoint attachPoint = [valuePoint CGPointValue];
+            CGPoint attachPoint = [self getAttachmentPointForSubEntity:entity];
             
             modelMatrix = GLKMatrix4Translate(modelMatrix, attachPoint.x, attachPoint.y, 0);
             [entity renderWithStartingMatrix:modelMatrix];
@@ -186,11 +206,11 @@
 }
 
 - (float)collisiony1 {
-    return self.position.y+self.size.height - self.collisionyoff;
+    return self.position.y + self.size.height - self.collisionyoff;
 }
 
 - (float)collisiony2 {
-    return self.position.y+self.size.height - self.collisionyoff - self.collisionsize.height;
+    return self.position.y + self.size.height - self.collisionyoff - self.collisionsize.height;
 }
 
 - (BOOL)doBoundsIntersect:(TBEntity *)first other:(TBEntity *)second {
@@ -241,6 +261,36 @@
     return [_drawable size];
 }
 
+- (void)setCollisionsize:(CGSize)collisionsize
+{
+    _collisionsize = collisionsize;
+}
+
+- (CGSize)collisionsize
+{
+    return CGSizeMake(_collisionsize.width*self.scale.x, _collisionsize.height*self.scale.y);
+}
+
+- (float)collisionxoff
+{
+    return _collisionxoff*self.scale.x;
+}
+
+- (void)setCollisionxoff:(float)collisionxoff
+{
+    _collisionxoff = collisionxoff;
+}
+
+- (float)collisionyoff
+{
+    return _collisionyoff*self.scale.y;
+}
+
+- (void)setCollisionyoff:(float)collisionyoff
+{
+    _collisionyoff = collisionyoff;
+}
+
 - (void)setLife:(int)life {
     _life = life;
     
@@ -249,7 +299,43 @@
     }
 }
 
+- (CGPoint)getAttachmentPointForSubEntity:(TBEntity *)entity
+{
+    NSValue *valuePoint = [_attachmentPoints objectForKey:[entity key]];
+    CGPoint attachPoint = [valuePoint CGPointValue];
+    
+    return attachPoint;
+}
+
+- (GLKVector2)absolutePosition
+{
+    if (_parent) {
+        GLKVector2 parentPosition = [_parent absolutePosition];
+        CGPoint attachPoint = [_parent getAttachmentPointForSubEntity:self];
+        GLKVector2 parentPlusChild = GLKVector2Add(parentPosition, self.position);
+        
+        return GLKVector2Make(parentPlusChild.x + attachPoint.x, parentPlusChild.y + attachPoint.y);
+    }
+    
+    return self.position;
+}
+
+- (BOOL)readyToDie
+{
+    return YES;
+}
+
 - (int)life {
     return _life;
+}
+
+- (void)setParent:(TBEntity *)parent
+{
+    _parent = parent;
+}
+
+- (TBEntity *)parent
+{
+    return _parent;
 }
 @end

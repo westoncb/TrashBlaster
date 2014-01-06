@@ -49,7 +49,7 @@
         self.life -= bullet.damage;
         
 //        self.color = GLKVector4Make(1, (self.life/_initialLife), (self.life/_initialLife), 1.0f);
-        [[TBWorld instance] createBulletHitEffectAtEntity:self];
+        [self createBulletHitEffectAtEntity:self];
     } else if (collider.type == PLAYER || collider.type == NPC) {
         if (!_hitPlayer) {
             _hitPlayer = true;
@@ -58,9 +58,14 @@
     }
 }
 
+- (void)updateWithTimeDelta:(float)delta
+{
+    [super updateWithTimeDelta:delta];
+}
+
 - (void)handleDeath
 {
-    [self createExplosionAtPoint:self.position];
+    [self createExplosionAtEntity:self];
     [[TBWorld instance] createPointDisplayAtEntity:self];
     
     TBBlockMachine *blockMachine = [TBWorld instance].blockMachine;
@@ -86,8 +91,74 @@
     return self.position.x/self.size.width;
 }
 
-- (void)createExplosionAtPoint:(GLKVector2)point
+- (void)createBulletHitEffectAtEntity:(TBEntity *)entity
 {
+    TBParticleEmitter *emmitter2 = [[TBParticleEmitter alloc] initWithParticleCount:10
+                                                                           lifetime:0.3f
+                                                                          spawnRate:0.001f
+                                                                           position:GLKVector2Make(0, 0)
+                                                                           velocity:GLKVector2Make(0, 0)
+                                                                       acceleration:GLKVector2Make(0, 0)
+                                                                         startScale:2 endScale:4 startColor:GLKVector4Make(0, 0, 0, 1) endColor:GLKVector4Make(1, 1, 1, 0)];
+    [emmitter2 setVariationWithLifetime:0.08f
+                              spawnRate:0.00
+                               position:GLKVector2Make(25, 25)
+                               velocity:GLKVector2Make(50, 50)
+                           acceleration:GLKVector2Make(0, 0)
+                             startScale:0.75f endScale:1 startColor:GLKVector4Make(0, 0, 0, 0) endColor:GLKVector4Make(0, 0, 0, 0)];
+    
+    [[TBWorld instance] addEntity:emmitter2];
+    
+    emmitter2.layer = 12;
+    emmitter2.position = GLKVector2Make(entity.position.x + entity.size.width/2, entity.position.y + entity.size.height/2);
+    emmitter2.velocity = entity.velocity;
+    emmitter2.additiveBlending = NO;
+    [emmitter2 limitEffectLifetimeWithTime:0.3f];
+    
+    //    TBSprite *sprite = [[TBSprite alloc] initWithFile:@"tinyexplosion.png"];
+    //    TBExplosion *explosion = [[TBExplosion alloc] initWithDrawable:sprite duration:0.2f];
+    //    explosion.layer = 11;
+    //    GLKVector2 entityCenter = GLKVector2Make(entity.position.x + entity.size.width/2 - explosion.size.width/2,
+    //                                             entity.position.y + entity.size.height/2 - explosion.size.height/2);
+    //    float xVariation = arc4random_uniform(entity.size.width/2.0f);
+    //    float yVariation = arc4random_uniform(entity.size.height/2.0f);
+    //    xVariation -= entity.size.width/4.0f;
+    //    yVariation -= entity.size.height/4.0f;
+    //
+    //    GLKVector2 position = GLKVector2Make(entityCenter.x + xVariation, entityCenter.y + yVariation);
+    //    explosion.position = position;
+    //    explosion.velocity = GLKVector2MultiplyScalar(entity.velocity, 0.9f);
+    //    
+    //    [self addEntity:explosion];
+}
+
+- (void)createExplosionAtEntity:(TBEntity *)entity
+{
+    TBParticleEmitter *emmitter = [[TBParticleEmitter alloc] initWithParticleCount:40
+                                                                          lifetime:0.8f
+                                                                         spawnRate:0.00001f
+                                                                          position:GLKVector2Make(0, 0)
+                                                                          velocity:GLKVector2Make(0, 0)
+                                                                      acceleration:GLKVector2Make(0, 0)
+                                                                        startScale:2.0f endScale:0.20f startColor:GLKVector4Make(1, 0, 0, 1) endColor:GLKVector4Make(0.9f, 0.7f, 0.2f, 1)];
+    [emmitter setVariationWithLifetime:0.08f
+                             spawnRate:0.00
+                              position:GLKVector2Make(6, 6)
+                              velocity:GLKVector2Make(150, 150)
+                          acceleration:GLKVector2Make(0, 0)
+                            startScale:0.08f endScale:0.08f startColor:GLKVector4Make(0, 0, 0, 0) endColor:GLKVector4Make(0, 0, 0, 0)];
+    
+    [[TBWorld instance] addEntity:emmitter];
+    
+    emmitter.layer = 12;
+    emmitter.position = GLKVector2Make(entity.position.x + entity.size.width/2, entity.position.y + entity.size.height/2);
+    emmitter.velocity = entity.velocity;
+    emmitter.additiveBlending = YES;
+    emmitter.colororBlending = YES;
+    emmitter.imageFileName = @"sharpparticle.png";
+    [emmitter limitEffectLifetimeWithTime:0.3f];
+    
+    GLKVector2 point = entity.position;
     TBAnimationInfo animInfo;
     animInfo.frameCount = 5;
     animInfo.frameWidth = 72;
@@ -97,6 +168,7 @@
     float animationLength = (animInfo.frameLength * animInfo.frameCount)/1000.0f;
     TBAnimatedSprite *sprite = [[TBAnimatedSprite alloc] initWithFile:@"bigexplosion.png" animationInfo:animInfo];
     TBExplosion *explosion = [[TBExplosion alloc] initWithDrawable:sprite duration:animationLength];
+    explosion.scale = self.scale;
     explosion.position = GLKVector2Make(point.x + self.size.width/2 - explosion.size.width/2,
                                         point.y + self.size.height/2 - explosion.size.height/2);
     explosion.velocity = GLKVector2MultiplyScalar(self.velocity, 0.75f);
@@ -110,8 +182,6 @@
 //    [event start];
     
     [[TBWorld instance] addEntity:explosion];
-    
-//    [self createExplosionSmoke];
 }
 
 - (GLKVector2)vetNewPosition:(GLKVector2)newPosition
@@ -177,15 +247,13 @@
                                                                           position:GLKVector2Make(-5, 0)
                                                                           velocity:GLKVector2Make(0, 20)
                                                                       acceleration:GLKVector2Make(0, 100)
-                                                                             scale:1.0f
-                                                                             color:GLKVector4Make(1, 1, 1, 0.75f)];
+                                                                             startScale:2 endScale:2 startColor:GLKVector4Make(1, 1, 1, 0.75f) endColor:GLKVector4Make(1, 1, 1, 0.75f)];
     [emmitter setVariationWithLifetime:0.1f
                              spawnRate:0.00
                               position:GLKVector2Make(25, 0)
                               velocity:GLKVector2Make(30, 0)
                           acceleration:GLKVector2Make(20, 30)
-                                 scale:0
-                                 color:GLKVector4Make(0, 0, 0, 0)];
+                                 startScale:0 endScale:0 startColor:GLKVector4Make(0, 0, 0, 0) endColor:GLKVector4Make(0, 0, 0, 0)];
     
     [[TBWorld instance] addEntity:emmitter];
     
@@ -202,31 +270,30 @@
 
 - (void)createSmokeEffect
 {
-    TBParticleEmitter *emmitter = [[TBParticleEmitter alloc] initWithParticleCount:20
-                                                                          lifetime:0.25f
+    TBParticleEmitter *emmitter = [[TBParticleEmitter alloc] initWithParticleCount:15
+                                                                          lifetime:0.65f
                                                                          spawnRate:0.0001f
-                                                                          position:GLKVector2Make(-5, 7 - (self.size.height - self.collisionyoff))
-                                                                          velocity:GLKVector2Make(0, -20)
+                                                                          position:GLKVector2Make(0, -10)
+                                                                          velocity:GLKVector2Make(0, -10)
                                                                       acceleration:GLKVector2Make(0, 100)
-                                                                             scale:2.0f
-                                                                             color:GLKVector4Make(1, 1, 1, 1)];
+                                                                             startScale:2 endScale:2 startColor:GLKVector4Make(1, 1, 1, 1) endColor:GLKVector4Make(1, 1, 1, 0)];
     [emmitter setVariationWithLifetime:0.1f
                              spawnRate:0.00
-                              position:GLKVector2Make(25, 0)
-                              velocity:GLKVector2Make(30, 0)
-                          acceleration:GLKVector2Make(20, 30)
-                                 scale:0.75f
-                                 color:GLKVector4Make(0, 0, 0, 0)];
+                              position:GLKVector2Make(COL_WIDTH + COL_WIDTH*0.25f, 0)
+                              velocity:GLKVector2Make(15, 0)
+                          acceleration:GLKVector2Make(0, 30)
+                                 startScale:1 endScale:1 startColor:GLKVector4Make(0, 0, 0, 0) endColor:GLKVector4Make(0, 0, 0, 0)];
     
     [[TBWorld instance] addEntity:emmitter];
     
     emmitter.layer = 12;
     emmitter.position = GLKVector2Make(self.position.x + self.size.width/2, self.position.y + self.size.height/2);
+    emmitter.additiveBlending = NO;
     
     TBEvent *event = [[TBEvent alloc] initWithHandler:^(float progress) {
     } completion:^{
         emmitter.alive = NO;
-    } duration:0.5f repeat:NO];
+    } duration:0.3f repeat:NO];
     [event start];
 }
 

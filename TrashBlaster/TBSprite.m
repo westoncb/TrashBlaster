@@ -160,6 +160,7 @@ static NSMutableDictionary *_textureCache;
     
 }
 
+bool set = NO;
 - (void)renderWithModelMatrix:(GLKMatrix4)modelMatrix {
     TBWorld.effect.texture2d0.name = self.textureInfo.name;
     TBWorld.effect.texture2d0.enabled = YES;
@@ -184,9 +185,12 @@ static NSMutableDictionary *_textureCache;
     
     [TBWorld.effect prepareToDraw];
     
-    glEnableVertexAttribArray(GLKVertexAttribPosition);
-    glEnableVertexAttribArray(GLKVertexAttribTexCoord0);
-    glEnableVertexAttribArray(GLKVertexAttribColor);
+    if (!set) {
+        glEnableVertexAttribArray(GLKVertexAttribPosition);
+        glEnableVertexAttribArray(GLKVertexAttribTexCoord0);
+        glEnableVertexAttribArray(GLKVertexAttribColor);
+
+    }
     
     long offset = (long)&_quad;
     glVertexAttribPointer(GLKVertexAttribPosition, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void *) (offset + offsetof(TexturedVertex, geometryVertex)));

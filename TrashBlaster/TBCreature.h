@@ -11,6 +11,7 @@
 #import "TBSprite.h"
 #import "TBStateSprite.h"
 #import "TBPoint.h"
+#import "TBParticleEmitter.h"
 
 @class TBWorld;
 @class TBBlock;
@@ -25,6 +26,11 @@
     NSMutableArray *_circle;
     NSMutableArray *_glows;
     NSMutableArray *_skeletons;
+    
+    TBParticleEmitter *_glow;
+    
+    float _rotationDelay;
+    float _theta;
 }
 
 @property NSMutableArray * destPoints;

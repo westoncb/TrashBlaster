@@ -1,4 +1,4 @@
-//
+	//
 //  TBPlayer.m
 //  TrashBlaster
 //
@@ -15,6 +15,7 @@
 #import "TBEvent.h"
 #import "TBPlayer.h"
 #import "TBGame.h"
+#import "TBParticleEmitter.h"
 
 @interface TBCreature()
 @property BOOL startedMoving;
@@ -58,26 +59,40 @@
 - (void)increaseGlow
 {
     if (_glows.count < 4) {
-        TBSprite *glowSprite = [[TBSprite alloc] initWithFile:@"glow3.png"];
-        TBEntity *glow = [[TBEntity alloc] initWithDrawable:glowSprite];
-        [self addSubEntity:glow];
-        glow.scale = GLKVector2Make(0, 0);
-        glow.layer = 1;
-        glow.color = GLKVector4Make(1, 0, 0, 1);
-        glowSprite.additiveBlending = YES;
-
-        [_glows addObject:glow];
-
-        TBEvent *event = [[TBEvent alloc] initWithHandler:^(float progress) {
-            glow.scale = GLKVector2Make(progress*progress, progress*progress);
-            [self changeAttachmentPointForSubEntity:glow attachX:self.size.width/2 - glow.size.width/2*progress
-                       attachY:self.size.height/2 - glow.size.height/2*progress];
-        } completion:^{
-            glow.scale = GLKVector2Make(1.0, 1.0);
-            [self changeAttachmentPointForSubEntity:glow attachX:self.size.width/2 - glow.size.width/2
-                                            attachY:self.size.height/2 - glow.size.height/2];
-        } duration:0.6f repeat:NO];
-        [event start];
+//        TBSprite *glowSprite = [[TBSprite alloc] initWithFile:@"glow3.png"];
+//        TBEntity *glow = [[TBEntity alloc] initWithDrawable:glowSprite];
+//        [self addSubEntity:glow];
+//        glow.scale = GLKVector2Make(0, 0);
+//        glow.layer = 1;
+//        glow.color = GLKVector4Make(1, 0, 0, 1);
+//        glowSprite.additiveBlending = YES;
+//
+//        [_glows addObject:glow];
+//
+//        TBEvent *event = [[TBEvent alloc] initWithHandler:^(float progress) {
+//            glow.scale = GLKVector2Make(progress*progress, progress*progress);
+//            [self changeAttachmentPointForSubEntity:glow attachX:self.size.width/2 - glow.size.width/2*progress
+//                       attachY:self.size.height/2 - glow.size.height/2*progress];
+//        } completion:^{
+//            glow.scale = GLKVector2Make(1.0, 1.0);
+//            [self changeAttachmentPointForSubEntity:glow attachX:self.size.width/2 - glow.size.width/2
+//                                            attachY:self.size.height/2 - glow.size.height/2];
+//        } duration:0.6f repeat:NO];
+//        [event start];
+        if (!_glow) {
+            _glow = [[TBParticleEmitter alloc]
+                    initWithParticleCount:12
+                    lifetime:0.24f
+                    spawnRate:0.003f
+                    position:GLKVector2Make(0, 0)
+                    velocity:GLKVector2Make(0, 0)
+                    acceleration:GLKVector2Make(0, 0)
+                    startScale:6 endScale:1
+                    startColor:GLKVector4Make(1.0f, 0.1f, 0.1f, 1)
+                    endColor:GLKVector4Make(0, 1, 0, 1)];
+            [self addSubEntity:_glow attachX:0 attachY:0];
+        }
+        
     } else if (_skeletons.count < 4) {
         TBAnimationInfo animationInfo;
         animationInfo.frameWidth = 64;
@@ -122,6 +137,7 @@
         TBSprite *gunSprite = [[TBSprite alloc] initWithFile:@"gun.png"];
         _gun = [[TBEntity alloc] initWithDrawable:gunSprite];
         _gun.layer = 6;
+        _gun.rotation = 0.0f;
         [self addSubEntity:_gun attachX:(self.size.width/2 - _gun.size.width/2) attachY:40];
     }
 }
@@ -149,7 +165,7 @@
         _destPoint = [self.destPoints objectAtIndex:0];
         int colIndex = [[TBWorld instance] xPositionToColumn:_destPoint.x];
         
-        float destX = colIndex*32 - 16;
+        float destX = colIndex*COL_WIDTH - COL_WIDTH/2.0f;
         float destY = self.position.y;
         
         self.acceleration = GLKVector2Make(0, GRAVITY_ACCELERATION); //gravity
@@ -208,6 +224,25 @@
     }
     
     [super updateWithTimeDelta:delta];
+    
+    
+//    _rotationDelay += delta;
+//    if (_rotationDelay > 0.01f) {
+//        _theta += (2*M_PI/200);
+//        _rotationDelay = 0;
+//    }
+//    
+//    [self updateParticleEffect];
+}
+
+- (void)updateParticleEffect
+{
+    if (_glow) {
+        float startScale = sinf(_theta)*6;
+        float endScale = cosf(_theta)*6;
+
+        [_glow setBaseAttributes:_glow.maxParticles lifetime:_glow.lifetime spawnRate:_glow.spawnRate position:_glow.pPosition velocity:_glow.pVelocity acceleration:_glow.pAcceleration startScale:startScale endScale:endScale startColor:_glow.pStartColor endColor:_glow.pEndColor];
+    }
 }
 
 - (void)updateGunWithTimeDelta:(float)delta
@@ -289,6 +324,10 @@
         
     }
     
+    //don't go off left side of screen
+    if (finalPosition.x < -self.size.width)
+        finalPosition = GLKVector2Make(-self.size.width, finalPosition.y);
+    
     GLKVector2 diff = GLKVector2Make(finalPosition.x - self.position.x, finalPosition.y - self.position.y);
     for (TBEntity *entity in _circle) {
         entity.position = GLKVector2Make(entity.position.x + diff.x, entity.position.y + diff.y);
@@ -312,16 +351,77 @@
         if (collider.type == BULLET) {
             TBBullet *bullet = (TBBullet *)collider;
             self.life -= bullet.damage;
-            
+            [self createCreatureBulletHitEffectWithBullet:bullet];
             if (self.life <= 0) {
-                if (self.type == NPC)
-                {
-                    [[TBGame instance] blockWasDestroyed];
-                    [[TBWorld instance] createPointDisplayAtEntity:self];
-                }
+                [[TBGame instance] blockWasDestroyed];
+                [[TBWorld instance] createPointDisplayAtEntity:self];
             }
         }
     }
+}
+
+- (void)createCreatureExplosionEffect
+{
+    TBParticleEmitter *emmitter = [[TBParticleEmitter alloc] initWithParticleCount:20
+                                                                          lifetime:1.30f
+                                                                         spawnRate:0.0001f
+                                                                          position:GLKVector2Make(0, 0)
+                                                                          velocity:GLKVector2Make(0, 0)
+                                                                      acceleration:GLKVector2Make(0, -100)
+                                                                        startScale:3.0f endScale:1
+                                                                        startColor:GLKVector4Make(1, 1.0f, 0.3f, 1) endColor:GLKVector4Make(1, 0, 0, 1)];
+    [emmitter setVariationWithLifetime:1
+                             spawnRate:0.0f
+                              position:GLKVector2Make(15, 15)
+                              velocity:GLKVector2Make(250, 250)
+                          acceleration:GLKVector2Make(0, 0)
+                            startScale:1 endScale:0.5f
+                            startColor:GLKVector4Make(0, 0, 0, 0) endColor:GLKVector4Make(0, 0, 0, 0)];
+    
+    emmitter.position = GLKVector2Make(self.position.x + self.size.width/2, self.position.y + self.size.height/2);
+    emmitter.additiveBlending = NO;
+    emmitter.imageFileName = @"sharpparticle.png";
+    emmitter.colororBlending = YES;
+    [[TBWorld instance] addEntity:emmitter];
+    
+    TBEvent *event = [[TBEvent alloc] initWithHandler:^(float progress) {
+        
+    } completion:^{
+        emmitter.alive = NO;
+    } duration:0.3f repeat:NO];
+    [event start];
+}
+
+- (void)createCreatureBulletHitEffectWithBullet:(TBEntity *)bullet
+{
+    TBParticleEmitter *emmitter = [[TBParticleEmitter alloc] initWithParticleCount:6
+                                                                          lifetime:0.75f
+                                                                         spawnRate:0.05f
+                                                                          position:GLKVector2Make(0, 0)
+                                                                          velocity:GLKVector2Make(bullet.velocity.x/5, bullet.velocity.y/5)
+                                                                      acceleration:GLKVector2Make(0, 0)
+                                                                        startScale:1.5f endScale:0.2f
+                                                                        startColor:GLKVector4Make(0.1f, 1.0f, 0.3f, 1) endColor:GLKVector4Make(0.1f, 1.0f, 0.3f, 1)];
+    [emmitter setVariationWithLifetime:1
+                             spawnRate:0.0f
+                              position:GLKVector2Make(5, 5)
+                              velocity:GLKVector2Make(30, 30)
+                          acceleration:GLKVector2Make(0, 0)
+                            startScale:0 endScale:2
+                            startColor:GLKVector4Make(0.5f, 0.5f, 0.3f, 0) endColor:GLKVector4Make(0.5f, 0.5f, 0.3f, 0)];
+    
+    emmitter.position = GLKVector2Make(bullet.position.x + bullet.size.width/2, bullet.position.y + bullet.size.height/2);
+    emmitter.additiveBlending = NO;
+    emmitter.imageFileName = @"sharpparticle.png";
+    emmitter.colororBlending = YES;
+    [[TBWorld instance] addEntity:emmitter];
+    
+    TBEvent *event = [[TBEvent alloc] initWithHandler:^(float progress) {
+
+    } completion:^{
+        emmitter.alive = NO;
+    } duration:0.3f repeat:NO];
+    [event start];
 }
 
 - (void)initiateDeathSequenceWithBlock:(TBBlock *)block
@@ -329,9 +429,11 @@
     float distanceFromGround = block.position.y - [self getGroundHeightBeneathPlayer];
     
     if (distanceFromGround > self.size.height/2.0f) {
-//        self.reloadTime = INT_MAX;
         _deathBlock = block;
-//        _deathBlock.life = INT_MAX;
+        if (self.type == PLAYER) {
+            _deathBlock.life = INT_MAX;
+            self.reloadTime = INT_MAX;
+        }
         self.velocity = GLKVector2Make(0, 0);
         self.acceleration = GLKVector2Make(0, 0);
         [self.destPoints removeAllObjects];
@@ -396,7 +498,7 @@
         bullet.rotation = plainRotation - M_PI/2;
         
         float cosOfRotation = cos(plainRotation);
-        float sizeOfGun = 25;
+        float sizeOfGun = 25*self.scale.x;
         float xShift = cosOfRotation*sizeOfGun;
         
         float sinOfRotation = sin(plainRotation);
@@ -413,5 +515,11 @@
     [[TBWorld instance] addEntity:bullet];
 }
 BOOL done = false;
+
+- (void)handleDeath
+{
+    [super handleDeath];
+    [self createCreatureExplosionEffect];
+}
 
 @end

@@ -30,6 +30,8 @@ static const int GRAVITY_ACCELERATION = -200;
     int _lastScore;
     int _frameIndex;
     TBEntity *_fpsEntity;
+    NSMutableArray *_addEntityQueue;
+    NSMutableArray *_entityPurgatory; //Entity has died, waiting for subentities to die before removal
     
     int _bezierSampleSize;
     NSMutableArray *_controlPoints;
@@ -53,7 +55,6 @@ static const int GRAVITY_ACCELERATION = -200;
 - (void)start;
 - (void)setFramesPerSecond:(int)fps;
 - (void)addCreature;
-- (void)createPointDisplayAtEntity:(TBEntity *)entity;
-- (void)createBulletHitEffectAtEntity:(TBEntity *)entity;
+- (void)createPointDisplayAtEntity:(TBEntity *)entity;	
 - (TBPlayer *)getPlayer;
 @end

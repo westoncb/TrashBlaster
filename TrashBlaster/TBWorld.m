@@ -61,18 +61,22 @@ static TBWorld *_world;
     TBWorld.effect = [[GLKBaseEffect alloc] init];
     GLKMatrix4 projectionMatrix = GLKMatrix4MakeOrtho(0, TBWorld.WIDTH, 0, TBWorld.HEIGHT, -1024, 1024);
     TBWorld.effect.transform.projectionMatrix = projectionMatrix;
+    TBWorld.effect.useConstantColor = YES;
+    TBWorld.effect.constantColor = GLKVector4Make(0, 0, 0, 1);
     
     self.entities = [NSMutableArray array];
     self.colliders = [NSMutableArray array];
     self.blocks = [NSMutableArray array];
     self.addEntityBuffer = [NSMutableArray array];
     self.removeEntityBuffer = [NSMutableArray array];
+    _addEntityQueue = [NSMutableArray array];
+    _entityPurgatory = [NSMutableArray array];
     
     _doTheBezier = NO;
     
     if (_doTheBezier) {
         
-        int points = 3;
+        int points = 3  ;
         int radius = 45;
         
         _controlPoints = [NSMutableArray arrayWithCapacity:points];
@@ -80,7 +84,7 @@ static TBWorld *_world;
         _bezierCurve = [NSMutableArray arrayWithCapacity:_bezierSampleSize];
         
         for (int i = 0; i < _bezierSampleSize; i++) {
-            TBSprite *sprite = [[TBSprite alloc] initWithFile:@"player2stand.png"];
+            TBSprite *sprite = [[TBSprite alloc] initWithFile:@"point.png"];
             TBEntity *entity = [[TBEntity alloc] initWithDrawable:sprite];
             
             [self addEntity:entity];
@@ -105,7 +109,9 @@ static TBWorld *_world;
         
         TBEntity *background = [[TBEntity alloc] initWithDrawable:self.bgSprite];
         background.layer = 0;
-        background.size = CGSizeMake(TBWorld.WIDTH, TBWorld.HEIGHT);
+//        background.position = GLKVector2Make(WIDTH/2, HEIGHT/2);
+        background.size = CGSizeMake(WIDTH, HEIGHT);
+//        background.scale = GLKVector2Make(1.01f, 1.01f);
         background.type = DECORATION;
         [self addEntity:background];
         
@@ -133,42 +139,24 @@ static TBWorld *_world;
         
         self.blockMachine = [[TBBlockMachine alloc] init];
         
-//        TBParticleEmitter *emmitter = [[TBParticleEmitter alloc] initWithParticleCount:150
+//        TBParticleEmitter *emmitter = [[TBParticleEmitter alloc] initWithParticleCount:100
 //                                                                              lifetime:3
 //                                                                             spawnRate:0.005f
 //                                                                              position:GLKVector2Make(WIDTH/2 - 22, HEIGHT)
-//                                                                              velocity:GLKVector2Make(0, -200)
+//                                                                              velocity:GLKVector2Make(0, -260)
 //                                                                          acceleration:GLKVector2Make(20, 100)
-//                                                                                 scale:3.0f
-//                                                                                 color:GLKVector4Make(0.6f, 0.6f, 1, 1)];
+//                                                                                 startScale:1.0f endScale:3.0f
+//                                                                                 startColor:GLKVector4Make(0.6f, 0.6f, 1, 1) endColor:GLKVector4Make(0.6f, 1, 0.6f, 0)];
 //        [emmitter setVariationWithLifetime:1
-//                                 spawnRate:0.00
+//                                 spawnRate:0.0f
 //                                  position:GLKVector2Make(15, 0)
 //                                  velocity:GLKVector2Make(30, 0)
 //                              acceleration:GLKVector2Make(20, 0)
-//                                     scale:0
-//                                     color:GLKVector4Make(0.5f, 0.5f, 0.3f, 0)];
+//                                     startScale:0 endScale:2
+//                                     startColor:GLKVector4Make(0.5f, 0.5f, 0.3f, 0) endColor:GLKVector4Make(0.5f, 0.5f, 0.3f, 0)];
 //        
 //        [self addEntity:emmitter];
         
-//        TBParticleEmitter *emmitter = [[TBParticleEmitter alloc] initWithParticleCount:150
-//                                                                              lifetime:1.65f
-//                                                                             spawnRate:0.005f
-//                                                                              position:GLKVector2Make(WIDTH/2 - 22, HEIGHT/2)
-//                                                                              velocity:GLKVector2Make(80, 80)
-//                                                                          acceleration:GLKVector2Make(0, -100)
-//                                                                                 scale:2.0f
-//                                                                                 color:GLKVector4Make(1.0f, 0.2f, 0.2f, 1)];
-//        [emmitter setVariationWithLifetime:0.75f
-//                                 spawnRate:0.00
-//                                  position:GLKVector2Make(2, 2)
-//                                  velocity:GLKVector2Make(30, 30)
-//                              acceleration:GLKVector2Make(0, 0)
-//                                     scale:0
-//                                     color:GLKVector4Make(0, 0, 0, 0)];
-//        
-//        [self addEntity:emmitter];
-
 //        TBEvent *event = [[TBEvent alloc] initWithHandler:^(float progress) {
 //            
 //        } completion:^{
@@ -258,8 +246,11 @@ static TBWorld *_world;
     _player = [[TBPlayer alloc] initWithStateSprite:playerSprite bulletSprite:bulletSprite];
     [_player.collidesWith addObject:[NSNumber numberWithInt:BLOCK]];
     [_player activateGun];
+    [_player increaseGlow];
     _player.canShoot = YES;
     _player.layer = 5;
+    float scale = COL_WIDTH/(_player.size.width/2.0f);
+    _player.scale = GLKVector2Make(scale, scale);
     
     [self addEntity:_player];
     
@@ -290,7 +281,7 @@ static TBWorld *_world;
     creature.ACCELERATION = 2000;
     creature.DECELERATION = 12000;
     creature.power = 100;
-    creature.life = 50;
+    creature.life = 500;
     creature.keepImageAfterDeath = NO;
     [creature.collidesWith addObject:[NSNumber numberWithInt:BLOCK]];
     [creature.collidesWith addObject:[NSNumber numberWithInt:BULLET]];
@@ -299,25 +290,6 @@ static TBWorld *_world;
     creature.reloadTime = 0.1;
     creature.position = GLKVector2Make(WIDTH, FLOOR_HEIGHT);
     [self addEntity:creature];
-}
-
-- (void)createBulletHitEffectAtEntity:(TBEntity *)entity
-{
-    TBSprite *sprite = [[TBSprite alloc] initWithFile:@"tinyexplosion.png"];
-    TBExplosion *explosion = [[TBExplosion alloc] initWithDrawable:sprite duration:0.2f];
-    explosion.layer = 11;
-    GLKVector2 entityCenter = GLKVector2Make(entity.position.x + entity.size.width/2 - explosion.size.width/2,
-                                             entity.position.y + entity.size.height/2 - explosion.size.height/2);
-    float xVariation = arc4random_uniform(entity.size.width/2.0f);
-    float yVariation = arc4random_uniform(entity.size.height/2.0f);
-    xVariation -= entity.size.width/4.0f;
-    yVariation -= entity.size.height/4.0f;
-    
-    GLKVector2 position = GLKVector2Make(entityCenter.x + xVariation, entityCenter.y + yVariation);
-    explosion.position = position;
-    explosion.velocity = GLKVector2MultiplyScalar(entity.velocity, 0.9f);
-    
-    [self addEntity:explosion];
 }
 
 - (void)createPointDisplayAtEntity:(TBEntity *)entity
@@ -329,7 +301,7 @@ static TBWorld *_world;
     if (bonusRatio > 1)
         bonusRatio = 1;
     
-    float scale = 1 + bonusRatio*0.5f;
+    float scale = 1.3 + bonusRatio*0.6f;
     stringEntity.scale = GLKVector2Make(scale, scale);
     stringEntity.color = GLKVector4Make((1 - bonusRatio), 1, (1 - bonusRatio), 1);
     stringEntity.position = GLKVector2Make(entity.position.x + entity.size.width/2 - stringEntity.size.width/2, entity.position.y + stringSprite.size.height/2);
@@ -378,14 +350,23 @@ static TBWorld *_world;
 
 - (void)addEntity:(TBEntity *)entity
 {
-    [self.addEntityBuffer addObject:entity];
-    if(entity.type == BLOCK)
-        [self.blocks addObject:entity];
+    [_addEntityQueue addObject:entity];
+}
+
+- (void)addQueuedEntities
+{
+    for (TBEntity *entity in _addEntityQueue) {
+        [self.addEntityBuffer addObject:entity];
+        if(entity.type == BLOCK)
+            [self.blocks addObject:entity];
+        
+        if (entity.type != DECORATION)
+            [self.colliders addObject:entity];
+        
+        [self.entities sortedArrayUsingSelector:@selector(compare:)];
+    }
     
-    if (entity.type != DECORATION)
-        [self.colliders addObject:entity];
-    
-    [self.entities sortedArrayUsingSelector:@selector(compare:)];
+    [_addEntityQueue removeAllObjects];
 }
 
 - (void)removeEntity:(TBEntity *)entity {
@@ -398,6 +379,8 @@ static TBWorld *_world;
 }
 
 - (BOOL)update:(float)delta {
+    [self addQueuedEntities];
+    
     [self.blockMachine update:delta];
     [[TBEventManager instance] updateWithTimeDelta:delta];
     [[TBGame instance] updateWithTimeDelta:delta];
@@ -425,6 +408,7 @@ static TBWorld *_world;
     
     [self removeDistantBullets];
     [self cleanupDeadEntities];
+    [self updatePurgatory];
     [self checkForCollisions];
     
     return NO;
@@ -510,10 +494,26 @@ static TBWorld *_world;
 - (void)cleanupDeadEntities
 {
     for (TBEntity *entity in self.entities) {
-        if (!entity.alive) {
+        if (!entity.alive && !entity.deathInitiated) {
+            entity.deathInitiated = YES;
             [entity handleDeath];
-            [self removeEntity:entity];
+            [_entityPurgatory addObject:entity];
         }
+    }
+}
+
+- (void)updatePurgatory
+{
+    NSMutableArray *removeList = [NSMutableArray array];
+    for (TBEntity *entity in _entityPurgatory) {
+        if ([entity readyToDie]) {
+            [self removeEntity:entity];
+            [removeList addObject:entity];
+        }
+    }
+    
+    for (TBEntity *entity in removeList) {
+        [_entityPurgatory removeObject:entity];
     }
 }
 
@@ -526,7 +526,7 @@ static TBWorld *_world;
 
 - (int)xPositionToColumn:(float)xPosition
 {
-    return ((int)xPosition)/32;
+    return ((int)xPosition)/COL_WIDTH;
 }
 
 - (void)checkForBlockCollisions {

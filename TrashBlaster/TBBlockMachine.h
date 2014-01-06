@@ -9,10 +9,10 @@
 #import <Foundation/Foundation.h>
 #import "TBWorld.h"
 
-static const int NUM_COLS = 10;
-static const int COL_WIDTH = 32;
-static const float INITIAL_BLOCK_VELOCITY = -30;
-static const float BLOCK_ACCELERATION = -75;
+static const int NUM_COLS = 8;
+static const int COL_WIDTH = 40;
+static const float INITIAL_BLOCK_VELOCITY = -50;
+static const float BLOCK_ACCELERATION = -95;
 
 @interface TBBlockMachine : NSObject {
     int blocksInColumns[NUM_COLS];
@@ -20,6 +20,7 @@ static const float BLOCK_ACCELERATION = -75;
 }
 
 @property TBBlock *dummyBlock;
+@property float blockDelay;
 
 - (id)init;
 - (void)update:(float)delta;

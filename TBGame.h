@@ -8,7 +8,6 @@
 
 #import <Foundation/Foundation.h>
 
-static const float BONUS_SCORE_OPPORTUNITY_DURATION = 1.7f;
 static const int BASE_BLOCK_VALUE = 10;
 static const int MAX_BONUS_LEVEL = 9;
 static const float MONSTER_SPAWN_DELAY = 5.0f;
@@ -17,8 +16,10 @@ static const float MONSTER_SPAWN_DELAY = 5.0f;
     float _timeSinceLastScore;
     int _score;
     int _scoreMultiplier;
+    int _blocksDestroyed;
     
     float _timeSinceLastMonsterSpawn;
+    float _bonusScoreOpportunityDuration;
 }
 
 @property int bonusLevel;

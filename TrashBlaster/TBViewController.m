@@ -23,7 +23,10 @@ const float RESTART_DELAY = 1.0f;
         NSLog(@"Failed to create ES context");
     }
     
-    self.preferredFramesPerSecond = 75;
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glClearColor(0, 0, 0, 1);
+    
+    self.preferredFramesPerSecond = 60;
     
     GLKView *view = (GLKView *)self.view;
     view.context = self.context;
@@ -68,9 +71,7 @@ const float RESTART_DELAY = 1.0f;
 
 - (void)glkView:(GLKView *)view drawInRect:(CGRect)rect {
     if (self.world) {
-        glClearColor(1, 1, 1, 1);
         glClear(GL_COLOR_BUFFER_BIT);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glEnable(GL_BLEND);
         
         [self.world render];

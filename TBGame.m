@@ -9,6 +9,7 @@
 #import "TBGame.h"
 #import "TBWorld.h"
 #import "TBPlayer.h"
+#import "TBBlockMachine.h"
 
 static TBGame *_game;
 
@@ -33,6 +34,7 @@ static TBGame *_game;
     
     if (self) {
         _scoreMultiplier = 1;
+        _bonusScoreOpportunityDuration = 2.2f;
     }
     
     return self;
@@ -40,10 +42,14 @@ static TBGame *_game;
 
 - (void)blockWasDestroyed
 {
+    TBWorld *world = [TBWorld instance];
+    TBBlockMachine *blockMachine = world.blockMachine;
+    
+    _blocksDestroyed++;
     _score += [self getCurrentBlockValue];
     
-    if (_timeSinceLastScore < BONUS_SCORE_OPPORTUNITY_DURATION) {
-        [[[TBWorld instance] getPlayer] increaseGlow];
+    if (_timeSinceLastScore < _bonusScoreOpportunityDuration) {
+        [[world getPlayer] increaseGlow];
         
         [self increaseBonusLevel];
         
@@ -51,6 +57,14 @@ static TBGame *_game;
     }
     
     _timeSinceLastScore = 0;
+    
+    if (_blocksDestroyed % 10 == 0) {
+        if (blockMachine.blockDelay > 0.4f)
+            blockMachine.blockDelay -= 0.1f;
+        if (_bonusScoreOpportunityDuration > 1.0f) {
+            _bonusScoreOpportunityDuration -= 0.1;
+        }
+    }
 }
 
 - (void)increaseBonusLevel
@@ -71,7 +85,7 @@ static TBGame *_game;
 {
     _timeSinceLastScore += delta;
     
-    if (_timeSinceLastScore > BONUS_SCORE_OPPORTUNITY_DURATION) {
+    if (_timeSinceLastScore > _bonusScoreOpportunityDuration) {
         _bonusLevel = 0;
         _scoreMultiplier = 1;
         _timeSinceLastMonsterSpawn = 0.0f;

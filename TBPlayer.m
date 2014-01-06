@@ -11,13 +11,25 @@
 
 @implementation TBPlayer
 
+- (id)init
+{
+    self = [super init];
+    
+    if (self) {
+        [super addDestPointWithDestX:WIDTH/2 destY:HEIGHT/2];
+        [super fireBullet];
+    }
+    
+    return self;
+}
+
 - (float)reloadTime
 {
     TBGame *game = [TBGame instance];
     
     float multiplier = (game.bonusLevel < 7) ? game.bonusLevel : 6;
     
-    return 0.20f - 0.025f*multiplier;
+    return 0.20f - 0.020f*multiplier;
 }
 
 - (int)power

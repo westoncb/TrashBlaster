@@ -15,26 +15,37 @@
     NSMutableArray *_particles;
     float _spawnTimePassed;
     float _nextSpawnTime;
+    BOOL _limitedDurationEffectInProgress;
 }
+@property NSString *imageFileName;
 
-@property int count;
+@property int maxParticles;
 @property float lifetime;
 @property float spawnRate;
-@property float pScale;
+@property float pStartScale;
+@property float pEndScale;
 @property GLKVector2 pPosition;
 @property GLKVector2 pVelocity;
 @property GLKVector2 pAcceleration;
-@property GLKVector4 pColor;
+@property GLKVector4 pStartColor;
+@property GLKVector4 pEndColor;
 
 @property float lifetimeVariation;
 @property float spawnRateVariation;
-@property float scaleVariation;
+@property float startScaleVariation;
+@property float endScaleVariation;
 @property GLKVector2 positionVariation;
 @property GLKVector2 velocityVariation;
 @property GLKVector2 accelerationVariation;
-@property GLKVector4 colorVariation;
+@property GLKVector4 startColorVariation;
+@property GLKVector4 endColorVariation;
 
-- (void)setVariationWithLifetime:(float)lifetime spawnRate:(float)spawnRate position:(GLKVector2)position velocity:(GLKVector2)velocity acceleration:(GLKVector2)acceleration scale:(float)scale color:(GLKVector4)color;
-- (id)initWithParticleCount:(int)count lifetime:(float)lifetime spawnRate:(float)spawnRate position:(GLKVector2)position velocity:(GLKVector2)velocity acceleration:(GLKVector2)acceleration scale:(float)scale color:(GLKVector4)color;
+@property BOOL additiveBlending;
+@property BOOL colororBlending;
+
+- (void)setVariationWithLifetime:(float)lifetime spawnRate:(float)spawnRate position:(GLKVector2)position velocity:(GLKVector2)velocity acceleration:(GLKVector2)acceleration startScale:(float)startScale endScale:(float)endScale startColor:(GLKVector4)startColor endColor:(GLKVector4)endColor;
+- (id)initWithParticleCount:(int)count lifetime:(float)lifetime spawnRate:(float)spawnRate position:(GLKVector2)position velocity:(GLKVector2)velocity acceleration:(GLKVector2)acceleration startScale:(float)startScale endScale:(float)endScale startColor:(GLKVector4)startColor endColor:(GLKVector4)endColor;
+- (void)setBaseAttributes:(int)count lifetime:(float)lifetime spawnRate:(float)spawnRate position:(GLKVector2)position velocity:(GLKVector2)velocity acceleration:(GLKVector2)acceleration startScale:(float)startScale endScale:(float)endScale startColor:(GLKVector4)startColor endColor:(GLKVector4)endColor;
+- (void)limitEffectLifetimeWithTime:(float)effectLifetime;
 
 @end

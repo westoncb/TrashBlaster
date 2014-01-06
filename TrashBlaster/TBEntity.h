@@ -24,7 +24,6 @@
 @property GLKVector2 position;
 @property GLKVector2 scale;
 @property GLKVector4 color;
-@property float timeTillExpiration;
 @property int layer;
 @property float rotation;
 @property CGSize size;
@@ -43,6 +42,7 @@
 @property int life;
 @property BOOL dragging;
 @property CGPoint touchPoint;
+@property BOOL deathInitiated;
 
 typedef enum {
     BLOCK,
@@ -69,4 +69,6 @@ typedef enum {
 - (GLKVector2)vetNewPosition:(GLKVector2)newPosition;
 - (CGSize)baseSize;
 - (void)handleDeath;
+- (BOOL)readyToDie;
+- (GLKVector2)absolutePosition;
 @end
