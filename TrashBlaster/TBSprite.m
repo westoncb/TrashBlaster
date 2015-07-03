@@ -165,7 +165,7 @@ bool set = NO;
     TBWorld.effect.texture2d0.name = self.textureInfo.name;
     TBWorld.effect.texture2d0.enabled = YES;
     
-    if (_xFlip) {
+    if (_xFlip) {   
         modelMatrix = GLKMatrix4Scale(modelMatrix, -1, 1, 1.0f);
         modelMatrix = GLKMatrix4Translate(modelMatrix, -_size.width, 0, 0);
     }
@@ -185,14 +185,16 @@ bool set = NO;
     
     [TBWorld.effect prepareToDraw];
     
+    long offset = (long)&_quad;
+    
     if (!set) {
         glEnableVertexAttribArray(GLKVertexAttribPosition);
         glEnableVertexAttribArray(GLKVertexAttribTexCoord0);
         glEnableVertexAttribArray(GLKVertexAttribColor);
-
+        
+        set = YES;
     }
     
-    long offset = (long)&_quad;
     glVertexAttribPointer(GLKVertexAttribPosition, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void *) (offset + offsetof(TexturedVertex, geometryVertex)));
     glVertexAttribPointer(GLKVertexAttribTexCoord0, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void *) (offset + offsetof(TexturedVertex, textureVertex)));
     glVertexAttribPointer(GLKVertexAttribColor, 4, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void *) (offset + offsetof(TexturedVertex, colorVertex)));

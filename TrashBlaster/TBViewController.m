@@ -85,16 +85,17 @@ const float RESTART_DELAY = 1.0f;
 //        [self.world setFramesPerSecond:self.framesPerSecond];
         BOOL reset = [self.world update:timeSinceLastUpdate];
         
-        if (reset) {
-            self.world = nil;
-            restartTime = 0;
-        }
+    if (reset) {
+        self.world = nil;
+        restartTime = 0;
+    }
     } else if (restartTime > RESTART_DELAY || firstTime) {
         [TBWorld destroy];
         self.world = [TBWorld instance];
         [self.world start];
         restartTime = 0;
         firstTime = NO;
+        
     } else {
         restartTime += timeSinceLastUpdate;
     }

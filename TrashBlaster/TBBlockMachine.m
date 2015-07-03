@@ -26,7 +26,7 @@
     self = [super init];
     if(self) {
         self.blockDelay = 2.0f;
-        self.blockSprite = [[TBSprite alloc] initWithFile:@"block.png"];
+        self.blockSprite = [[TBSprite alloc] initWithFile:@"block2.png"];
         _dummyBlock = [[TBBlock alloc] initWithSprite:self.blockSprite];
         _dummyBlock.position = GLKVector2Make(0, INT_MAX);
         _topBlocks = [NSMutableArray arrayWithCapacity:NUM_COLS];

@@ -7,32 +7,32 @@
 	<key>IDESourceControlProjectIdentifier</key>
 	<string>D71EB306-56B6-4BC6-88BD-AA016E46153D</string>
 	<key>IDESourceControlProjectName</key>
-	<string>TrashBlaster</string>
+	<string>project</string>
 	<key>IDESourceControlProjectOriginsDictionary</key>
 	<dict>
-		<key>54E323E8-77F5-4D75-A5F7-EC19CF9D69EC</key>
+		<key>90234C24B2D5CF5126CB8D12E0267308E69FC008</key>
 		<string>https://github.com/westoncb/TrashBlaster.git</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
 	<string>TrashBlaster.xcodeproj/project.xcworkspace</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
-		<key>54E323E8-77F5-4D75-A5F7-EC19CF9D69EC</key>
+		<key>90234C24B2D5CF5126CB8D12E0267308E69FC008</key>
 		<string>../..</string>
 	</dict>
 	<key>IDESourceControlProjectURL</key>
 	<string>https://github.com/westoncb/TrashBlaster.git</string>
 	<key>IDESourceControlProjectVersion</key>
-	<integer>110</integer>
+	<integer>111</integer>
 	<key>IDESourceControlProjectWCCIdentifier</key>
-	<string>54E323E8-77F5-4D75-A5F7-EC19CF9D69EC</string>
+	<string>90234C24B2D5CF5126CB8D12E0267308E69FC008</string>
 	<key>IDESourceControlProjectWCConfigurations</key>
 	<array>
 		<dict>
 			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
 			<string>public.vcs.git</string>
 			<key>IDESourceControlWCCIdentifierKey</key>
-			<string>54E323E8-77F5-4D75-A5F7-EC19CF9D69EC</string>
+			<string>90234C24B2D5CF5126CB8D12E0267308E69FC008</string>
 			<key>IDESourceControlWCCName</key>
 			<string>TrashBlaster</string>
 		</dict>
