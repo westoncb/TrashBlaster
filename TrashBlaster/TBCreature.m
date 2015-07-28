@@ -30,6 +30,7 @@
 
 - (id)initWithStateSprite:(TBStateSprite *)stateSprite bulletSprite:(TBSprite *)bulletSprite {
     self = [super initWithDrawable:stateSprite];
+    
     if (self) {
         self.destPoints = [NSMutableArray array];
         self.INITIAL_SPEED = 50;
@@ -41,7 +42,7 @@
         self.type = PLAYER;
         self.collisionxoff = 26;
         self.collisionyoff = 4;
-        self.collisionsize = CGSizeMake(self.collisionsize.width - 52, self.collisionsize.height - 8);
+        self.collisionsize = CGSizeMake(self.size.width - 52, self.size.height - 8);
         self.position = GLKVector2Make(WIDTH/2 - self.size.width/2, FLOOR_HEIGHT - self.collisionyoff);
         self.keepImageAfterDeath = true;
         self.power = 5;
@@ -318,7 +319,7 @@
         !_jumping &&
         nextBlock != underBlock &&
         self.position.y < nextBlock.position.y &&
-        fabsf(self.velocity.x > 20)) {
+        abs(self.velocity.x > 20)) {
         
         [self jump];
         

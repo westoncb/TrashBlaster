@@ -64,6 +64,7 @@ typedef enum {
 - (void)addSubEntity:(TBEntity *)entity attachX:(float)x attachY:(float)y;
 - (void)changeAttachmentPointForSubEntity:(TBEntity *)entity attachX:(float)x attachY:(float)y;
 - (void)removeSubEntity:(TBEntity *)entity;
+- (void)printCollisionBounds;
 //- (BOOL)doBoundsIntersect:(TBEntity *)first other:(TBEntity *)other;
 - (void)updateMotion:(float)dt;
 - (GLKVector2)vetNewPosition:(GLKVector2)newPosition;

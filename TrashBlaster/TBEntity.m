@@ -213,6 +213,10 @@
     return self.position.y + self.size.height - self.collisionyoff - self.collisionsize.height;
 }
 
+- (void)printCollisionBounds {
+    NSLog(@"x1: %f, x2: %f, y1: %f, y2: %f", [self collisionx1], [self collisionx2], [self collisiony1], [self collisiony2]);
+}
+
 - (BOOL)doBoundsIntersect:(TBEntity *)first other:(TBEntity *)second {
     if (([first collisionx1] <= [second collisionx1] && [first collisionx2] >= [second collisionx1] &&
         [first collisiony1] >= [second collisiony1] && [first collisiony2] <= [second collisiony1]) ||
@@ -246,7 +250,7 @@
 }
 
 - (void)setSize:(CGSize)size
-{
+{   
     _size = size;
 }
 
