@@ -287,7 +287,7 @@
     [[TBWorld instance] addEntity:emmitter];
     
     emmitter.layer = 12;
-    emmitter.position = GLKVector2Make(self.position.x + self.size.width/2, self.position.y + self.size.height/2);
+    emmitter.position = GLKVector2Make(self.position.x, self.position.y);
     emmitter.additiveBlending = NO;
     
     TBEvent *event = [[TBEvent alloc] initWithHandler:^(float progress) {

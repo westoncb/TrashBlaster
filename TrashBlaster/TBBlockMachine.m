@@ -25,7 +25,7 @@
 - (id)init {
     self = [super init];
     if(self) {
-        self.blockDelay = 2.0f;
+        self.blockDelay = 1.0f;
         self.blockSprite = [[TBSprite alloc] initWithFile:@"block2.png"];
         _dummyBlock = [[TBBlock alloc] initWithSprite:self.blockSprite];
         _dummyBlock.position = GLKVector2Make(0, INT_MAX);
@@ -54,7 +54,7 @@
     block.scale = GLKVector2Make(scale, scale);
     int randX = arc4random_uniform(WIDTH);
     int colIndex = round(randX/COL_WIDTH);
-    int newX = colIndex*COL_WIDTH;
+    int newX = colIndex*COL_WIDTH + block.size.width/2.0f;
     
     if(blocksInColumns[colIndex]*block.collisionsize.height < HEIGHT) {
         block.position = GLKVector2Make(newX, HEIGHT);

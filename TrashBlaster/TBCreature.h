@@ -48,4 +48,5 @@
 - (void)increaseGlow;
 - (void)endGlow;
 - (void)fireBullet;
+- (void)createJetPack;
 @end

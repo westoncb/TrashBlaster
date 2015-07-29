@@ -57,42 +57,46 @@
     return self;
 }
 
+- (void)createJetPack {
+    if (!_glow) {
+        _glow = [[TBParticleEmitter alloc]
+                 initWithParticleCount:8
+                 lifetime:0.14f
+                 spawnRate:0.003f
+                 position:GLKVector2Make(0, 0)
+                 velocity:GLKVector2Make(0, 0)
+                 acceleration:GLKVector2Make(0, 0)
+                 startScale:5 endScale:1
+                 startColor:GLKVector4Make(0.6f, 0.1f, 0.9f, 1)
+                 endColor:GLKVector4Make(1, 0, 0, 1)];
+//        [[TBWorld instance] addEntity:_glow];
+        [self addSubEntity:_glow attachX:0 attachY:0];
+    }
+}
+
 - (void)increaseGlow
 {
     if (_glows.count < 4) {
-//        TBSprite *glowSprite = [[TBSprite alloc] initWithFile:@"glow3.png"];
-//        TBEntity *glow = [[TBEntity alloc] initWithDrawable:glowSprite];
-//        [self addSubEntity:glow];
-//        glow.scale = GLKVector2Make(0, 0);
-//        glow.layer = 1;
-//        glow.color = GLKVector4Make(1, 0, 0, 1);
-//        glowSprite.additiveBlending = YES;
-//
-//        [_glows addObject:glow];
-//
-//        TBEvent *event = [[TBEvent alloc] initWithHandler:^(float progress) {
-//            glow.scale = GLKVector2Make(progress*progress, progress*progress);
-//            [self changeAttachmentPointForSubEntity:glow attachX:self.size.width/2 - glow.size.width/2*progress
-//                       attachY:self.size.height/2 - glow.size.height/2*progress];
-//        } completion:^{
-//            glow.scale = GLKVector2Make(1.0, 1.0);
-//            [self changeAttachmentPointForSubEntity:glow attachX:self.size.width/2 - glow.size.width/2
-//                                            attachY:self.size.height/2 - glow.size.height/2];
-//        } duration:0.6f repeat:NO];
-//        [event start];
-        if (!_glow) {
-            _glow = [[TBParticleEmitter alloc]
-                    initWithParticleCount:12
-                    lifetime:0.24f
-                    spawnRate:0.003f
-                    position:GLKVector2Make(0, 0)
-                    velocity:GLKVector2Make(0, 0)
-                    acceleration:GLKVector2Make(0, 0)
-                    startScale:6 endScale:1
-                    startColor:GLKVector4Make(1.0f, 0.1f, 0.1f, 1)
-                    endColor:GLKVector4Make(0, 1, 0, 1)];
-            [self addSubEntity:_glow attachX:0 attachY:0];
-        }
+        TBSprite *glowSprite = [[TBSprite alloc] initWithFile:@"glow3.png"];
+        TBEntity *glow = [[TBEntity alloc] initWithDrawable:glowSprite];
+        [self addSubEntity:glow];
+        glow.scale = GLKVector2Make(0, 0);
+        glow.layer = 1;
+        glow.color = GLKVector4Make(0.6f, 0.1f, 0.9f, 1);
+        glowSprite.additiveBlending = YES;
+
+        [_glows addObject:glow];
+
+        TBEvent *event = [[TBEvent alloc] initWithHandler:^(float progress) {
+            glow.scale = GLKVector2Make(progress*progress, progress*progress);
+            [self changeAttachmentPointForSubEntity:glow attachX:glow.size.width/2
+                       attachY:self.size.height/2 - glow.size.height/2*progress];
+        } completion:^{
+            glow.scale = GLKVector2Make(1.0, 1.0);
+            [self changeAttachmentPointForSubEntity:glow attachX:glow.size.width/2
+                                            attachY:glow.size.height/2];
+        } duration:0.6f repeat:NO];
+        [event start];
         
     } else if (_skeletons.count < 4) {
         TBAnimationInfo animationInfo;
@@ -139,7 +143,7 @@
         _gun = [[TBEntity alloc] initWithDrawable:gunSprite];
         _gun.layer = 6;
         _gun.rotation = 0.0f;
-        [self addSubEntity:_gun attachX:(self.size.width/2 - _gun.size.width/2) attachY:40];
+        [self addSubEntity:_gun attachX:(self.size.width/2) attachY:40+_gun.size.height/2];
     }
 }
 
@@ -166,7 +170,7 @@
         _destPoint = [self.destPoints objectAtIndex:0];
         int colIndex = [[TBWorld instance] xPositionToColumn:_destPoint.x];
         
-        float destX = colIndex*COL_WIDTH - COL_WIDTH/2.0f;
+        float destX = colIndex*COL_WIDTH - COL_WIDTH/2.0f + self.size.width/2.0f;
         float destY = self.position.y;
         
         self.acceleration = GLKVector2Make(0, GRAVITY_ACCELERATION); //gravity
@@ -269,7 +273,7 @@
 
 - (float)getGroundHeightBeneathPlayer
 {
-    return [self getGroundHeightAtPoint:self.position.x + self.size.width/2.0f];
+    return [self getGroundHeightAtPoint:self.position.x + self.size.width/2.0f] + self.size.height/2.0f;
 }
 
 - (float)getGroundHeightAtPoint:(float)posX
@@ -280,7 +284,7 @@
     //Determine floor height
     int column = [world xPositionToColumn:posX];
     TBBlock *underBlock = [blockMachine getTopSettledBlockAtColIndex:column];
-    float floorHeight = underBlock.position.y + underBlock.size.height;
+    float floorHeight = underBlock.position.y + underBlock.size.height/2.0f;
     
     if (underBlock == blockMachine.dummyBlock || !underBlock)
         floorHeight = FLOOR_HEIGHT;
@@ -293,7 +297,7 @@
     TBWorld *world = [TBWorld instance];
     TBBlockMachine *blockMachine = world.blockMachine;
     
-    float playerXCenter = newPosition.x + self.size.width/2.0f;
+    float playerXCenter = newPosition.x;
     int column = [world xPositionToColumn:playerXCenter];
     if (column >= NUM_COLS)
         column = NUM_COLS - 1;
@@ -302,9 +306,9 @@
     
     //Floor collision
     GLKVector2 finalPosition = newPosition;
-    if (newPosition.y + self.collisionyoff < floorHeight) {
+    if (newPosition.y + self.collisionyoff - self.size.height/2.0f < floorHeight) {
         self.velocity = GLKVector2Make(self.velocity.x, 0.0f);
-        finalPosition = GLKVector2Make(newPosition.x, floorHeight - self.collisionyoff);
+        finalPosition = GLKVector2Make(newPosition.x, floorHeight - self.collisionyoff + self.size.height/2.0f);
         _jumping = NO;
     }
     
@@ -468,7 +472,15 @@
     self.bulletSprite.yFlip = NO;
     TBBullet *bullet = [[TBBullet alloc] initWithDrawable:self.bulletSprite];
     bullet.damage = self.power;
-    bullet.position = GLKVector2Make(self.position.x + self.size.width/2 - bullet.size.width/2 + self.xChange, self.position.y + self.size.height - 10 + self.yChange);
+    
+//    float bulletScale = ([TBGame instance].bonusLevel+1)/4.0f;
+//    if (bulletScale < 0.75f)
+//        bulletScale = 0.75f;
+//    else if (bulletScale > 2.0)
+//        bulletScale = 2.0f;
+//    bullet.scale = GLKVector2Make(bulletScale, bulletScale);
+    bullet.position = GLKVector2Make(self.position.x + self.xChange, self.position.y + self.size.height - 10 + self.yChange);
+    
     
     if (!_running && done) {
         bullet.velocity = GLKVector2Make(0, 300);
@@ -505,7 +517,7 @@
         float sinOfRotation = sin(plainRotation);
         float yShift = sinOfRotation*sizeOfGun;
         
-        bullet.position = GLKVector2Make(bullet.position.x + xShift, bullet.position.y + yShift - 16);
+        bullet.position = GLKVector2Make(bullet.position.x + xShift, bullet.position.y + yShift - 16 - bullet.size.height);
     }
     
     bullet.collisionxoff = 0;

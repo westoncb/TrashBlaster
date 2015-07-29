@@ -109,7 +109,7 @@ static TBWorld *_world;
         
         TBEntity *background = [[TBEntity alloc] initWithDrawable:self.bgSprite];
         background.layer = 0;
-//        background.position = GLKVector2Make(WIDTH/2, HEIGHT/2);
+        background.position = GLKVector2Make(WIDTH/2, HEIGHT/2);
         background.size = CGSizeMake(WIDTH, HEIGHT);
 //        background.scale = GLKVector2Make(1.01f, 1.01f);
         background.type = DECORATION;
@@ -132,8 +132,8 @@ static TBWorld *_world;
         
         TBStringSprite *scoreTextSprite = [[TBStringSprite alloc] initWithString:@"Score:"];
         _scoreTextEntity = [[TBEntity alloc] initWithDrawable:scoreTextSprite];
-        _scoreTextEntity.position = GLKVector2Make(0, 0);
         _scoreTextEntity.scale = GLKVector2Make(1.3f, 1.3f);
+        _scoreTextEntity.position = GLKVector2Make(_scoreTextEntity.size.width/2.0f, _scoreTextEntity.size.height/2.0f);
         
         [self addEntity:_scoreTextEntity];
         
@@ -246,15 +246,13 @@ static TBWorld *_world;
     _player = [[TBPlayer alloc] initWithStateSprite:playerSprite bulletSprite:bulletSprite];
     [_player.collidesWith addObject:[NSNumber numberWithInt:BLOCK]];
     [_player activateGun];
-    [_player increaseGlow];
+    [_player createJetPack];
     _player.canShoot = YES;
     _player.layer = 5;
     float scale = COL_WIDTH/(_player.size.width/2.0f);
     _player.scale = GLKVector2Make(scale, scale);
     
     [self addEntity:_player];
-    
-    
 }
 
 - (void)addCreature
@@ -281,7 +279,7 @@ static TBWorld *_world;
     creature.ACCELERATION = 2000;
     creature.DECELERATION = 12000;
     creature.power = 100;
-    creature.life = 500;
+    creature.life = 250;
     creature.keepImageAfterDeath = NO;
     [creature.collidesWith addObject:[NSNumber numberWithInt:BLOCK]];
     [creature.collidesWith addObject:[NSNumber numberWithInt:BULLET]];
@@ -295,6 +293,8 @@ static TBWorld *_world;
 - (void)createPointDisplayAtEntity:(TBEntity *)entity
 {
     int pointValue = [[TBGame instance] getCurrentBlockValue];
+    if (entity.type == NPC) //for the weird white guys
+        pointValue = 500;
     TBStringSprite *stringSprite = [[TBStringSprite alloc] initWithString:[NSString stringWithFormat:@"%i", pointValue]];
     TBEntity *stringEntity = [[TBEntity alloc] initWithDrawable:stringSprite];
     float bonusRatio = [TBGame instance].bonusLevel/((float)MAX_BONUS_LEVEL);
@@ -340,7 +340,7 @@ static TBWorld *_world;
         TBStringSprite *scoreSprite = [[TBStringSprite alloc] initWithString:[NSString stringWithFormat:@"%i", [game getScore]]];
         _scoreEntity = [[TBEntity alloc] initWithDrawable:scoreSprite];
         _scoreEntity.scale = GLKVector2Make(1.3f, 1.3f);
-        _scoreEntity.position = GLKVector2Make(_scoreTextEntity.size.width, 0);
+        _scoreEntity.position = GLKVector2Make(_scoreTextEntity.size.width + _scoreEntity.size.width/2.0f, _scoreEntity.size.height/2.0f);
         
         [self addEntity:_scoreEntity];
         
@@ -536,7 +536,7 @@ static TBWorld *_world;
         }
         
         int colIndex = [block getColumnIndex];
-        int collisionThreshold = TBWorld.FLOOR_HEIGHT - block.collisionyoff;
+        int collisionThreshold = TBWorld.FLOOR_HEIGHT - block.collisionyoff + block.size.height/2.0f;
         
         TBBlock *blockBelow = [block getBlockBelow];
         if (blockBelow.resting && blockBelow != self.blockMachine.dummyBlock) {

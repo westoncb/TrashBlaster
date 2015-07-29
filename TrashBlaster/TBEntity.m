@@ -143,7 +143,7 @@
 
 - (void)renderWithStartingMatrix:(GLKMatrix4)modelMatrix
 {
-    modelMatrix = GLKMatrix4Translate(modelMatrix, self.position.x, self.position.y, 0);
+    modelMatrix = GLKMatrix4Translate(modelMatrix, self.position.x - self.size.width/2.0f, self.position.y - self.size.height/2.0f, 0);
     modelMatrix = GLKMatrix4Scale(modelMatrix, self.scale.x, self.scale.y, 1.0f);
 //    modelMatrix = GLKMatrix4Translate(modelMatrix, self.size.width/2*self.scale.x, self.size.height/2*self.scale.y, 0);
     modelMatrix = GLKMatrix4Translate(modelMatrix, self.size.width/2, 0, 0);
@@ -198,19 +198,19 @@
 }
 
 - (float)collisionx1 {
-    return self.position.x + self.collisionxoff;
+    return self.position.x + self.collisionxoff - self.size.width/2.0f;
 }
 
 - (float)collisionx2 {
-    return self.position.x + self.collisionxoff + self.collisionsize.width;
+    return self.position.x + self.collisionxoff + self.collisionsize.width - self.size.width/2.0f;
 }
 
 - (float)collisiony1 {
-    return self.position.y + self.size.height - self.collisionyoff;
+    return self.position.y + self.size.height - self.collisionyoff - self.size.height/2.0f;
 }
 
 - (float)collisiony2 {
-    return self.position.y + self.size.height - self.collisionyoff - self.collisionsize.height;
+    return self.position.y + self.size.height - self.collisionyoff - self.collisionsize.height - self.size.height/2.0f;
 }
 
 - (void)printCollisionBounds {
